@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cendana Craig Ranch - Staff Admin Portal</title>
+<style>
+  :root{ --brown:#7a5230; --cream:#f4efe8; --ink:#2c241b; --line:#e2d8c8; --accent:#a8632f; }
+  *{box-sizing:border-box}
+  body{font-family:Georgia, 'Times New Roman', serif; background:var(--cream); color:var(--ink); margin:0;}
+  header{background:var(--brown); color:#fff; padding:20px; text-align:center;}
+  header h1{margin:0; font-size:20px;}
+  .wrap{max-width:900px; margin:0 auto; padding:20px;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px;}
+  label{display:block; font-weight:bold; margin-bottom:6px;}
+  input{width:100%; padding:10px; border:1px solid var(--line); border-radius:6px; font-size:15px; margin-bottom:12px;}
+  button{background:var(--accent); color:#fff; border:none; padding:10px 14px; border-radius:6px; font-size:14px; cursor:pointer;}
+  button.danger{background:#b34a4a;}
+  button.warn{background:#8a6a2f;}
+  button.neutral{background:#6b6b6b;}
+  button:disabled{background:#ccc; cursor:not-allowed;}
+  .tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .tabs button{background:#e8ddc8; color:var(--ink);}
+  .tabs button.active{background:var(--accent); color:#fff;}
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th, td{text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{background:#f0e9db;}
+  .badge{display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; margin:2px 2px 0 0;}
+  .badge.yes{background:#e7f3e5; color:#2c5c22;}
+  .badge.no{background:#fbe4e4; color:#8a1f1f;}
+  .badge.wait{background:#fff4e0; color:#8a5a00;}
+  .btn-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .msg{padding:10px; border-radius:6px; margin-bottom:14px; font-size:14px;}
+  .msg.err{background:#fbe4e4; color:#8a1f1f;}
+  .msg.ok{background:#e7f3e5; color:#2c5c22;}
+  #loginCard{max-width:360px; margin:60px auto;}
+  #portal{display:none}
+  .security-note{background:#fff4e0; border:1px solid #f0d59a; color:#8a5a00; padding:12px; border-radius:8px; font-size:13px; margin-bottom:16px;}
+</style>
+</head>
+<body>
+<header><h1>CENDANA CRAIG RANCH &mdash; Staff Admin Portal</h1></header>
+<div class="wrap">
+
+  <div class="card" id="loginCard">
+    <label>Staff Email</label>
+    <input type="email" id="loginEmail" />
+    <label>Password</label>
+    <input type="password" id="loginPassword" />
+    <button id="loginBtn" style="width:100%;">Log In</button>
+    <div class="msg err" id="loginError" style="display:none"></div>
+  </div>
+
+  <div id="portal">
+    <div class="security-note">
+      Heads up: this login screen protects the portal's interface, but the underlying database is not yet locked down with row-level security. Treat this as an internal tool for now, not a public-facing one, until that's addressed.
+    </div>
+    <div class="tabs">
+      <button id="tabBookingsBtn" class="active">Upcoming Bookings</button>
+      <button id="tabWaitlistBtn">Waitlist</button>
+    </div>
+    <div class="card" id="bookingsView"></div>
+    <div class="card" id="waitlistView" style="display:none"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+});
+
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const errBox = document.getElementById("loginError");
+  errBox.style.display = "none";
+
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    errBox.textContent = "Login failed: " + error.message;
+    errBox.style.display = "block";
+    return;
+  }
+  showPortal();
+};
+
+// stay logged in on refresh
+sb.auth.getSession().then(({ data }) => { if (data.session) showPortal(); });
+
+function showPortal() {
+  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("portal").style.display = "block";
+  loadBookings();
+}
+
+document.getElementById("tabBookingsBtn").onclick = () => {
+  document.getElementById("tabBookingsBtn").classList.add("active");
+  document.getElementById("tabWaitlistBtn").classList.remove("active");
+  document.getElementById("bookingsView").style.display = "block";
+  document.getElementById("waitlistView").style.display = "none";
+  loadBookings();
+};
+document.getElementById("tabWaitlistBtn").onclick = () => {
+  document.getElementById("tabWaitlistBtn").classList.add("active");
+  document.getElementById("tabBookingsBtn").classList.remove("active");
+  document.getElementById("waitlistView").style.display = "block";
+  document.getElementById("bookingsView").style.display = "none";
+  loadWaitlist();
+};
+
+// ---------- BOOKINGS ----------
+async function loadBookings() {
+  const view = document.getElementById("bookingsView");
+  view.innerHTML = "Loading...";
+  const nowIso = new Date().toISOString();
+
+  const { data, error } = await sb
+    .from("bookings")
+    .select("*, amenities(name, requires_deposit, deposit_amount)")
+    .eq("status", "confirmed")
+    .gt("end_time", nowIso)
+    .order("start_time");
+
+  if (error) { view.innerHTML = `<div class="msg err">Error loading bookings: ${error.message}</div>`; return; }
+
+  if (!data || data.length === 0) { view.innerHTML = "<p>No upcoming bookings.</p>"; return; }
+
+  let html = `<table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Guests</th><th>Key</th><th>Deposit</th><th>Actions</th></tr>`;
+  data.forEach(b => {
+    if (b.is_maintenance_hold) {
+      html += `<tr>
+        <td>${b.amenities.name}</td>
+        <td><em>Maintenance Hold</em></td>
+        <td>${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>
+        <td><button class="neutral" onclick="clearMaintenanceHold('${b.id}')">Clear Hold</button></td>
+      </tr>`;
+      return;
+    }
+    html += `<tr>
+      <td>${b.amenities.name}</td>
+      <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
+      <td>${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      <td>${b.guests}</td>
+      <td>
+        <span class="badge ${b.key_picked_up ? 'yes' : 'no'}">${b.key_picked_up ? 'Picked up' : 'Not picked up'}</span>
+        ${b.key_picked_up ? `<span class="badge ${b.key_returned ? 'yes' : 'no'}">${b.key_returned ? 'Returned' : 'Not returned'}</span>` : ''}
+      </td>
+      <td>${b.amenities.requires_deposit ? `<span class="badge ${b.deposit_paid ? 'yes' : 'no'}">${b.deposit_paid ? 'Paid' : 'Unpaid ($' + b.amenities.deposit_amount + ')'}</span>` : '&mdash;'}</td>
+      <td>
+        <div class="btn-row">
+          ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up')">Mark Key Picked Up</button>` : ''}
+          ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned')">Mark Key Returned</button>` : ''}
+          ${b.amenities.requires_deposit && !b.deposit_paid ? `<button class="warn" onclick="markDeposit('${b.id}')">Mark Deposit Paid</button>` : ''}
+          <button class="danger" onclick="staffCancel('${b.id}', false)">Cancel &amp; Release to Waitlist</button>
+          <button class="neutral" onclick="staffCancel('${b.id}', true)">Cancel for Maintenance</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html += `</table>`;
+  view.innerHTML = html;
+}
+
+async function markKey(id, field) {
+  const update = { [field]: true };
+  update[field + "_at"] = new Date().toISOString();
+  await sb.from("bookings").update(update).eq("id", id);
+  loadBookings();
+}
+
+async function markDeposit(id) {
+  await sb.from("bookings").update({ deposit_paid: true }).eq("id", id);
+  loadBookings();
+}
+
+async function clearMaintenanceHold(id) {
+  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+  loadBookings();
+}
+
+async function staffCancel(id, isMaintenance) {
+  const label = isMaintenance ? "cancel this for maintenance (waitlist will NOT be notified)" : "cancel this and release it to the waitlist";
+  if (!confirm(`Are you sure you want to ${label}?`)) return;
+
+  const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
+  if (!booking) return;
+
+  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+
+  if (isMaintenance) {
+    // Block the same slot silently -- no waitlist notification
+    await sb.from("bookings").insert({
+      amenity_id: booking.amenity_id,
+      resident_name: "Maintenance Hold",
+      resident_email: "n/a",
+      apartment_number: "N/A",
+      start_time: booking.start_time,
+      end_time: booking.end_time,
+      guests: 0,
+      is_maintenance_hold: true
+    });
+  } else {
+    await promoteNextWaitlisted(booking);
+  }
+  loadBookings();
+}
+
+async function promoteNextWaitlisted(cancelledBooking) {
+  const { data: candidates } = await sb
+    .from("waitlist").select("*")
+    .eq("amenity_id", cancelledBooking.amenity_id).eq("status", "waiting")
+    .lt("start_time", cancelledBooking.end_time).gt("end_time", cancelledBooking.start_time)
+    .order("created_at", { ascending: true }).limit(1);
+
+  if (!candidates || candidates.length === 0) return;
+  const next = candidates[0];
+  await sb.from("bookings").insert({
+    amenity_id: next.amenity_id, resident_name: next.resident_name, resident_email: next.resident_email,
+    apartment_number: next.apartment_number, start_time: next.start_time, end_time: next.end_time,
+    guests: next.guests, comments: next.comments
+  });
+  await sb.from("waitlist").update({ status: "promoted" }).eq("id", next.id);
+}
+
+// ---------- WAITLIST ----------
+async function loadWaitlist() {
+  const view = document.getElementById("waitlistView");
+  view.innerHTML = "Loading...";
+  const nowIso = new Date().toISOString();
+
+  const { data, error } = await sb
+    .from("waitlist")
+    .select("*, amenities(name)")
+    .eq("status", "waiting")
+    .gt("end_time", nowIso)
+    .order("amenity_id").order("created_at");
+
+  if (error) { view.innerHTML = `<div class="msg err">Error: ${error.message}</div>`; return; }
+  if (!data || data.length === 0) { view.innerHTML = "<p>No one is currently waitlisted.</p>"; return; }
+
+  let html = `<table><tr><th>Amenity</th><th>Resident</th><th>Requested Time</th><th>Joined Waitlist</th><th>Actions</th></tr>`;
+  data.forEach(w => {
+    html += `<tr>
+      <td>${w.amenities.name}</td>
+      <td>${w.resident_name}<br/><small>${w.resident_email}<br/>Apt ${w.apartment_number}</small></td>
+      <td>${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      <td>${new Date(w.created_at).toLocaleString()}</td>
+      <td><button class="neutral" onclick="removeFromWaitlist('${w.id}')">Remove from Waitlist</button></td>
+    </tr>`;
+  });
+  html += `</table>`;
+  view.innerHTML = html;
+}
+
+async function removeFromWaitlist(id) {
+  if (!confirm("Remove this person from the waitlist?")) return;
+  await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
+  loadWaitlist();
+}
+</script>
+</body>
+</html>
