@@ -114,6 +114,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
  
 let amenities = [];
 let amenityHours = [];
+let officeHours = [];
 let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
 let resident = { name: "", email: "", apt: "" };
 let selectedAmenity = null;
@@ -163,6 +164,9 @@ async function loadData() {
  
   const { data: hourRows } = await sb.from("amenity_hours").select("*");
   amenityHours = hourRows || [];
+ 
+  const { data: officeRows } = await sb.from("office_hours").select("*");
+  officeHours = officeRows || [];
  
   const list = document.getElementById("amenityList");
   list.innerHTML = "";
@@ -342,8 +346,27 @@ document.getElementById("submitBtn").onclick = async () => {
  
   if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
  
-  showMsg("ok", `Your reservation for ${selectedAmenity.name} is confirmed for ${startTime.toLocaleString()}. Please pick up your fob from the leasing office at your reservation start time.`);
+  const pickupInstructions = getPickupInstructions(selectedAmenity, startTime, date);
+  showMsg("ok", `Your reservation for ${selectedAmenity.name} is confirmed for ${startTime.toLocaleString()}. ${pickupInstructions}`);
 };
+ 
+// Cinema bookings can start after the leasing office itself has closed for the day (extended hours to 11pm).
+// In that case, fob pickup has to happen before the office closes -- not "at reservation start time".
+function getPickupInstructions(amenity, startTime, dateStr) {
+  const standard = "Please pick up your fob from the leasing office at your reservation start time.";
+  if (amenity.name !== "Cinema Theater") return standard;
+ 
+  const dow = startTime.getDay();
+  const officeRow = officeHours.find(h => h.day_of_week === dow);
+  if (!officeRow || !officeRow.close_time) return standard;
+ 
+  const officeClose = new Date(`${dateStr}T${officeRow.close_time}`);
+  if (startTime >= officeClose) {
+    const closeStr = officeClose.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    return `Since this is after the leasing office's normal hours, please pick up your fob from the leasing office 15 minutes before office closing time (by around ${closeStr}) rather than at your reservation start time.`;
+  }
+  return standard;
+}
  
 function showMsg(type, text) {
   document.getElementById("resultMsg").innerHTML = `<div class="msg ${type}">${text}</div>`;
