@@ -81,7 +81,8 @@
       <option value="180">3 hours</option>
       <option value="240">4 hours</option>
     </select>
-    <div class="hint">Maximum reservation length is 4 hours.</div>
+    <div class="hint" id="durationHint">Maximum reservation length is 4 hours.</div>
+    <div class="hint" id="closingNote" style="display:none; color:#8a5a00; font-weight:bold;"></div>
  
     <label>Number of Guests (if applicable)</label>
     <input type="number" id="resGuests" min="0" value="0" />
@@ -183,6 +184,7 @@ async function loadData() {
       } else {
         depoBox.style.display = "none";
       }
+      updateDurationOptions();
     };
     list.appendChild(div);
   });
@@ -196,6 +198,67 @@ async function loadData() {
   dateInput.max = maxDate.toISOString().split("T")[0];
 }
 loadData();
+ 
+// ---------- DYNAMIC DURATION OPTIONS ----------
+// Shrinks the duration dropdown so a booking can never run past that amenity's closing time
+// (this is what naturally produces "8pm -> max 3 hours, 9pm -> max 2 hours" for a space that closes at 11pm)
+function updateDurationOptions() {
+  const durationSelect = document.getElementById("resDuration");
+  const hint = document.getElementById("durationHint");
+  const closingNote = document.getElementById("closingNote");
+  const date = document.getElementById("resDate").value;
+  const startStr = document.getElementById("resStart").value;
+ 
+  if (!selectedAmenity || !date || !startStr) return; // not enough info yet, leave defaults
+ 
+  const startTime = new Date(`${date}T${startStr}:00`);
+  const dow = startTime.getDay();
+  const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
+ 
+  durationSelect.innerHTML = "";
+  closingNote.style.display = "none";
+ 
+  if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
+    durationSelect.innerHTML = '<option value="">Closed this day</option>';
+    hint.textContent = "This amenity is closed on the selected day.";
+    return;
+  }
+ 
+  const openTime = new Date(`${date}T${hoursRow.open_time}`);
+  const closeTime = new Date(`${date}T${hoursRow.close_time}`);
+ 
+  if (startTime < openTime || startTime >= closeTime) {
+    durationSelect.innerHTML = '<option value="">Outside business hours</option>';
+    hint.textContent = `Open ${hoursRow.open_time.slice(0,5)} - ${hoursRow.close_time.slice(0,5)} on this day.`;
+    return;
+  }
+ 
+  const maxMinutes = Math.floor((closeTime - startTime) / 60000);
+  const allOptions = [60, 120, 180, 240];
+  const validOptions = allOptions.filter(m => m <= maxMinutes);
+ 
+  if (validOptions.length === 0) {
+    durationSelect.innerHTML = '<option value="">No duration fits before closing</option>';
+    hint.textContent = `Closes at ${hoursRow.close_time.slice(0,5)} — pick an earlier start time.`;
+    return;
+  }
+ 
+  validOptions.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = (m / 60) + (m === 60 ? " hour" : " hours");
+    durationSelect.appendChild(opt);
+  });
+  hint.textContent = `Closes at ${hoursRow.close_time.slice(0,5)} on this day.`;
+ 
+  // late-evening warning: only relevant for spaces open into the evening (close at/after 9pm)
+  if (closeTime.getHours() >= 21 && startTime.getHours() >= 20) {
+    closingNote.style.display = "block";
+    closingNote.textContent = `Please plan accordingly — ${selectedAmenity.name} closes at ${hoursRow.close_time.slice(0,5)}. You must exit by then.`;
+  }
+}
+document.getElementById("resDate").addEventListener("change", updateDurationOptions);
+document.getElementById("resStart").addEventListener("change", updateDurationOptions);
  
 // ---------- SUBMIT ----------
 document.getElementById("submitBtn").onclick = async () => {
