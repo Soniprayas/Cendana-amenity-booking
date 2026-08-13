@@ -34,8 +34,15 @@
   .agree{display:flex; gap:8px; align-items:flex-start; margin-top:16px;}
   .agree input{width:auto; margin-top:3px;}
   .agree label{font-weight:normal; margin:0; font-size:13px;}
-  #step1, #step2{display:none}
-  #step1.active, #step2.active{display:block}
+  #step1, #step2, #menuStep, #myResStep{display:none}
+  #step1.active, #step2.active, #menuStep.active, #myResStep.active{display:block}
+  .res-item{border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:10px;}
+  .res-item .res-title{font-weight:bold;}
+  .res-item .res-time{font-size:14px; color:#555; margin:4px 0;}
+  .res-item .res-status{display:inline-block; font-size:12px; padding:2px 8px; border-radius:10px; margin-top:4px;}
+  .res-status.confirmed{background:#e7f3e5; color:#2c5c22;}
+  .res-status.waiting{background:#fff4e0; color:#8a5a00;}
+  .res-item button{background:#b34a4a; margin-top:10px; padding:8px; font-size:13px;}
   .small-link{background:none; border:none; color:var(--accent); text-decoration:underline; padding:0; width:auto; margin:8px 0 0; font-size:13px;}
 </style>
 </head>
@@ -60,6 +67,21 @@
  
     <button id="continueBtn">Continue</button>
     <div class="msg err" id="step1Error" style="display:none"></div>
+  </div>
+ 
+  <!-- STEP 1B: menu -->
+  <div class="card" id="menuStep">
+    <button id="newResBtn">Make a New Reservation</button>
+    <button id="myResBtn" style="background:#8a7050;">My Reservations</button>
+  </div>
+ 
+  <!-- STEP 3: my reservations -->
+  <div class="card" id="myResStep">
+    <h3 style="margin-top:0;">My Reservations</h3>
+    <div id="myResList"></div>
+    <h3 id="pastHeading" style="display:none; cursor:pointer;" onclick="document.getElementById('pastResList').style.display = document.getElementById('pastResList').style.display==='none' ? 'block' : 'none';">Past Reservations &#9662;</h3>
+    <div id="pastResList" style="display:none;"></div>
+    <button class="small-link" id="backFromMyResBtn">&larr; back to menu</button>
   </div>
  
   <!-- STEP 2: the booking form -->
@@ -145,12 +167,28 @@ document.getElementById("continueBtn").onclick = async () => {
  
   resident = { name, email, apt };
   document.getElementById("step1").classList.remove("active");
+  document.getElementById("menuStep").classList.add("active");
+};
+ 
+document.getElementById("newResBtn").onclick = () => {
+  document.getElementById("menuStep").classList.remove("active");
   document.getElementById("step2").classList.add("active");
+};
+ 
+document.getElementById("myResBtn").onclick = () => {
+  document.getElementById("menuStep").classList.remove("active");
+  document.getElementById("myResStep").classList.add("active");
+  loadMyReservations();
+};
+ 
+document.getElementById("backFromMyResBtn").onclick = () => {
+  document.getElementById("myResStep").classList.remove("active");
+  document.getElementById("menuStep").classList.add("active");
 };
  
 document.getElementById("backBtn").onclick = () => {
   document.getElementById("step2").classList.remove("active");
-  document.getElementById("step1").classList.add("active");
+  document.getElementById("menuStep").classList.add("active");
   document.getElementById("resultMsg").innerHTML = "";
 };
  
@@ -370,6 +408,172 @@ function getPickupInstructions(amenity, startTime, dateStr) {
  
 function showMsg(type, text) {
   document.getElementById("resultMsg").innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+ 
+// ---------- MY RESERVATIONS ----------
+async function loadMyReservations() {
+  const listBox = document.getElementById("myResList");
+  const pastBox = document.getElementById("pastResList");
+  const pastHeading = document.getElementById("pastHeading");
+  listBox.innerHTML = "Loading...";
+  pastBox.innerHTML = "";
+ 
+  const nowIso = new Date().toISOString();
+  const amenitySelect = "*, amenities(name, requires_deposit, deposit_amount)";
+ 
+  const { data: myBookings } = await sb
+    .from("bookings").select(amenitySelect)
+    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
+    .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
+ 
+  const { data: myWaitlist } = await sb
+    .from("waitlist").select(amenitySelect)
+    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
+    .eq("status", "waiting").gt("end_time", nowIso).order("start_time");
+ 
+  const { data: pastBookings } = await sb
+    .from("bookings").select(amenitySelect)
+    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
+    .in("status", ["confirmed", "cancelled"]).lte("end_time", nowIso)
+    .order("start_time", { ascending: false }).limit(10);
+ 
+  listBox.innerHTML = "";
+ 
+  if ((!myBookings || myBookings.length === 0) && (!myWaitlist || myWaitlist.length === 0)) {
+    listBox.innerHTML = "<p>You have no upcoming reservations or waitlist entries.</p>";
+  }
+ 
+  for (const b of (myBookings || [])) {
+    const div = document.createElement("div");
+    div.className = "res-item";
+    div.innerHTML = `
+      <div class="res-title">${b.amenities.name}</div>
+      <div class="res-time">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</div>
+      <span class="res-status confirmed">Confirmed</span>
+      <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
+      <div class="res-time">${keyStatusText(b)}</div>
+      ${depositReminderHtml(b)}
+      <button data-id="${b.id}" data-type="booking">Give Up / Cancel This Reservation</button>`;
+    div.querySelector("button").onclick = (e) => cancelReservation(b.id, "booking", e.target);
+    listBox.appendChild(div);
+  }
+ 
+  for (const w of (myWaitlist || [])) {
+    const position = await waitlistPosition(w);
+    const div = document.createElement("div");
+    div.className = "res-item";
+    div.innerHTML = `
+      <div class="res-title">${w.amenities.name}</div>
+      <div class="res-time">${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</div>
+      <span class="res-status waiting">Waiting &mdash; position #${position}</span>
+      <button data-id="${w.id}" data-type="waitlist">Leave Waitlist</button>`;
+    div.querySelector("button").onclick = (e) => cancelReservation(w.id, "waitlist", e.target);
+    listBox.appendChild(div);
+  }
+ 
+  // Past reservations (collapsed by default)
+  pastBox.innerHTML = "";
+  if (pastBookings && pastBookings.length > 0) {
+    pastHeading.style.display = "block";
+    pastBookings.forEach(b => {
+      const div = document.createElement("div");
+      div.className = "res-item";
+      const statusLabel = b.status === "cancelled" ? "Cancelled" : "Completed";
+      div.innerHTML = `
+        <div class="res-title">${b.amenities.name}</div>
+        <div class="res-time">${new Date(b.start_time).toLocaleString()}</div>
+        <span class="res-status confirmed">${statusLabel}</span>`;
+      pastBox.appendChild(div);
+    });
+  } else {
+    pastHeading.style.display = "none";
+  }
+}
+ 
+function timeRemainingText(startIso, endIso) {
+  const now = new Date();
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  if (now < start) {
+    const mins = Math.round((start - now) / 60000);
+    if (mins < 60) return `Starts in ${mins} minute${mins === 1 ? "" : "s"}`;
+    const hrs = Math.round(mins / 60);
+    return `Starts in about ${hrs} hour${hrs === 1 ? "" : "s"}`;
+  }
+  if (now >= start && now < end) {
+    const mins = Math.round((end - now) / 60000);
+    return `In progress &mdash; ends in ${mins} minute${mins === 1 ? "" : "s"}`;
+  }
+  return "";
+}
+ 
+function keyStatusText(b) {
+  if (b.key_returned) return "Key: picked up and returned.";
+  if (b.key_picked_up) return "Key: picked up, not yet returned.";
+  return "Key: not yet picked up from the leasing office.";
+}
+ 
+function depositReminderHtml(b) {
+  if (!b.amenities.requires_deposit || b.deposit_paid) return "";
+  return `<div class="msg wait" style="margin-top:8px;">Reminder: a $${b.amenities.deposit_amount} refundable deposit is required for this space. Please pay it at the leasing office if you haven't already.</div>`;
+}
+ 
+async function waitlistPosition(w) {
+  const { count } = await sb
+    .from("waitlist").select("id", { count: "exact", head: true })
+    .eq("amenity_id", w.amenity_id).eq("status", "waiting")
+    .lt("start_time", w.end_time).gt("end_time", w.start_time)
+    .lte("created_at", w.created_at);
+  return count || 1;
+}
+ 
+async function cancelReservation(id, type, btn) {
+  btn.disabled = true;
+  btn.textContent = "Cancelling...";
+ 
+  if (type === "waitlist") {
+    await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
+    loadMyReservations();
+    return;
+  }
+ 
+  // type === "booking": fetch it first so we know amenity/time to promote the right waitlist entry
+  const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
+  if (!booking) { loadMyReservations(); return; }
+ 
+  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+  await promoteNextWaitlisted(booking);
+  loadMyReservations();
+}
+ 
+// Finds the earliest-joined ("waiting") waitlist entry that overlapped this now-cancelled booking,
+// and confirms it -- matches our FIFO rule, and fires immediately on cancellation (not the 45-min timeout).
+async function promoteNextWaitlisted(cancelledBooking) {
+  const { data: candidates } = await sb
+    .from("waitlist")
+    .select("*")
+    .eq("amenity_id", cancelledBooking.amenity_id)
+    .eq("status", "waiting")
+    .lt("start_time", cancelledBooking.end_time)
+    .gt("end_time", cancelledBooking.start_time)
+    .order("created_at", { ascending: true })
+    .limit(1);
+ 
+  if (!candidates || candidates.length === 0) return;
+  const next = candidates[0];
+ 
+  await sb.from("bookings").insert({
+    amenity_id: next.amenity_id,
+    resident_name: next.resident_name,
+    resident_email: next.resident_email,
+    apartment_number: next.apartment_number,
+    start_time: next.start_time,
+    end_time: next.end_time,
+    guests: next.guests,
+    comments: next.comments
+  });
+  await sb.from("waitlist").update({ status: "promoted" }).eq("id", next.id);
+  // Note: the promoted resident finding out is email-based (Phase 6) -- not shown live in this browser tab.
 }
 </script>
 </body>
