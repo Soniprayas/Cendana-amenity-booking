@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cendana Craig Ranch - Amenity Reservations</title>
+<link rel="manifest" href="manifest.json" />
+<style>
+  :root{
+    --brown:#7a5230; --cream:#f4efe8; --ink:#2c241b; --line:#e2d8c8; --accent:#a8632f;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Georgia, 'Times New Roman', serif; background:var(--cream); color:var(--ink); margin:0; padding:0;}
+  header{background:var(--brown); color:#fff; padding:24px 20px; text-align:center;}
+  header h1{margin:0; font-size:22px; letter-spacing:1px;}
+  header p{margin:4px 0 0; font-size:13px; opacity:.85;}
+  .wrap{max-width:520px; margin:0 auto; padding:20px;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px;}
+  label{display:block; font-weight:bold; margin-bottom:6px; margin-top:14px;}
+  label:first-child{margin-top:0;}
+  input, select, textarea{width:100%; padding:10px; border:1px solid var(--line); border-radius:6px; font-size:15px; font-family:inherit;}
+  textarea{min-height:70px}
+  .amenity-option{border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-top:8px; display:flex; align-items:center; gap:10px; cursor:pointer;}
+  .amenity-option input{width:auto}
+  .amenity-note{font-size:12px; color:#7a6a52; margin-top:2px}
+  button{background:var(--accent); color:#fff; border:none; padding:14px; border-radius:8px; font-size:16px; width:100%; margin-top:18px; cursor:pointer;}
+  button:disabled{background:#ccc; cursor:not-allowed}
+  .msg{padding:12px; border-radius:8px; margin-top:14px; font-size:14px;}
+  .msg.ok{background:#e7f3e5; color:#2c5c22; border:1px solid #b9dcb2;}
+  .msg.wait{background:#fff4e0; color:#8a5a00; border:1px solid #f0d59a;}
+  .msg.err{background:#fbe4e4; color:#8a1f1f; border:1px solid #f0b3b3;}
+  .hint{font-size:12px; color:#7a6a52; margin-top:4px;}
+  fieldset{border:none; padding:0; margin:0;}
+  .agree{display:flex; gap:8px; align-items:flex-start; margin-top:16px;}
+  .agree input{width:auto; margin-top:3px;}
+  .agree label{font-weight:normal; margin:0; font-size:13px;}
+  #step1, #step2{display:none}
+  #step1.active, #step2.active{display:block}
+  .small-link{background:none; border:none; color:var(--accent); text-decoration:underline; padding:0; width:auto; margin:8px 0 0; font-size:13px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>CENDANA CRAIG RANCH</h1>
+  <p>Amenity Reservations</p>
+</header>
+
+<div class="wrap">
+
+  <!-- STEP 1: who are you -->
+  <div class="card active" id="step1">
+    <label>Name *</label>
+    <input type="text" id="resName" placeholder="Your full name" />
+
+    <label>Email *</label>
+    <input type="email" id="resEmail" placeholder="you@email.com" />
+
+    <label>Apartment Number *</label>
+    <input type="text" id="resApt" placeholder="e.g. 204" />
+
+    <button id="continueBtn">Continue</button>
+    <div class="msg err" id="step1Error" style="display:none"></div>
+  </div>
+
+  <!-- STEP 2: the booking form -->
+  <div class="card" id="step2">
+    <label>Which amenity would you like to reserve? *</label>
+    <div id="amenityList"></div>
+    <div class="hint" id="amenityDeposit" style="display:none"></div>
+
+    <label>Reservation Date *</label>
+    <input type="date" id="resDate" />
+
+    <label>Start Time *</label>
+    <input type="time" id="resStart" />
+
+    <label>Duration *</label>
+    <select id="resDuration">
+      <option value="60">1 hour</option>
+      <option value="120">2 hours</option>
+      <option value="180">3 hours</option>
+      <option value="240">4 hours</option>
+    </select>
+    <div class="hint">Maximum reservation length is 4 hours.</div>
+
+    <label>Number of Guests (if applicable)</label>
+    <input type="number" id="resGuests" min="0" value="0" />
+    <div class="hint" id="guestCapHint"></div>
+
+    <label>Additional questions or comments</label>
+    <textarea id="resComments"></textarea>
+
+    <div class="agree">
+      <input type="checkbox" id="resAgree" />
+      <label>By checking this box, I agree that I have read and understand the amenity reservation agreement.</label>
+    </div>
+
+    <button id="submitBtn">Submit Reservation</button>
+    <button class="small-link" id="backBtn">&larr; back</button>
+    <div id="resultMsg"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ====== CONFIG - your Supabase project ======
+const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let amenities = [];
+let amenityHours = [];
+let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
+let resident = { name: "", email: "", apt: "" };
+let selectedAmenity = null;
+
+// ---------- STEP 1 ----------
+document.getElementById("continueBtn").onclick = async () => {
+  const name = document.getElementById("resName").value.trim();
+  const email = document.getElementById("resEmail").value.trim();
+  const apt = document.getElementById("resApt").value.trim();
+  const errBox = document.getElementById("step1Error");
+  errBox.style.display = "none";
+
+  if (!name || !email || !apt) {
+    errBox.textContent = "Please fill in your name, email, and apartment number.";
+    errBox.style.display = "block";
+    return;
+  }
+
+  // check apartment list only if enforcement is turned on in app_settings
+  if (settings.enforce_apartment_list) {
+    const { data, error } = await sb.from("apartments").select("unit_number").eq("unit_number", apt).eq("active", true).maybeSingle();
+    if (error || !data) {
+      errBox.textContent = "We don't recognize that apartment number. Please contact the leasing office.";
+      errBox.style.display = "block";
+      return;
+    }
+  }
+
+  resident = { name, email, apt };
+  document.getElementById("step1").classList.remove("active");
+  document.getElementById("step2").classList.add("active");
+};
+
+document.getElementById("backBtn").onclick = () => {
+  document.getElementById("step2").classList.remove("active");
+  document.getElementById("step1").classList.add("active");
+  document.getElementById("resultMsg").innerHTML = "";
+};
+
+// ---------- LOAD AMENITIES + SETTINGS ----------
+async function loadData() {
+  const { data: settingsRow } = await sb.from("app_settings").select("*").eq("id", 1).single();
+  if (settingsRow) settings = settingsRow;
+
+  const { data: amenityRows } = await sb.from("amenities").select("*").eq("active", true).order("name");
+  amenities = amenityRows || [];
+
+  const { data: hourRows } = await sb.from("amenity_hours").select("*");
+  amenityHours = hourRows || [];
+
+  const list = document.getElementById("amenityList");
+  list.innerHTML = "";
+  amenities.forEach((a, i) => {
+    const div = document.createElement("div");
+    div.className = "amenity-option";
+    div.innerHTML = `
+      <input type="radio" name="amenity" value="${a.id}" id="amenity_${i}" />
+      <label for="amenity_${i}" style="margin:0; font-weight:normal;">${a.name}
+        <div class="amenity-note">Up to ${a.max_guests} guests${a.requires_deposit ? " &middot; $" + a.deposit_amount + " refundable deposit required at leasing office" : ""}</div>
+      </label>`;
+    div.querySelector("input").onchange = () => {
+      selectedAmenity = a;
+      document.getElementById("guestCapHint").textContent = "Maximum " + a.max_guests + " guests for this space.";
+      const depoBox = document.getElementById("amenityDeposit");
+      if (a.requires_deposit) {
+        depoBox.style.display = "block";
+        depoBox.textContent = "Note: this space requires a $" + a.deposit_amount + " refundable deposit, payable at the leasing office.";
+      } else {
+        depoBox.style.display = "none";
+      }
+    };
+    list.appendChild(div);
+  });
+
+  // set date limits
+  const dateInput = document.getElementById("resDate");
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + settings.max_advance_booking_days);
+  dateInput.min = today.toISOString().split("T")[0];
+  dateInput.max = maxDate.toISOString().split("T")[0];
+}
+loadData();
+
+// ---------- SUBMIT ----------
+document.getElementById("submitBtn").onclick = async () => {
+  const resultBox = document.getElementById("resultMsg");
+  resultBox.innerHTML = "";
+
+  if (!selectedAmenity) return showMsg("err", "Please select an amenity.");
+  const date = document.getElementById("resDate").value;
+  const startStr = document.getElementById("resStart").value;
+  const duration = parseInt(document.getElementById("resDuration").value, 10);
+  const guests = parseInt(document.getElementById("resGuests").value || "0", 10);
+  const comments = document.getElementById("resComments").value.trim();
+  const agreed = document.getElementById("resAgree").checked;
+
+  if (!date || !startStr) return showMsg("err", "Please choose a date and start time.");
+  if (!agreed) return showMsg("err", "You must agree to the reservation agreement to continue.");
+  if (guests > selectedAmenity.max_guests) return showMsg("err", `This space allows a maximum of ${selectedAmenity.max_guests} guests.`);
+
+  const startTime = new Date(`${date}T${startStr}:00`);
+  const endTime = new Date(startTime.getTime() + duration * 60000);
+
+  // ---- check business hours ----
+  const dow = startTime.getDay();
+  const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
+  if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
+    return showMsg("err", "This amenity is closed on the selected day.");
+  }
+  const openTime = new Date(`${date}T${hoursRow.open_time}`);
+  const closeTime = new Date(`${date}T${hoursRow.close_time}`);
+  if (startTime < openTime || endTime > closeTime) {
+    return showMsg("err", `Reservations must fit within business hours: ${hoursRow.open_time.slice(0,5)} - ${hoursRow.close_time.slice(0,5)} on this day.`);
+  }
+
+  // ---- check for overlap with existing confirmed bookings ----
+  const { data: overlaps, error: overlapErr } = await sb
+    .from("bookings")
+    .select("id")
+    .eq("amenity_id", selectedAmenity.id)
+    .eq("status", "confirmed")
+    .lt("start_time", endTime.toISOString())
+    .gt("end_time", startTime.toISOString());
+
+  if (overlapErr) return showMsg("err", "Something went wrong checking availability. Please try again.");
+
+  if (overlaps && overlaps.length > 0) {
+    // slot taken -> join waitlist
+    const { data: waitRow, error: waitErr } = await sb.from("waitlist").insert({
+      amenity_id: selectedAmenity.id,
+      resident_name: resident.name,
+      resident_email: resident.email,
+      apartment_number: resident.apt,
+      start_time: startTime.toISOString(),
+      end_time: endTime.toISOString(),
+      guests, comments
+    }).select().single();
+
+    if (waitErr) return showMsg("err", "Something went wrong joining the waitlist. Please try again.");
+
+    const { count } = await sb
+      .from("waitlist")
+      .select("id", { count: "exact", head: true })
+      .eq("amenity_id", selectedAmenity.id)
+      .eq("status", "waiting")
+      .lt("start_time", endTime.toISOString())
+      .gt("end_time", startTime.toISOString());
+
+    showMsg("wait", `That time is already booked. You've been added to the waitlist — you are position #${count}. ${count === 1 ? "You're first in line: if the current holder does not pick up their keys, this room may become available to you." : ""} We'll email you if it opens up.`);
+    return;
+  }
+
+  // ---- no overlap -> confirm booking ----
+  const { error: insertErr } = await sb.from("bookings").insert({
+    amenity_id: selectedAmenity.id,
+    resident_name: resident.name,
+    resident_email: resident.email,
+    apartment_number: resident.apt,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    guests, comments
+  });
+
+  if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
+
+  showMsg("ok", `Your reservation for ${selectedAmenity.name} is confirmed for ${startTime.toLocaleString()}. Please pick up your fob from the leasing office at your reservation start time.`);
+};
+
+function showMsg(type, text) {
+  document.getElementById("resultMsg").innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+</script>
+</body>
+</html>
