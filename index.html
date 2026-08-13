@@ -73,6 +73,7 @@
   <div class="card" id="menuStep">
     <button id="newResBtn">Make a New Reservation</button>
     <button id="myResBtn" style="background:#8a7050;">My Reservations</button>
+    <button class="small-link" id="backToStep1Btn">&larr; that's not me / edit my info</button>
   </div>
  
   <!-- STEP 3: my reservations -->
@@ -179,6 +180,15 @@ document.getElementById("myResBtn").onclick = () => {
   document.getElementById("menuStep").classList.remove("active");
   document.getElementById("myResStep").classList.add("active");
   loadMyReservations();
+};
+ 
+document.getElementById("backToStep1Btn").onclick = () => {
+  document.getElementById("resName").value = resident.name;
+  document.getElementById("resEmail").value = resident.email;
+  document.getElementById("resApt").value = resident.apt;
+  document.getElementById("menuStep").classList.remove("active");
+  document.getElementById("step1").classList.add("active");
+  document.getElementById("step1Error").style.display = "none";
 };
  
 document.getElementById("backFromMyResBtn").onclick = () => {
