@@ -161,6 +161,21 @@ let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
 let resident = { name: "", email: "", apt: "" };
 let selectedAmenity = null;
  
+// ---------- REMEMBER THIS RESIDENT ACROSS VISITS/REFRESHES ----------
+(function restoreResident() {
+  const saved = localStorage.getItem("ccr_resident");
+  if (saved) {
+    try {
+      resident = JSON.parse(saved);
+      document.getElementById("resName").value = resident.name;
+      document.getElementById("resEmail").value = resident.email;
+      document.getElementById("resApt").value = resident.apt;
+      document.getElementById("step1").classList.remove("active");
+      document.getElementById("menuStep").classList.add("active");
+    } catch (e) { /* ignore corrupted storage, just show the normal form */ }
+  }
+})();
+ 
 // ---------- STEP 1 ----------
 document.getElementById("continueBtn").onclick = async () => {
   const name = document.getElementById("resName").value.trim();
@@ -186,6 +201,7 @@ document.getElementById("continueBtn").onclick = async () => {
   }
  
   resident = { name, email, apt };
+  localStorage.setItem("ccr_resident", JSON.stringify(resident));
   document.getElementById("step1").classList.remove("active");
   document.getElementById("menuStep").classList.add("active");
 };
@@ -205,6 +221,7 @@ document.getElementById("backToStep1Btn").onclick = () => {
   document.getElementById("resName").value = resident.name;
   document.getElementById("resEmail").value = resident.email;
   document.getElementById("resApt").value = resident.apt;
+  localStorage.removeItem("ccr_resident");
   document.getElementById("menuStep").classList.remove("active");
   document.getElementById("step1").classList.add("active");
   document.getElementById("step1Error").style.display = "none";
