@@ -87,6 +87,14 @@
   #confirmModal svg{width:50px; height:50px; stroke:#2c5c22; margin-bottom:6px;}
   #confirmModal h3{margin:6px 0;}
   #confirmModal p{font-size:14px; color:#555; margin:6px 0;}
+  #confirmDialogBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #confirmDialogBackdrop.visible{display:flex;}
+  #confirmDialog{background:#fff; border-radius:14px; padding:26px; max-width:360px; width:100%; text-align:center;}
+  #confirmDialog p{font-size:15px; margin:6px 0 16px;}
+  #confirmDialog .btn-row{display:flex; gap:10px;}
+  #confirmDialog button{margin-top:0;}
+  #confirmDialogCancelBtn{background:#e8ddc8; color:var(--ink);}
+  #confirmDialogYesBtn{background:#b34a4a;}
 </style>
 </head>
 <body>
@@ -139,6 +147,17 @@
     <h3>Reservation Confirmed</h3>
     <p id="confirmModalText"></p>
     <button id="confirmModalDoneBtn">Done</button>
+  </div>
+</div>
+ 
+<!-- Are-you-sure dialog, used before any cancel action -->
+<div id="confirmDialogBackdrop">
+  <div id="confirmDialog">
+    <p id="confirmDialogText"></p>
+    <div class="btn-row">
+      <button id="confirmDialogCancelBtn">No, Keep It</button>
+      <button id="confirmDialogYesBtn">Yes, Cancel It</button>
+    </div>
   </div>
 </div>
  
@@ -794,23 +813,49 @@ async function waitlistPosition(w) {
   return count || 1;
 }
  
-async function cancelReservation(id, type, btn) {
+// Reusable "are you sure?" dialog. Call with a message and a function to run if they confirm.
+let pendingConfirmAction = null;
+function askToConfirm(message, onConfirm) {
+  document.getElementById("confirmDialogText").textContent = message;
+  pendingConfirmAction = onConfirm;
+  document.getElementById("confirmDialogBackdrop").classList.add("visible");
+}
+document.getElementById("confirmDialogCancelBtn").onclick = () => {
+  document.getElementById("confirmDialogBackdrop").classList.remove("visible");
+  pendingConfirmAction = null;
+};
+document.getElementById("confirmDialogYesBtn").onclick = () => {
+  document.getElementById("confirmDialogBackdrop").classList.remove("visible");
+  if (pendingConfirmAction) pendingConfirmAction();
+  pendingConfirmAction = null;
+};
+ 
+function cancelReservation(id, type, btn) {
+  const message = type === "waitlist"
+    ? "Are you sure you want to leave the waitlist for this reservation?"
+    : "Are you sure you want to give up / cancel this reservation?";
+  askToConfirm(message, () => performCancel(id, type, btn));
+}
+ 
+async function performCancel(id, type, btn) {
   btn.disabled = true;
   btn.textContent = "Cancelling...";
  
   if (type === "waitlist") {
     await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
-    loadMyReservations();
-    return;
+  } else {
+    // type === "booking": fetch it first so we know amenity/time to promote the right waitlist entry
+    const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
+    if (booking) {
+      await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+      await promoteNextWaitlisted(booking);
+    }
   }
  
-  // type === "booking": fetch it first so we know amenity/time to promote the right waitlist entry
-  const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
-  if (!booking) { loadMyReservations(); return; }
- 
-  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
-  await promoteNextWaitlisted(booking);
+  // Refresh every view that could be showing this reservation -- whichever one is
+  // actually visible is the one that matters, but both are safe/cheap to refresh.
   loadMyReservations();
+  loadHomeCard();
 }
  
 // Finds the earliest-joined ("waiting") waitlist entry that overlapped this now-cancelled booking,
