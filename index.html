@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Cendana Craig Ranch - Amenity Reservations</title>
+<title>Cendana at Craig Ranch - Amenity Reservations</title>
 <link rel="manifest" href="manifest.json" />
 <style>
   :root{
@@ -12,7 +12,7 @@
   *{box-sizing:border-box}
   body{font-family:Georgia, 'Times New Roman', serif; background:var(--cream); color:var(--ink); margin:0; padding:0;}
   header{background:var(--brown); color:#fff; padding:24px 20px; text-align:center;}
-  header h1{margin:0; font-size:22px; letter-spacing:1px;}
+  header h1{margin:0; font-size:22px; letter-spacing:.5px; font-weight:normal;}
   header p{margin:4px 0 0; font-size:13px; opacity:.85;}
   .wrap{max-width:520px; margin:0 auto; padding:20px;}
   .card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px;}
@@ -51,14 +51,96 @@
   .slot-legend{display:flex; gap:14px; font-size:12px; margin-bottom:6px; flex-wrap:wrap;}
   .slot-legend span{display:flex; align-items:center; gap:4px;}
   .legend-dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
-  .small-link{background:none; border:none; color:var(--accent); text-decoration:underline; padding:0; width:auto; margin:8px 0 0; font-size:13px;}
+  .footer-note{font-size:12px; color:#8a7a5f; text-align:center; margin-top:24px; line-height:1.5; padding:0 10px;}
+  .email-note{font-size:12px; color:#7a6a52; margin-top:4px; font-style:italic;}
+ 
+  /* ---- Top bar (Home / Menu / Logout) ---- */
+  #topBar{display:none; align-items:center; justify-content:space-between; max-width:520px; margin:0 auto; padding:10px 20px; background:#fff; border-bottom:1px solid var(--line);}
+  #topBar.visible{display:flex;}
+  .topbar-left{display:flex; align-items:center; gap:14px;}
+  .icon-btn{background:none; border:none; padding:6px; width:auto; margin:0; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px;}
+  .icon-btn:hover{background:#f0e9db;}
+  .icon-btn svg{width:24px; height:24px; stroke:var(--brown);}
+ 
+  /* ---- Sidebar drawer ---- */
+  #sidebarBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:40;}
+  #sidebarBackdrop.visible{display:block;}
+  #sidebar{position:fixed; top:0; left:-280px; width:260px; height:100%; background:#fff; z-index:50; transition:left .2s ease; padding:20px; box-shadow:2px 0 10px rgba(0,0,0,.15);}
+  #sidebar.visible{left:0;}
+  #sidebar h3{margin-top:0; color:var(--brown);}
+  .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:10px; background:#f0e9db; color:var(--ink); text-align:left; justify-content:flex-start;}
+  .sidebar-link svg{width:18px; height:18px; stroke:var(--brown); flex-shrink:0;}
+  .sidebar-link.logout{background:#fbe4e4; color:#8a1f1f;}
+  .sidebar-link.logout svg{stroke:#8a1f1f;}
+ 
+  /* ---- Square menu boxes (home screen) ---- */
+  .menu-grid{display:flex; gap:14px; flex-wrap:wrap;}
+  .menu-box{flex:1 1 45%; aspect-ratio:1/1; background:#fff; border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; text-align:center; padding:12px; transition:box-shadow .15s;}
+  .menu-box:hover{box-shadow:0 4px 14px rgba(122,82,48,.18);}
+  .menu-box svg{width:40px; height:40px; stroke:var(--accent);}
+  .menu-box span{font-weight:bold; font-size:15px;}
+ 
+  /* ---- Confirmation modal ---- */
+  #confirmModalBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #confirmModalBackdrop.visible{display:flex;}
+  #confirmModal{background:#fff; border-radius:14px; padding:26px; max-width:360px; width:100%; text-align:center;}
+  #confirmModal svg{width:50px; height:50px; stroke:#2c5c22; margin-bottom:6px;}
+  #confirmModal h3{margin:6px 0;}
+  #confirmModal p{font-size:14px; color:#555; margin:6px 0;}
 </style>
 </head>
 <body>
 <header>
-  <h1>CENDANA CRAIG RANCH</h1>
+  <h1>Cendana at Craig Ranch</h1>
   <p>Amenity Reservations</p>
 </header>
+ 
+<!-- Persistent top bar: Home on left, Logout on right -->
+<div id="topBar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="hamburgerBtn" title="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <button class="icon-btn" id="homeBtn" title="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    </button>
+  </div>
+  <button class="icon-btn" id="logoutBtn" title="Log out">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  </button>
+</div>
+ 
+<!-- Sidebar drawer -->
+<div id="sidebarBackdrop"></div>
+<div id="sidebar">
+  <h3>Menu</h3>
+  <button class="sidebar-link" id="sidebarNewRes">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+    Make a New Reservation
+  </button>
+  <button class="sidebar-link" id="sidebarMyRes">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    My Reservations
+  </button>
+  <button class="sidebar-link" id="sidebarEditInfo">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    Edit My Info
+  </button>
+  <button class="sidebar-link logout" id="sidebarLogout">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Log Out
+  </button>
+</div>
+ 
+<!-- Confirmation modal -->
+<div id="confirmModalBackdrop">
+  <div id="confirmModal">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+    <h3>Reservation Confirmed</h3>
+    <p id="confirmModalText"></p>
+    <button id="confirmModalDoneBtn">Done</button>
+  </div>
+</div>
  
 <div class="wrap">
  
@@ -69,19 +151,32 @@
  
     <label>Email *</label>
     <input type="email" id="resEmail" placeholder="you@email.com" />
+    <div class="email-note">Please use your correct email, as you will receive communication related to your booking at the email entered.</div>
  
     <label>Apartment Number *</label>
     <input type="text" id="resApt" placeholder="e.g. 204" />
  
     <button id="continueBtn">Continue</button>
     <div class="msg err" id="step1Error" style="display:none"></div>
+ 
+    <div class="footer-note">
+      Note: This is a community-built website. Cendana and its staff are not responsible for downtime or errors related to bookings. Please be respectful to the staff if you face any booking-related issues, as they are only trying to help.
+    </div>
   </div>
  
-  <!-- STEP 1B: menu -->
+  <!-- STEP 1B: menu / home -->
   <div class="card" id="menuStep">
-    <button id="newResBtn">Make a New Reservation</button>
-    <button id="myResBtn" style="background:#8a7050;">My Reservations</button>
-    <button class="small-link" id="backToStep1Btn">&larr; that's not me / edit my info</button>
+    <div class="menu-grid">
+      <div class="menu-box" id="newResBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+        <span>Make a New<br/>Reservation</span>
+      </div>
+      <div class="menu-box" id="myResBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>My<br/>Reservations</span>
+      </div>
+    </div>
+    <div id="homeUpcomingCard"></div>
   </div>
  
   <!-- STEP 3: my reservations -->
@@ -90,7 +185,6 @@
     <div id="myResList"></div>
     <h3 id="pastHeading" style="display:none; cursor:pointer;" onclick="document.getElementById('pastResList').style.display = document.getElementById('pastResList').style.display==='none' ? 'block' : 'none';">Past Reservations &#9662;</h3>
     <div id="pastResList" style="display:none;"></div>
-    <button class="small-link" id="backFromMyResBtn">&larr; back to menu</button>
   </div>
  
   <!-- STEP 2: the booking form -->
@@ -139,7 +233,6 @@
     </div>
  
     <button id="submitBtn">Submit Reservation</button>
-    <button class="small-link" id="backBtn">&larr; back</button>
     <div id="resultMsg"></div>
   </div>
  
@@ -170,11 +263,57 @@ let selectedAmenity = null;
       document.getElementById("resName").value = resident.name;
       document.getElementById("resEmail").value = resident.email;
       document.getElementById("resApt").value = resident.apt;
-      document.getElementById("step1").classList.remove("active");
-      document.getElementById("menuStep").classList.add("active");
+      showScreen("menuStep");
+      loadHomeCard();
     } catch (e) { /* ignore corrupted storage, just show the normal form */ }
   }
 })();
+ 
+// ---------- NAVIGATION ----------
+function showScreen(id) {
+  ["step1", "menuStep", "step2", "myResStep"].forEach(s => document.getElementById(s).classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("topBar").classList.toggle("visible", id !== "step1");
+  closeSidebar();
+}
+ 
+function openSidebar() {
+  document.getElementById("sidebar").classList.add("visible");
+  document.getElementById("sidebarBackdrop").classList.add("visible");
+}
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("visible");
+  document.getElementById("sidebarBackdrop").classList.remove("visible");
+}
+ 
+document.getElementById("hamburgerBtn").onclick = openSidebar;
+document.getElementById("sidebarBackdrop").onclick = closeSidebar;
+document.getElementById("homeBtn").onclick = () => { showScreen("menuStep"); loadHomeCard(); };
+ 
+function goToNewReservation() { showScreen("step2"); }
+function goToMyReservations() { showScreen("myResStep"); loadMyReservations(); }
+function goToEditInfo() {
+  document.getElementById("resName").value = resident.name;
+  document.getElementById("resEmail").value = resident.email;
+  document.getElementById("resApt").value = resident.apt;
+  showScreen("step1");
+}
+function logout() {
+  localStorage.removeItem("ccr_resident");
+  resident = { name: "", email: "", apt: "" };
+  document.getElementById("resName").value = "";
+  document.getElementById("resEmail").value = "";
+  document.getElementById("resApt").value = "";
+  showScreen("step1");
+}
+ 
+document.getElementById("newResBtn").onclick = goToNewReservation;
+document.getElementById("myResBtn").onclick = goToMyReservations;
+document.getElementById("sidebarNewRes").onclick = goToNewReservation;
+document.getElementById("sidebarMyRes").onclick = goToMyReservations;
+document.getElementById("sidebarEditInfo").onclick = goToEditInfo;
+document.getElementById("sidebarLogout").onclick = logout;
+document.getElementById("logoutBtn").onclick = logout;
  
 // ---------- STEP 1 ----------
 document.getElementById("continueBtn").onclick = async () => {
@@ -202,40 +341,8 @@ document.getElementById("continueBtn").onclick = async () => {
  
   resident = { name, email, apt };
   localStorage.setItem("ccr_resident", JSON.stringify(resident));
-  document.getElementById("step1").classList.remove("active");
-  document.getElementById("menuStep").classList.add("active");
-};
- 
-document.getElementById("newResBtn").onclick = () => {
-  document.getElementById("menuStep").classList.remove("active");
-  document.getElementById("step2").classList.add("active");
-};
- 
-document.getElementById("myResBtn").onclick = () => {
-  document.getElementById("menuStep").classList.remove("active");
-  document.getElementById("myResStep").classList.add("active");
-  loadMyReservations();
-};
- 
-document.getElementById("backToStep1Btn").onclick = () => {
-  document.getElementById("resName").value = resident.name;
-  document.getElementById("resEmail").value = resident.email;
-  document.getElementById("resApt").value = resident.apt;
-  localStorage.removeItem("ccr_resident");
-  document.getElementById("menuStep").classList.remove("active");
-  document.getElementById("step1").classList.add("active");
-  document.getElementById("step1Error").style.display = "none";
-};
- 
-document.getElementById("backFromMyResBtn").onclick = () => {
-  document.getElementById("myResStep").classList.remove("active");
-  document.getElementById("menuStep").classList.add("active");
-};
- 
-document.getElementById("backBtn").onclick = () => {
-  document.getElementById("step2").classList.remove("active");
-  document.getElementById("menuStep").classList.add("active");
-  document.getElementById("resultMsg").innerHTML = "";
+  showScreen("menuStep");
+  loadHomeCard();
 };
  
 // ---------- LOAD AMENITIES + SETTINGS ----------
@@ -491,8 +598,26 @@ document.getElementById("submitBtn").onclick = async () => {
   if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
  
   const pickupInstructions = getPickupInstructions(selectedAmenity, startTime, date);
-  showMsg("ok", `Your reservation for ${selectedAmenity.name} is confirmed for ${startTime.toLocaleString()}. ${pickupInstructions}`);
+  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${startTime.toLocaleString()}. ${pickupInstructions}`);
+  resetBookingForm();
 };
+ 
+function showConfirmationModal(text) {
+  document.getElementById("confirmModalText").textContent = text;
+  document.getElementById("confirmModalBackdrop").classList.add("visible");
+}
+ 
+function resetBookingForm() {
+  document.querySelectorAll('input[name="amenity"]').forEach(r => r.checked = false);
+  selectedAmenity = null;
+  document.getElementById("resDate").value = "";
+  document.getElementById("resStart").value = "";
+  document.getElementById("resGuests").value = "0";
+  document.getElementById("resComments").value = "";
+  document.getElementById("resAgree").checked = false;
+  document.getElementById("availabilitySection").style.display = "none";
+  document.getElementById("resultMsg").innerHTML = "";
+}
  
 // Cinema bookings can start after the leasing office itself has closed for the day (extended hours to 11pm).
 // In that case, fob pickup has to happen before the office closes -- not "at reservation start time".
@@ -514,6 +639,42 @@ function getPickupInstructions(amenity, startTime, dateStr) {
  
 function showMsg(type, text) {
   document.getElementById("resultMsg").innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+ 
+document.getElementById("confirmModalDoneBtn").onclick = () => {
+  document.getElementById("confirmModalBackdrop").classList.remove("visible");
+  showScreen("menuStep");
+  loadHomeCard();
+};
+ 
+// ---------- HOME CARD (shows next upcoming booking right on the home screen) ----------
+async function loadHomeCard() {
+  const box = document.getElementById("homeUpcomingCard");
+  if (!resident.email) { box.innerHTML = ""; return; }
+  const nowIso = new Date().toISOString();
+ 
+  const { data } = await sb
+    .from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)")
+    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
+    .eq("status", "confirmed").gt("end_time", nowIso)
+    .order("start_time").limit(1);
+ 
+  if (!data || data.length === 0) { box.innerHTML = ""; return; }
+  const b = data[0];
+  const div = document.createElement("div");
+  div.className = "res-item";
+  div.style.marginTop = "16px";
+  div.innerHTML = `
+    <div class="res-title">Your Next Reservation</div>
+    <div class="res-title">${b.amenities.name}</div>
+    <div class="res-time">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</div>
+    <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
+    <div class="res-time">${keyStatusText(b)}</div>
+    ${depositReminderHtml(b)}
+    <button data-id="${b.id}" data-type="booking">Give Up / Cancel This Reservation</button>`;
+  div.querySelector("button").onclick = (e) => { cancelReservation(b.id, "booking", e.target); };
+  box.innerHTML = "";
+  box.appendChild(div);
 }
  
 // ---------- MY RESERVATIONS ----------
