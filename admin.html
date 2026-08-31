@@ -244,7 +244,14 @@ document.getElementById("loginBtn").onclick = async () => {
   if (error) { errBox.textContent = "Login failed: " + error.message; errBox.style.display = "block"; return; }
   showPortal();
 };
-sb.auth.getSession().then(({ data }) => { if (data.session) showPortal(); });
+sb.auth.getSession().then(async ({ data }) => {
+  if (data.session) {
+    // if this session was minted before the staff role claim was set on the account,
+    // refresh it now so every is_staff() RLS check downstream has the current claims
+    await sb.auth.refreshSession();
+    showPortal();
+  }
+});
  
 function showPortal() {
   document.getElementById("loginScreen").style.display = "none";
@@ -649,6 +656,7 @@ function renderApartmentList() {
             <td style="padding:8px 6px;">${a.active ? '<span class="badge yes">Active</span>' : '<span class="badge no">Inactive</span>'}</td>
             <td style="padding:8px 6px; white-space:nowrap;">
               <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="renewLease('${a.unit_number}')">Renew Lease</button>
+              <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="refreshPin('${a.unit_number}')">Refresh PIN</button>
               <button class="${a.active ? 'neutral' : ''}" style="font-size:12px; padding:5px 10px;" onclick="toggleAptActive('${a.unit_number}', ${!a.active})">${a.active ? "Deactivate" : "Activate"}</button>
             </td>
           </tr>`).join("")}
@@ -703,9 +711,20 @@ async function renewLease(unit) {
   showPinReveal(unit, newPin);
 }
  
+async function refreshPin(unit) {
+  if (!confirm(`Generate a new PIN for apartment ${unit}? The current resident's device stays signed in as normal, but the OLD PIN stops working immediately. Use this if the PIN may have been shared or guessed by someone who shouldn't have it.`)) return;
+  const { data: newPin, error } = await sb.rpc("refresh_apartment_pin", { p_apartment: unit });
+  if (error) { alert("Couldn't refresh this PIN: " + error.message); return; }
+  await loadApartmentList();
+  showPinReveal(unit, newPin);
+}
+ 
 async function toggleAptActive(unit, makeActive) {
   const { error } = await sb.from("apartments").update({ active: makeActive }).eq("unit_number", unit);
-  if (error) { alert("Couldn't update this apartment."); return; }
+  if (error) {
+    alert("Couldn't update this apartment: " + error.message + "\n\nIf this mentions a policy/permission issue, try logging out and back in -- your session may predate the staff role being set.");
+    return;
+  }
   await loadApartmentList();
 }
  
@@ -738,3 +757,5 @@ document.getElementById("exportPinsBtn").onclick = () => {
 </body>
 </html>
  
+
+
