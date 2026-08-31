@@ -463,31 +463,18 @@ let editingProfile = false;
 const ALL_SCREENS = ["authStep", "profileStep", "menuStep", "step2", "myResStep"];
  
 // ---------- DEVICE IDENTITY ----------
-// Supabase's dedicated "anonymous" sign-in has been unreliable to enable via dashboard,
-// so instead each device silently creates its own real (but fake/random) email+password
-// account on first visit. Functionally identical for our purposes: a real auth.uid() that
-// every RLS policy in this app already relies on. The credentials are cached in
-// localStorage purely as a resilience fallback in case the session/refresh token is ever
-// lost -- normal visits never touch this, since persistSession keeps you signed in.
+// Each device gets a real Supabase anonymous session (auth.uid()) that every RLS
+// policy in this app relies on. Supabase persists this session in localStorage for
+// us (persistSession: true), so normal repeat visits just restore it via getSession()
+// -- signInAnonymously() is only called once, on a device's very first visit.
+// Requires "Anonymous Sign-Ins" to be enabled in Supabase: Authentication > Providers.
 async function ensureDeviceIdentity() {
   let { data: { session } } = await sb.auth.getSession();
   if (session) return session;
  
-  let creds = null;
-  try { creds = JSON.parse(localStorage.getItem("ccr_device") || "null"); } catch (e) { /* ignore */ }
- 
-  if (creds) {
-    const { data, error } = await sb.auth.signInWithPassword({ email: creds.email, password: creds.password });
-    if (!error && data.session) return data.session;
-  }
- 
-  const deviceId = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  const email = `device-${deviceId}@cendana.local`;
-  const password = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  const { data, error } = await sb.auth.signUp({ email, password });
+  const { data, error } = await sb.auth.signInAnonymously();
   if (error || !data.session) return null;
  
-  localStorage.setItem("ccr_device", JSON.stringify({ email, password }));
   return data.session;
 }
  
@@ -1563,5 +1550,3 @@ async function promoteNextWaitlisted(cancelledBooking) {
 </body>
 </html>
  
-
-
