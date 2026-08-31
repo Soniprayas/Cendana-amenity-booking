@@ -4,67 +4,229 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Cendana Craig Ranch - Staff Admin Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
 <style>
-  :root{ --brown:#7a5230; --cream:#f4efe8; --ink:#2c241b; --line:#e2d8c8; --accent:#a8632f; }
+  :root{
+    --ink:#232B36; --ink-soft:#4B5563; --sand:#F6F3EC; --line:#E4DFD2;
+    --amber:#D9A441; --amber-dark:#B9791E;
+    --sage:#7A9E7E; --dusty:#6E93AC; --clay:#C77B58; --gold:#D9A441;
+    --font-display:'Sora', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+  }
   *{box-sizing:border-box}
-  body{font-family:Georgia, 'Times New Roman', serif; background:var(--cream); color:var(--ink); margin:0;}
-  header{background:var(--brown); color:#fff; padding:20px; text-align:center;}
-  header h1{margin:0; font-size:20px;}
-  .wrap{max-width:900px; margin:0 auto; padding:20px;}
-  .card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px;}
-  label{display:block; font-weight:bold; margin-bottom:6px;}
-  input{width:100%; padding:10px; border:1px solid var(--line); border-radius:6px; font-size:15px; margin-bottom:12px;}
-  button{background:var(--accent); color:#fff; border:none; padding:10px 14px; border-radius:6px; font-size:14px; cursor:pointer;}
-  button.danger{background:#b34a4a;}
-  button.warn{background:#8a6a2f;}
+  body{font-family:var(--font-body); background:var(--sand); color:var(--ink); margin:0;}
+  a{color:inherit;}
+  #loginScreen{min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, #232B36 0%, #2E3A47 45%, #3B4A56 100%); position:relative; overflow:hidden; padding:20px;}
+  #loginScreen::before{content:""; position:absolute; inset:0; background-image:radial-gradient(circle at 15% 20%, rgba(217,164,65,.14), transparent 45%), radial-gradient(circle at 85% 80%, rgba(110,147,172,.16), transparent 50%); pointer-events:none;}
+  #loginCard{position:relative; z-index:1; max-width:400px; width:100%; background:#fff; border-radius:16px; padding:36px 32px; box-shadow:0 20px 50px rgba(15,20,26,.35);}
+  #loginCard .login-brand{text-align:center; margin-bottom:26px;}
+  #loginCard .login-brand .login-mark{width:52px; height:52px; margin:0 auto 14px; border-radius:14px; background:linear-gradient(135deg, var(--amber), var(--clay)); display:flex; align-items:center; justify-content:center;}
+  #loginCard .login-brand .login-mark svg{width:26px; height:26px; stroke:#fff;}
+  #loginCard .login-brand h1{font-family:var(--font-display); font-size:19px; font-weight:600; margin:0 0 4px;}
+  #loginCard .login-brand .login-address{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+  #loginCard .login-eyebrow{font-family:var(--font-display); font-weight:600; font-size:11px; letter-spacing:.6px; text-transform:uppercase; color:var(--amber-dark); text-align:center; margin-bottom:18px;}
+  #loginCard label{display:block; font-family:var(--font-display); font-weight:600; font-size:13px; margin-bottom:6px;}
+  #loginCard input{width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; font-size:15px; margin-bottom:14px; font-family:var(--font-body);}
+  #loginCard button{width:100%; padding:11px; font-size:14px;}
+  #loginCard .login-footer{text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:20px; line-height:1.5;}
+ 
+  /* ---- Sidebar ---- */
+  #sidebar{position:fixed; top:0; left:0; width:220px; height:100%; background:var(--ink); z-index:30; padding:20px 14px;}
+  #sidebar .brand{font-family:var(--font-display); font-weight:600; color:#fff; font-size:15px; margin-bottom:24px; padding:0 8px;}
+  #sidebar .brand small{display:block; font-family:var(--font-body); font-weight:400; font-size:11px; color:#B8C0CC; margin-top:2px;}
+  .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:4px; background:transparent; color:#D8DEE6; text-align:left; justify-content:flex-start; font-family:var(--font-body); font-weight:500; font-size:14px; padding:11px 12px; border:none; border-radius:8px; cursor:pointer;}
+  .sidebar-link:hover{background:rgba(255,255,255,.08);}
+  .sidebar-link.active{background:rgba(217,164,65,.18); color:#fff;}
+  .sidebar-link svg{width:18px; height:18px; stroke:var(--amber); flex-shrink:0;}
+ 
+  /* ---- Top bar ---- */
+  #topBar{margin-left:220px; display:flex; align-items:center; justify-content:space-between; padding:14px 28px; background:#fff; border-bottom:1px solid var(--line);}
+  .icon-btn{background:none; border:none; padding:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px;}
+  .icon-btn:hover{background:var(--sand);}
+  .icon-btn svg{width:22px; height:22px; stroke:var(--ink);}
+  #topBar h2{font-family:var(--font-display); font-size:16px; margin:0;}
+ 
+  #portalBody{margin-left:220px; padding:24px 28px;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(35,43,54,.06);}
+  label{display:block; font-family:var(--font-display); font-weight:600; font-size:13px; margin-bottom:6px;}
+  button{background:var(--amber-dark); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-family:var(--font-display); font-weight:600; font-size:13px; cursor:pointer;}
+  button:hover{background:#a3690f;}
+  button.danger{background:#B04A3E;} button.danger:hover{background:#96392f;}
+  button.warn{background:#8A6A2F;}
   button.neutral{background:#6b6b6b;}
+  button.outline{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
   button:disabled{background:#ccc; cursor:not-allowed;}
-  .tabs{display:flex; gap:8px; margin-bottom:16px;}
-  .tabs button{background:#e8ddc8; color:var(--ink);}
-  .tabs button.active{background:var(--accent); color:#fff;}
-  table{width:100%; border-collapse:collapse; font-size:14px;}
-  th, td{text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top;}
-  th{background:#f0e9db;}
-  .badge{display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; margin:2px 2px 0 0;}
-  .badge.yes{background:#e7f3e5; color:#2c5c22;}
-  .badge.no{background:#fbe4e4; color:#8a1f1f;}
-  .badge.wait{background:#fff4e0; color:#8a5a00;}
+  .tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .tabs button{background:#EEE8DA; color:var(--ink);}
+  .tabs button.active{background:var(--amber-dark); color:#fff;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th, td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{background:var(--sand); font-family:var(--font-display); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft);}
+  td .mono{font-family:var(--font-mono); font-size:12px;}
+  .badge{display:inline-block; font-family:var(--font-body); font-weight:600; font-size:11px; padding:3px 10px; border-radius:20px; margin:2px 2px 0 0;}
+  .badge.yes{background:#EAF3E8; color:#2C5C36;}
+  .badge.no{background:#FBE9E7; color:#8A2F1F;}
+  .badge.wait{background:#FBF0DD; color:#8A5A00;}
   .btn-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
-  .msg{padding:10px; border-radius:6px; margin-bottom:14px; font-size:14px;}
-  .msg.err{background:#fbe4e4; color:#8a1f1f;}
-  .msg.ok{background:#e7f3e5; color:#2c5c22;}
-  #loginCard{max-width:360px; margin:60px auto;}
-  #portal{display:none}
-  .security-note{background:#fff4e0; border:1px solid #f0d59a; color:#8a5a00; padding:12px; border-radius:8px; font-size:13px; margin-bottom:16px;}
+  .msg{padding:12px; border-radius:8px; margin-bottom:14px; font-size:14px;}
+  .msg.err{background:#FBE9E7; color:#8A2F1F;}
+  .msg.ok{background:#EAF3E8; color:#2C5C36;}
+  .security-note{background:#FBF0DD; border:1px solid #F0D59A; color:#8A5A00; padding:12px; border-radius:8px; font-size:13px; margin-bottom:16px;}
+  .stat-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:20px;}
+  .stat-tile{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:0 1px 3px rgba(35,43,54,.06);}
+  .stat-tile .stat-label{font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); font-weight:600;}
+  .stat-tile .stat-num{font-family:var(--font-display); font-size:30px; font-weight:600; margin-top:4px;}
+  .section-title{font-family:var(--font-display); font-weight:600; font-size:15px; margin:0 0 10px;}
+ 
+  /* ---- Calendar ---- */
+  .cal-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+  .cal-nav{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600;}
+  .cal-nav button{background:#EEE8DA; color:var(--ink); padding:6px 10px;}
+  .cal-mode-toggle{display:flex; gap:6px;}
+  .cal-mode-toggle button{background:#EEE8DA; color:var(--ink); padding:6px 14px;}
+  .cal-mode-toggle button.active{background:var(--amber-dark); color:#fff;}
+  .cal-grid{display:grid; grid-template-columns:repeat(7, 1fr); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .cal-day-header{background:var(--sand); padding:8px; text-align:center; font-family:var(--font-display); font-weight:600; font-size:12px; border-bottom:1px solid var(--line); border-right:1px solid var(--line);}
+  .cal-day-header:last-child{border-right:none;}
+  .cal-cell{border-right:1px solid var(--line); border-bottom:1px solid var(--line); min-height:110px; padding:6px; background:#fff; position:relative;}
+  .cal-grid.week-mode .cal-cell{min-height:320px;}
+  .cal-cell:nth-child(7n){border-right:none;}
+  .cal-cell.outside{background:#FAFAF7;}
+  .cal-cell.outside .cal-date-num{color:#B0AA98;}
+  .cal-cell .cal-date-num{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-bottom:4px;}
+  .cal-chip{font-size:10.5px; font-family:var(--font-body); font-weight:500; padding:2px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; border-left:3px solid; color:var(--ink); background:var(--sand);}
+  .cal-chip.pending{border-style:dashed; opacity:.85;}
+  .cal-more{font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-weight:600; margin-top:2px;}
+ 
+  /* ---- Detail modal ---- */
+  #detailBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #detailBackdrop.visible{display:flex;}
+  #detailModal{background:#fff; border-radius:14px; padding:24px; max-width:420px; width:100%;}
+  #detailModal h3{margin:0 0 10px; font-family:var(--font-display);}
 </style>
 </head>
 <body>
-<header><h1>CENDANA CRAIG RANCH &mdash; Staff Admin Portal</h1></header>
-<div class="wrap">
-
-  <div class="card" id="loginCard">
-    <label>Staff Email</label>
-    <input type="email" id="loginEmail" />
-    <label>Password</label>
-    <input type="password" id="loginPassword" />
-    <button id="loginBtn" style="width:100%;">Log In</button>
-    <div class="msg err" id="loginError" style="display:none"></div>
-  </div>
-
-  <div id="portal">
-    <div class="security-note">
-      Heads up: this login screen protects the portal's interface, but the underlying database is not yet locked down with row-level security. Treat this as an internal tool for now, not a public-facing one, until that's addressed.
+ 
+  <div id="loginScreen">
+    <div class="card" id="loginCard">
+      <div class="login-brand">
+        <div class="login-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+        </div>
+        <h1>Cendana Craig Ranch</h1>
+        <div class="login-address">6121 Alma Road &middot; McKinney, TX 75070</div>
+      </div>
+      <div class="login-eyebrow">Staff Admin Portal</div>
+      <label>Staff Email</label>
+      <input type="email" id="loginEmail" autocomplete="username" />
+      <label>Password</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" />
+      <button id="loginBtn">Log In</button>
+      <div class="msg err" id="loginError" style="display:none"></div>
+      <div class="login-footer">Amenity reservations for private offices, the Huddle Room, and the Cinema.</div>
     </div>
-    <div class="tabs">
-      <button id="tabBookingsBtn" class="active">Upcoming Bookings</button>
-      <button id="tabWaitlistBtn">Waitlist</button>
-    </div>
-    <div class="card" id="bookingsView"></div>
-    <div class="card" id="waitlistView" style="display:none"></div>
   </div>
-
-</div>
-
+ 
+  <div id="portal" style="display:none;">
+    <div id="sidebar">
+      <div class="brand">Cendana Craig Ranch<small>6121 Alma Rd, McKinney, TX 75070</small></div>
+      <button class="sidebar-link" id="sidebarCalendarBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </button>
+      <button class="sidebar-link" id="sidebarRequestsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Requests
+      </button>
+      <button class="sidebar-link" id="sidebarApartmentsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+        Apartments
+      </button>
+    </div>
+ 
+    <div id="topBar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="icon-btn" id="homeBtn" title="Home (Calendar)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        </button>
+        <h2 id="topBarTitle">Calendar</h2>
+      </div>
+      <button class="icon-btn" id="logoutBtn" title="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+ 
+    <div id="portalBody">
+      <div id="calendarView">
+        <div class="cal-toolbar">
+          <div class="cal-nav">
+            <button id="calPrevBtn">&larr;</button>
+            <span id="calLabel"></span>
+            <button id="calNextBtn">&rarr;</button>
+            <button id="calTodayBtn" class="outline">Today</button>
+          </div>
+          <div class="cal-mode-toggle">
+            <button id="calWeekBtn">Week</button>
+            <button id="calMonthBtn" class="active">Month</button>
+          </div>
+        </div>
+        <div id="calGrid" class="cal-grid"></div>
+      </div>
+ 
+      <div id="requestsView" style="display:none;">
+        <div class="stat-row" id="statRow"></div>
+        <div class="tabs">
+          <button id="tabBookingsBtn" class="active">Upcoming Bookings</button>
+          <button id="tabApprovalsBtn">Approvals</button>
+          <button id="tabWaitlistBtn">Waitlist</button>
+        </div>
+        <div class="card" id="bookingsView"></div>
+        <div class="card" id="approvalsView" style="display:none"></div>
+        <div class="card" id="waitlistView" style="display:none"></div>
+      </div>
+ 
+      <div id="apartmentsView" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="section-title" style="margin-top:0;">Add Apartments</div>
+          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">One unit number per line (or comma-separated). Each gets a fresh unique 6-digit PIN automatically.</p>
+          <textarea id="addAptInput" rows="3" style="width:100%; font-family:var(--font-mono, monospace); padding:8px; box-sizing:border-box;" placeholder="e.g.&#10;3068&#10;3069, 3070"></textarea>
+          <button id="addAptBtn" style="margin-top:10px;">Add Apartment(s)</button>
+          <div class="msg err" id="addAptError" style="display:none; margin-top:8px;"></div>
+        </div>
+ 
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="section-title" style="margin-top:0;">Apartment List &amp; PINs</div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="aptSearchInput" placeholder="Search unit #..." style="padding:6px 10px; font-size:13px;" />
+              <button class="outline" id="exportPinsBtn">Export CSV</button>
+            </div>
+          </div>
+          <div id="aptListBody" style="margin-top:12px;">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- shown once after a PIN is generated/rotated, since staff must relay it manually -->
+  <div id="pinRevealBackdrop" style="display:none; position:fixed; inset:0; background:rgba(20,20,20,.45); z-index:200; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; padding:28px; max-width:360px; width:90%; text-align:center;">
+      <div style="font-size:13px; color:var(--ink-soft,#666); margin-bottom:6px;" id="pinRevealUnit"></div>
+      <div style="font-family:var(--font-mono,monospace); font-size:32px; font-weight:700; letter-spacing:6px; margin:10px 0;" id="pinRevealCode"></div>
+      <p style="font-size:13px; color:var(--ink-soft,#666);">Give this PIN to the resident directly &mdash; it won't be shown again automatically, but you can always look it up here later.</p>
+      <button id="pinRevealCopyBtn" class="outline" style="width:100%; margin-bottom:8px;">Copy PIN</button>
+      <button id="pinRevealCloseBtn" style="width:100%;">Done</button>
+    </div>
+  </div>
+ 
+  <div id="detailBackdrop">
+    <div id="detailModal">
+      <div id="detailModalBody"></div>
+      <button class="outline" id="detailCloseBtn" style="margin-top:14px; width:100%;">Close</button>
+    </div>
+  </div>
+ 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
@@ -72,151 +234,163 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
 });
-
+ 
 document.getElementById("loginBtn").onclick = async () => {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
   const errBox = document.getElementById("loginError");
   errBox.style.display = "none";
-
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    errBox.textContent = "Login failed: " + error.message;
-    errBox.style.display = "block";
-    return;
-  }
+  if (error) { errBox.textContent = "Login failed: " + error.message; errBox.style.display = "block"; return; }
   showPortal();
 };
-
-// stay logged in on refresh
 sb.auth.getSession().then(({ data }) => { if (data.session) showPortal(); });
-
+ 
 function showPortal() {
-  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("loginScreen").style.display = "none";
   document.getElementById("portal").style.display = "block";
-  loadBookings();
+  goToCalendar();
 }
-
-document.getElementById("tabBookingsBtn").onclick = () => {
-  document.getElementById("tabBookingsBtn").classList.add("active");
-  document.getElementById("tabWaitlistBtn").classList.remove("active");
-  document.getElementById("bookingsView").style.display = "block";
-  document.getElementById("waitlistView").style.display = "none";
-  loadBookings();
+ 
+document.getElementById("logoutBtn").onclick = async () => {
+  await sb.auth.signOut();
+  document.getElementById("portal").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
 };
-document.getElementById("tabWaitlistBtn").onclick = () => {
-  document.getElementById("tabWaitlistBtn").classList.add("active");
-  document.getElementById("tabBookingsBtn").classList.remove("active");
-  document.getElementById("waitlistView").style.display = "block";
-  document.getElementById("bookingsView").style.display = "none";
-  loadWaitlist();
-};
-
+document.getElementById("homeBtn").onclick = () => { calendarMode = "month"; goToCalendar(); };
+document.getElementById("sidebarCalendarBtn").onclick = () => goToCalendar();
+document.getElementById("sidebarRequestsBtn").onclick = () => goToRequests();
+document.getElementById("sidebarApartmentsBtn").onclick = () => goToApartments();
+ 
+const ALL_SIDEBAR_BTNS = ["sidebarCalendarBtn", "sidebarRequestsBtn", "sidebarApartmentsBtn"];
+const ALL_MAIN_VIEWS = ["calendarView", "requestsView", "apartmentsView"];
+function setActiveNav(btnId, viewId, title) {
+  ALL_SIDEBAR_BTNS.forEach(b => document.getElementById(b).classList.toggle("active", b === btnId));
+  ALL_MAIN_VIEWS.forEach(v => document.getElementById(v).style.display = (v === viewId ? "block" : "none"));
+  document.getElementById("topBarTitle").textContent = title;
+}
+ 
+function goToCalendar() {
+  setActiveNav("sidebarCalendarBtn", "calendarView", "Calendar");
+  document.getElementById("calMonthBtn").classList.toggle("active", calendarMode === "month");
+  document.getElementById("calWeekBtn").classList.toggle("active", calendarMode === "week");
+  renderCalendar();
+}
+function goToRequests() {
+  setActiveNav("sidebarRequestsBtn", "requestsView", "Requests");
+  loadStats(); loadBookings();
+}
+function goToApartments() {
+  setActiveNav("sidebarApartmentsBtn", "apartmentsView", "Apartments");
+  loadApartmentList();
+}
+ 
+document.getElementById("tabBookingsBtn").onclick = () => switchReqTab("bookings");
+document.getElementById("tabApprovalsBtn").onclick = () => switchReqTab("approvals");
+document.getElementById("tabWaitlistBtn").onclick = () => switchReqTab("waitlist");
+function switchReqTab(tab) {
+  ["Bookings", "Approvals", "Waitlist"].forEach(t => {
+    document.getElementById(`tab${t}Btn`).classList.toggle("active", t.toLowerCase() === tab);
+    document.getElementById(`${t.toLowerCase()}View`).style.display = t.toLowerCase() === tab ? "block" : "none";
+  });
+  if (tab === "bookings") loadBookings();
+  if (tab === "approvals") loadApprovals();
+  if (tab === "waitlist") loadWaitlist();
+  loadStats();
+}
+ 
+// ---------- STATS ----------
+async function loadStats() {
+  const nowIso = new Date().toISOString();
+  const [{ count: pendingBookings }, { count: pendingExt }, { count: activeFobs }, { count: upcoming }] = await Promise.all([
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "pending").gt("end_time", nowIso),
+    sb.from("extension_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").eq("key_picked_up", true).eq("key_returned", false),
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").gt("end_time", nowIso)
+  ]);
+  const stats = [
+    { label: "Awaiting Approval", value: (pendingBookings || 0) + (pendingExt || 0) },
+    { label: "Active Fobs", value: activeFobs || 0 },
+    { label: "Upcoming Bookings", value: upcoming || 0 }
+  ];
+  document.getElementById("statRow").innerHTML = stats.map(s => `
+    <div class="stat-tile"><div class="stat-label">${s.label}</div><div class="stat-num">${s.value}</div></div>`).join("");
+}
+ 
 // ---------- BOOKINGS ----------
 async function loadBookings() {
   const view = document.getElementById("bookingsView");
   view.innerHTML = "Loading...";
   const nowIso = new Date().toISOString();
-
-  const { data, error } = await sb
-    .from("bookings")
+  const { data, error } = await sb.from("bookings")
     .select("*, amenities(name, requires_deposit, deposit_amount)")
-    .eq("status", "confirmed")
-    .gt("end_time", nowIso)
-    .order("start_time");
-
+    .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
+ 
   if (error) { view.innerHTML = `<div class="msg err">Error loading bookings: ${error.message}</div>`; return; }
-
   if (!data || data.length === 0) { view.innerHTML = "<p>No upcoming bookings.</p>"; return; }
-
-  let html = `<table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Guests</th><th>Key</th><th>Deposit</th><th>Actions</th></tr>`;
+ 
+  let html = `<div class="section-title">Upcoming Bookings</div><table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Guests</th><th>Key</th><th>Deposit</th><th>Actions</th></tr>`;
   data.forEach(b => {
     if (b.is_maintenance_hold) {
-      html += `<tr>
-        <td>${b.amenities.name}</td>
-        <td><em>Maintenance Hold</em></td>
-        <td>${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      html += `<tr><td>${b.amenities.name}</td><td><em>Maintenance Hold</em></td>
+        <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
         <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>
-        <td><button class="neutral" onclick="clearMaintenanceHold('${b.id}')">Clear Hold</button></td>
-      </tr>`;
+        <td><button class="neutral" onclick="clearMaintenanceHold('${b.id}')">Clear Hold</button></td></tr>`;
       return;
     }
     html += `<tr>
-      <td>${b.amenities.name}</td>
+      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}</td>
       <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
-      <td>${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
       <td>${b.guests}</td>
-      <td>
-        <span class="badge ${b.key_picked_up ? 'yes' : 'no'}">${b.key_picked_up ? 'Picked up' : 'Not picked up'}</span>
-        ${b.key_picked_up ? `<span class="badge ${b.key_returned ? 'yes' : 'no'}">${b.key_returned ? 'Returned' : 'Not returned'}</span>` : ''}
-      </td>
+      <td><span class="badge ${b.key_picked_up ? 'yes' : 'no'}">${b.key_picked_up ? 'Picked up' : 'Not picked up'}</span>
+        ${b.key_picked_up ? `<span class="badge ${b.key_returned ? 'yes' : 'no'}">${b.key_returned ? 'Returned' : 'Not returned'}</span>` : ''}</td>
       <td>${b.amenities.requires_deposit ? `<span class="badge ${b.deposit_paid ? 'yes' : 'no'}">${b.deposit_paid ? 'Paid' : 'Unpaid ($' + b.amenities.deposit_amount + ')'}</span>` : '&mdash;'}</td>
-      <td>
-        <div class="btn-row">
-          ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up')">Mark Key Picked Up</button>` : ''}
-          ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned')">Mark Key Returned</button>` : ''}
-          ${b.amenities.requires_deposit && !b.deposit_paid ? `<button class="warn" onclick="markDeposit('${b.id}')">Mark Deposit Paid</button>` : ''}
-          <button class="danger" onclick="staffCancel('${b.id}', false)">Cancel &amp; Release to Waitlist</button>
-          <button class="neutral" onclick="staffCancel('${b.id}', true)">Cancel for Maintenance</button>
-        </div>
-      </td>
-    </tr>`;
+      <td><div class="btn-row">
+        ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up')">Mark Key Picked Up</button>` : ''}
+        ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned')">Mark Key Returned</button>` : ''}
+        ${b.amenities.requires_deposit && !b.deposit_paid ? `<button class="warn" onclick="markDeposit('${b.id}')">Mark Deposit Paid</button>` : ''}
+        <button class="danger" onclick="staffCancel('${b.id}', false)">Cancel &amp; Release to Waitlist</button>
+        <button class="neutral" onclick="staffCancel('${b.id}', true)">Cancel for Maintenance</button>
+      </div></td></tr>`;
   });
   html += `</table>`;
   view.innerHTML = html;
 }
-
+ 
 async function markKey(id, field) {
-  const update = { [field]: true };
-  update[field + "_at"] = new Date().toISOString();
+  const update = { [field]: true }; update[field + "_at"] = new Date().toISOString();
   await sb.from("bookings").update(update).eq("id", id);
-  loadBookings();
+  loadBookings(); loadStats();
 }
-
 async function markDeposit(id) {
   await sb.from("bookings").update({ deposit_paid: true }).eq("id", id);
   loadBookings();
 }
-
 async function clearMaintenanceHold(id) {
   await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
   loadBookings();
 }
-
 async function staffCancel(id, isMaintenance) {
   const label = isMaintenance ? "cancel this for maintenance (waitlist will NOT be notified)" : "cancel this and release it to the waitlist";
   if (!confirm(`Are you sure you want to ${label}?`)) return;
-
   const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
   if (!booking) return;
-
   await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
-
   if (isMaintenance) {
-    // Block the same slot silently -- no waitlist notification
     await sb.from("bookings").insert({
-      amenity_id: booking.amenity_id,
-      resident_name: "Maintenance Hold",
-      resident_email: "n/a",
-      apartment_number: "N/A",
-      start_time: booking.start_time,
-      end_time: booking.end_time,
-      guests: 0,
-      is_maintenance_hold: true
+      amenity_id: booking.amenity_id, resident_name: "Maintenance Hold", resident_email: "n/a",
+      apartment_number: "N/A", start_time: booking.start_time, end_time: booking.end_time,
+      guests: 0, is_maintenance_hold: true
     });
-  } else {
-    await promoteNextWaitlisted(booking);
-  }
-  loadBookings();
+  } else { await promoteNextWaitlisted(booking); }
+  loadBookings(); loadStats(); renderCalendar();
 }
-
 async function promoteNextWaitlisted(cancelledBooking) {
-  const { data: candidates } = await sb
-    .from("waitlist").select("*")
+  const { data: candidates } = await sb.from("waitlist").select("*")
     .eq("amenity_id", cancelledBooking.amenity_id).eq("status", "waiting")
     .lt("start_time", cancelledBooking.end_time).gt("end_time", cancelledBooking.start_time)
     .order("created_at", { ascending: true }).limit(1);
-
   if (!candidates || candidates.length === 0) return;
   const next = candidates[0];
   await sb.from("bookings").insert({
@@ -226,42 +400,341 @@ async function promoteNextWaitlisted(cancelledBooking) {
   });
   await sb.from("waitlist").update({ status: "promoted" }).eq("id", next.id);
 }
-
+ 
+// ---------- APPROVALS ----------
+async function loadApprovals() {
+  const view = document.getElementById("approvalsView");
+  view.innerHTML = "Loading...";
+  const nowIso = new Date().toISOString();
+  const { data: pendingBookings } = await sb.from("bookings").select("*, amenities(name)")
+    .eq("status", "pending").gt("end_time", nowIso).order("start_time");
+  const { data: pendingExt } = await sb.from("extension_requests")
+    .select("*, bookings(resident_name, resident_email, apartment_number, start_time, end_time, amenities(name))")
+    .eq("status", "pending").order("created_at");
+ 
+  let html = `<div class="section-title">Pending Bookings (6-day office plans)</div>`;
+  if (!pendingBookings || pendingBookings.length === 0) { html += "<p>Nothing awaiting approval.</p>"; }
+  else {
+    html += `<table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Actions</th></tr>`;
+    pendingBookings.forEach(b => {
+      html += `<tr><td>${b.amenities.name}</td>
+        <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
+        <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td><div class="btn-row"><button onclick="approveBooking('${b.id}')">Approve</button>
+        <button class="danger" onclick="denyBooking('${b.id}')">Deny</button></div></td></tr>`;
+    });
+    html += `</table>`;
+  }
+  html += `<div class="section-title" style="margin-top:24px;">Pending Extension Requests</div>`;
+  if (!pendingExt || pendingExt.length === 0) { html += "<p>Nothing awaiting approval.</p>"; }
+  else {
+    html += `<table><tr><th>Amenity</th><th>Resident</th><th>Current End</th><th>Requested</th><th>New End</th><th>Actions</th></tr>`;
+    pendingExt.forEach(e => {
+      html += `<tr><td>${e.bookings.amenities.name}</td>
+        <td>${e.bookings.resident_name}<br/><small>${e.bookings.resident_email}<br/>Apt ${e.bookings.apartment_number}</small></td>
+        <td class="mono">${new Date(e.current_end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td>+${e.requested_hours} hr</td>
+        <td class="mono">${new Date(e.new_end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td><div class="btn-row"><button onclick="approveExtension('${e.id}','${e.booking_id}','${e.new_end_time}')">Approve</button>
+        <button class="danger" onclick="denyExtension('${e.id}')">Deny</button></div></td></tr>`;
+    });
+    html += `</table>`;
+  }
+  view.innerHTML = html;
+}
+async function approveBooking(id) { await sb.from("bookings").update({ status: "confirmed" }).eq("id", id); loadApprovals(); loadStats(); renderCalendar(); }
+async function denyBooking(id) { await sb.from("bookings").update({ status: "rejected" }).eq("id", id); loadApprovals(); loadStats(); renderCalendar(); }
+async function approveExtension(reqId, bookingId, newEndTime) {
+  await sb.from("bookings").update({ end_time: newEndTime }).eq("id", bookingId);
+  await sb.from("extension_requests").update({ status: "approved" }).eq("id", reqId);
+  loadApprovals(); loadStats(); renderCalendar();
+}
+async function denyExtension(reqId) { await sb.from("extension_requests").update({ status: "denied" }).eq("id", reqId); loadApprovals(); loadStats(); }
+ 
 // ---------- WAITLIST ----------
 async function loadWaitlist() {
   const view = document.getElementById("waitlistView");
   view.innerHTML = "Loading...";
   const nowIso = new Date().toISOString();
-
-  const { data, error } = await sb
-    .from("waitlist")
-    .select("*, amenities(name)")
-    .eq("status", "waiting")
-    .gt("end_time", nowIso)
-    .order("amenity_id").order("created_at");
-
+  const { data, error } = await sb.from("waitlist").select("*, amenities(name)")
+    .eq("status", "waiting").gt("end_time", nowIso).order("amenity_id").order("created_at");
   if (error) { view.innerHTML = `<div class="msg err">Error: ${error.message}</div>`; return; }
   if (!data || data.length === 0) { view.innerHTML = "<p>No one is currently waitlisted.</p>"; return; }
-
-  let html = `<table><tr><th>Amenity</th><th>Resident</th><th>Requested Time</th><th>Joined Waitlist</th><th>Actions</th></tr>`;
+  let html = `<div class="section-title">Waitlist</div><table><tr><th>Amenity</th><th>Resident</th><th>Requested Time</th><th>Joined Waitlist</th><th>Actions</th></tr>`;
   data.forEach(w => {
-    html += `<tr>
-      <td>${w.amenities.name}</td>
+    html += `<tr><td>${w.amenities.name}</td>
       <td>${w.resident_name}<br/><small>${w.resident_email}<br/>Apt ${w.apartment_number}</small></td>
-      <td>${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
-      <td>${new Date(w.created_at).toLocaleString()}</td>
-      <td><button class="neutral" onclick="removeFromWaitlist('${w.id}')">Remove from Waitlist</button></td>
-    </tr>`;
+      <td class="mono">${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      <td class="mono">${new Date(w.created_at).toLocaleString()}</td>
+      <td><button class="neutral" onclick="removeFromWaitlist('${w.id}')">Remove from Waitlist</button></td></tr>`;
   });
   html += `</table>`;
   view.innerHTML = html;
 }
-
 async function removeFromWaitlist(id) {
   if (!confirm("Remove this person from the waitlist?")) return;
   await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
   loadWaitlist();
 }
+ 
+// ---------- CALENDAR ----------
+let calendarMode = "month";
+let calendarAnchor = new Date();
+const ACCENTS = ["var(--sage)", "var(--dusty)", "var(--clay)", "var(--gold)"];
+let amenityColorMap = {};
+ 
+document.getElementById("calWeekBtn").onclick = () => { calendarMode = "week"; document.getElementById("calWeekBtn").classList.add("active"); document.getElementById("calMonthBtn").classList.remove("active"); renderCalendar(); };
+document.getElementById("calMonthBtn").onclick = () => { calendarMode = "month"; document.getElementById("calMonthBtn").classList.add("active"); document.getElementById("calWeekBtn").classList.remove("active"); renderCalendar(); };
+document.getElementById("calTodayBtn").onclick = () => { calendarAnchor = new Date(); renderCalendar(); };
+document.getElementById("calPrevBtn").onclick = () => { shiftCalendar(-1); };
+document.getElementById("calNextBtn").onclick = () => { shiftCalendar(1); };
+function shiftCalendar(dir) {
+  if (calendarMode === "month") calendarAnchor.setMonth(calendarAnchor.getMonth() + dir);
+  else calendarAnchor.setDate(calendarAnchor.getDate() + dir * 7);
+  calendarAnchor = new Date(calendarAnchor);
+  renderCalendar();
+}
+ 
+function getGridDates() {
+  if (calendarMode === "week") {
+    const start = new Date(calendarAnchor);
+    start.setDate(start.getDate() - start.getDay());
+    return Array.from({ length: 7 }, (_, i) => { const d = new Date(start); d.setDate(start.getDate() + i); return d; });
+  }
+  const firstOfMonth = new Date(calendarAnchor.getFullYear(), calendarAnchor.getMonth(), 1);
+  const gridStart = new Date(firstOfMonth);
+  gridStart.setDate(gridStart.getDate() - firstOfMonth.getDay());
+  const weeks = Math.ceil((firstOfMonth.getDay() + new Date(calendarAnchor.getFullYear(), calendarAnchor.getMonth() + 1, 0).getDate()) / 7);
+  return Array.from({ length: weeks * 7 }, (_, i) => { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); return d; });
+}
+ 
+async function renderCalendar() {
+  const grid = document.getElementById("calGrid");
+  const dates = getGridDates();
+  grid.className = "cal-grid" + (calendarMode === "week" ? " week-mode" : "");
+ 
+  const label = calendarMode === "week"
+    ? `${dates[0].toLocaleDateString([], { month: "short", day: "numeric" })} \u2013 ${dates[6].toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}`
+    : calendarAnchor.toLocaleDateString([], { month: "long", year: "numeric" });
+  document.getElementById("calLabel").textContent = label;
+ 
+  const rangeStart = new Date(dates[0]); rangeStart.setHours(0,0,0,0);
+  const rangeEnd = new Date(dates[dates.length - 1]); rangeEnd.setHours(23,59,59,999);
+ 
+  const { data: bookings } = await sb.from("bookings")
+    .select("*, amenities(name)")
+    .in("status", ["confirmed", "pending"])
+    .lt("start_time", rangeEnd.toISOString()).gt("end_time", rangeStart.toISOString())
+    .order("start_time");
+ 
+  (bookings || []).forEach(b => {
+    if (!(b.amenities.name in amenityColorMap)) {
+      amenityColorMap[b.amenities.name] = ACCENTS[Object.keys(amenityColorMap).length % ACCENTS.length];
+    }
+  });
+ 
+  const byDate = {};
+  (bookings || []).forEach(b => {
+    const key = new Date(b.start_time).toDateString();
+    (byDate[key] = byDate[key] || []).push(b);
+  });
+ 
+  const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  let html = dayNames.map(d => `<div class="cal-day-header">${d}</div>`).join("");
+ 
+  const today = new Date().toDateString();
+  const maxChips = calendarMode === "week" ? 8 : 3;
+ 
+  dates.forEach(d => {
+    const key = d.toDateString();
+    const outside = calendarMode === "month" && d.getMonth() !== calendarAnchor.getMonth();
+    const dayBookings = (byDate[key] || []);
+    const visible = dayBookings.slice(0, maxChips);
+    const overflow = dayBookings.length - visible.length;
+ 
+    html += `<div class="cal-cell ${outside ? 'outside' : ''}">
+      <div class="cal-date-num" style="${key === today ? 'color:var(--amber-dark);' : ''}">${d.getDate()}</div>
+      ${visible.map(b => {
+        const timeStr = new Date(b.start_time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+        const color = amenityColorMap[b.amenities.name];
+        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''}" style="border-left-color:${color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
+      }).join("")}
+      ${overflow > 0 ? `<div class="cal-more" onclick="openDayDetail('${key}')">+${overflow} more</div>` : ""}
+    </div>`;
+  });
+ 
+  grid.innerHTML = html;
+  window._calBookingsCache = bookings || [];
+}
+ 
+function openBookingDetail(id) {
+  const b = (window._calBookingsCache || []).find(x => x.id === id);
+  if (!b) return;
+  const body = document.getElementById("detailModalBody");
+  const timeRange = `${new Date(b.start_time).toLocaleString()} \u2013 ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`;
+  let actions = "";
+  if (b.status === "pending") {
+    actions = `<div class="btn-row">
+      <button onclick="approveBooking('${b.id}'); closeDetail();">Approve</button>
+      <button class="danger" onclick="denyBooking('${b.id}'); closeDetail();">Deny</button>
+    </div>`;
+  } else {
+    actions = `<div class="btn-row">
+      ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up'); closeDetail();">Mark Key Picked Up</button>` : ''}
+      ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned'); closeDetail();">Mark Key Returned</button>` : ''}
+      <button class="danger" onclick="staffCancel('${b.id}', false); closeDetail();">Cancel &amp; Release to Waitlist</button>
+      <button class="neutral" onclick="staffCancel('${b.id}', true); closeDetail();">Cancel for Maintenance</button>
+    </div>`;
+  }
+  body.innerHTML = `
+    <h3>${b.amenities.name}</h3>
+    <p><strong>${b.resident_name}</strong><br/>${b.resident_email}<br/>Apt ${b.apartment_number}</p>
+    <p class="mono">${timeRange}</p>
+    <p>Guests: ${b.guests}${b.status === "pending" ? '<br/><span class="badge wait">Pending Approval</span>' : ''}
+      ${b.key_picked_up ? `<br/><span class="badge yes">Key Picked Up</span>` : ''}</p>
+    ${actions}`;
+  document.getElementById("detailBackdrop").classList.add("visible");
+}
+ 
+function openDayDetail(dateKey) {
+  const dayBookings = (window._calBookingsCache || []).filter(b => new Date(b.start_time).toDateString() === dateKey);
+  const body = document.getElementById("detailModalBody");
+  body.innerHTML = `<h3>${new Date(dateKey).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}</h3>` +
+    dayBookings.map(b => `<p style="cursor:pointer; border-bottom:1px solid var(--line); padding:8px 0;" onclick="openBookingDetail('${b.id}')">
+      <strong>${new Date(b.start_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</strong> &mdash; ${b.amenities.name}<br/>
+      <small>${b.resident_name}, Apt ${b.apartment_number}</small></p>`).join("");
+  document.getElementById("detailBackdrop").classList.add("visible");
+}
+ 
+function closeDetail() { document.getElementById("detailBackdrop").classList.remove("visible"); }
+document.getElementById("detailCloseBtn").onclick = closeDetail;
+document.getElementById("detailBackdrop").onclick = (e) => { if (e.target.id === "detailBackdrop") closeDetail(); };
+ 
+// =====================================================================
+// APARTMENTS TAB: add units, view/renew PINs, activate/deactivate
+// =====================================================================
+let apartmentCache = [];
+ 
+async function loadApartmentList() {
+  const body = document.getElementById("aptListBody");
+  body.innerHTML = "Loading...";
+  const { data, error } = await sb.from("apartments").select("*").order("unit_number");
+  if (error) { body.innerHTML = "Couldn't load apartments."; return; }
+  apartmentCache = data || [];
+  renderApartmentList();
+}
+ 
+function renderApartmentList() {
+  const body = document.getElementById("aptListBody");
+  const q = (document.getElementById("aptSearchInput").value || "").trim();
+  const rows = apartmentCache.filter(a => !q || a.unit_number.includes(q));
+ 
+  if (rows.length === 0) { body.innerHTML = "<p>No apartments match.</p>"; return; }
+ 
+  body.innerHTML = `
+    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+      <thead><tr style="text-align:left; border-bottom:1px solid var(--line);">
+        <th style="padding:8px 6px;">Unit</th>
+        <th style="padding:8px 6px;">PIN</th>
+        <th style="padding:8px 6px;">Issued</th>
+        <th style="padding:8px 6px;">Status</th>
+        <th style="padding:8px 6px;"></th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(a => `
+          <tr style="border-bottom:1px solid var(--line);">
+            <td style="padding:8px 6px; font-weight:600;">${a.unit_number}</td>
+            <td style="padding:8px 6px; font-family:var(--font-mono,monospace); letter-spacing:2px;">${a.pin || "\u2014"}</td>
+            <td style="padding:8px 6px; font-size:12px; color:var(--ink-soft,#666);">${a.pin_issued_at ? new Date(a.pin_issued_at).toLocaleDateString() : "\u2014"}</td>
+            <td style="padding:8px 6px;">${a.active ? '<span class="badge yes">Active</span>' : '<span class="badge no">Inactive</span>'}</td>
+            <td style="padding:8px 6px; white-space:nowrap;">
+              <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="renewLease('${a.unit_number}')">Renew Lease</button>
+              <button class="${a.active ? 'neutral' : ''}" style="font-size:12px; padding:5px 10px;" onclick="toggleAptActive('${a.unit_number}', ${!a.active})">${a.active ? "Deactivate" : "Activate"}</button>
+            </td>
+          </tr>`).join("")}
+      </tbody>
+    </table>`;
+}
+document.getElementById("aptSearchInput").addEventListener("input", renderApartmentList);
+ 
+document.getElementById("addAptBtn").onclick = async () => {
+  const raw = document.getElementById("addAptInput").value;
+  const errBox = document.getElementById("addAptError");
+  errBox.style.display = "none";
+  const units = raw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  if (units.length === 0) {
+    errBox.textContent = "Enter at least one apartment number.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  const btn = document.getElementById("addAptBtn");
+  btn.disabled = true; btn.textContent = "Adding...";
+ 
+  const results = [];
+  for (const unit of units) {
+    const { data: pin, error } = await sb.rpc("add_apartment", { p_unit: unit });
+    results.push({ unit, pin, error });
+  }
+ 
+  btn.disabled = false; btn.textContent = "Add Apartment(s)";
+  document.getElementById("addAptInput").value = "";
+  await loadApartmentList();
+ 
+  const failed = results.filter(r => r.error);
+  if (failed.length > 0) {
+    errBox.textContent = `Some units failed to add: ${failed.map(f => f.unit).join(", ")}`;
+    errBox.style.display = "block";
+  }
+ 
+  const succeeded = results.filter(r => !r.error);
+  if (succeeded.length === 1) {
+    showPinReveal(succeeded[0].unit, succeeded[0].pin);
+  } else if (succeeded.length > 1) {
+    alert(`Added ${succeeded.length} apartments with fresh PINs. See the table below, or export CSV to hand them out.`);
+  }
+};
+ 
+async function renewLease(unit) {
+  if (!confirm(`Renew the lease PIN for apartment ${unit}? This immediately signs out whoever is currently using that unit's PIN \u2014 only do this at move-out/move-in.`)) return;
+  const { data: newPin, error } = await sb.rpc("rotate_apartment_pin", { p_apartment: unit });
+  if (error) { alert("Couldn't renew this PIN: " + error.message); return; }
+  await loadApartmentList();
+  showPinReveal(unit, newPin);
+}
+ 
+async function toggleAptActive(unit, makeActive) {
+  const { error } = await sb.from("apartments").update({ active: makeActive }).eq("unit_number", unit);
+  if (error) { alert("Couldn't update this apartment."); return; }
+  await loadApartmentList();
+}
+ 
+function showPinReveal(unit, pin) {
+  document.getElementById("pinRevealUnit").textContent = `Apartment ${unit}`;
+  document.getElementById("pinRevealCode").textContent = pin;
+  document.getElementById("pinRevealBackdrop").style.display = "flex";
+}
+document.getElementById("pinRevealCloseBtn").onclick = () => { document.getElementById("pinRevealBackdrop").style.display = "none"; };
+document.getElementById("pinRevealCopyBtn").onclick = () => {
+  navigator.clipboard.writeText(document.getElementById("pinRevealCode").textContent);
+  const b = document.getElementById("pinRevealCopyBtn");
+  const old = b.textContent; b.textContent = "Copied!";
+  setTimeout(() => { b.textContent = old; }, 1200);
+};
+ 
+document.getElementById("exportPinsBtn").onclick = () => {
+  const rows = [["Unit Number", "PIN", "Issued", "Active"]].concat(
+    apartmentCache.map(a => [a.unit_number, a.pin || "", a.pin_issued_at ? new Date(a.pin_issued_at).toISOString() : "", a.active ? "yes" : "no"])
+  );
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "cendana-apartment-pins.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+};
 </script>
 </body>
 </html>
+ 
