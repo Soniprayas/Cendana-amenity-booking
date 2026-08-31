@@ -105,9 +105,10 @@
   .clock-hand{stroke:var(--amber-dark); stroke-width:2.5; stroke-linecap:round; pointer-events:none;}
   .clock-duration-arc{stroke:var(--amber); stroke-width:14; fill:none; opacity:.35; pointer-events:none;}
   .clock-center-readout{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-mono); font-weight:600; font-size:13px; color:var(--ink); text-align:center; pointer-events:none; background:#fff; border-radius:50%; width:84px; height:84px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 5px rgba(35,43,54,.1); line-height:1.35; padding:4px;}
-  .clock-ring-legend{display:flex; gap:16px; font-size:11px; color:var(--ink-soft); flex-wrap:wrap; justify-content:center;}
-  .ring-dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:4px; vertical-align:middle; border:2.5px solid var(--amber-dark); box-sizing:border-box;}
-  .ring-dot.inner{border-color:var(--dusty);}
+  .ampm-toggle{display:flex; gap:6px;}
+  .ampm-toggle button{width:auto; margin-top:0; padding:8px 22px; font-size:13px; background:#fff; color:var(--ink-soft); border:1.5px solid var(--line);}
+  .ampm-toggle button:hover{background:#FBF6EA;}
+  .ampm-toggle button.active{background:var(--amber-dark); color:#fff; border-color:var(--amber-dark);}
   .key-countdown{font-family:var(--font-mono); font-size:13px; font-weight:600; padding:8px 10px; border-radius:8px; margin-top:8px;}
   .key-countdown.ok{background:#EAF3E8; color:#2C5C36;}
   .key-countdown.warn{background:#FBF0DD; color:#8A5A00;}
@@ -134,8 +135,11 @@
   .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:8px; background:rgba(255,255,255,.06); color:#fff; text-align:left; justify-content:flex-start; font-family:var(--font-body); font-weight:500; font-size:14px; padding:11px 12px;}
   .sidebar-link:hover{background:rgba(255,255,255,.12);}
   .sidebar-link svg{width:18px; height:18px; stroke:var(--amber); flex-shrink:0;}
-  .sidebar-link.logout{background:rgba(176,74,62,.18); color:#F2B3AA;}
-  .sidebar-link.logout svg{stroke:#F2B3AA;}
+  .sidebar-link.active{background:rgba(217,164,65,.22); color:#fff;}
+  .sidebar-link.active svg{stroke:#fff;}
+  .sidebar-link.logout{margin-top:20px; border-top:1px solid rgba(255,255,255,.12); padding-top:16px; border-radius:0;}
+  .sidebar-link.logout:hover{background:rgba(176,74,62,.18); color:#F2B3AA;}
+  .sidebar-link.logout:hover svg{stroke:#F2B3AA;}
  
   /* ---- Square menu boxes (home screen) ---- */
   .menu-grid{display:flex; gap:14px; flex-wrap:wrap;}
@@ -356,13 +360,13 @@
         <span><span class="legend-dot" style="background:#F5DAD5;"></span>Booked, keys still out</span>
       </div>
       <div class="clock-container">
+        <div class="ampm-toggle">
+          <button type="button" id="clockAmBtn" class="active">AM</button>
+          <button type="button" id="clockPmBtn">PM</button>
+        </div>
         <div class="clock-face" id="clockFace">
           <svg id="clockSvg" viewBox="0 0 300 300"></svg>
           <div class="clock-center-readout" id="clockReadout">Select<br/>a time</div>
-        </div>
-        <div class="clock-ring-legend">
-          <span><span class="ring-dot outer"></span>12 AM&ndash;12 PM &middot; outer ring</span>
-          <span><span class="ring-dot inner"></span>12 PM&ndash;12 AM &middot; inner ring</span>
         </div>
       </div>
     </div>
@@ -521,7 +525,18 @@ function showScreen(id) {
  
   document.getElementById("topBar").classList.toggle("visible", hasIdentity && id !== "authStep" && id !== "profileStep");
   updateProfileChip();
+  updateSidebarActive(id);
   closeSidebar();
+}
+ 
+// Highlights whichever sidebar item matches the section you're actually on,
+// so the sidebar reflects real state instead of nothing ever looking "selected".
+const SIDEBAR_SCREEN_MAP = { step2: "sidebarNewRes", myResStep: "sidebarMyRes" };
+function updateSidebarActive(id) {
+  const activeBtnId = (id === "profileStep" && editingProfile) ? "sidebarEditInfo" : SIDEBAR_SCREEN_MAP[id];
+  ["sidebarNewRes", "sidebarMyRes", "sidebarEditInfo"].forEach(btnId => {
+    document.getElementById(btnId).classList.toggle("active", btnId === activeBtnId);
+  });
 }
  
 function updateProfileChip() {
@@ -782,11 +797,12 @@ document.getElementById("resDate").addEventListener("change", () => { updateDura
 document.getElementById("resDuration").addEventListener("change", () => { drawClockSelection(); });
  
 // ---------- AVAILABILITY CLOCK DIAL (booking page) ----------
-// Double-ring 24-hour dial: outer ring = 12am-12pm, inner ring = 12pm-12am.
+// Standard single-ring 12-hour dial (numbers 1-12) with an AM/PM toggle above it.
 // Dragging the hand snaps to the nearest open 15-minute slot; booked slots are shown in red and can't be selected.
-const CX = 150, CY = 150, R_OUTER = 124, R_INNER = 84;
+const CX = 150, CY = 150, R = 112;
 let clockOpenMin = null, clockCloseMin = null, clockBookings = [], clockDate = null;
 let selectedStartMin = null;
+let clockMeridiem = "AM"; // which half of the day the dial is currently showing
  
 function minToLabel(min) {
   const h24 = Math.floor(min / 60) % 24, m = min % 60;
@@ -797,12 +813,8 @@ function polarPoint(r, angleDeg) {
   const a = (angleDeg - 90) * Math.PI / 180;
   return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
 }
-function ringAngle(minute) {
-  // angle within its own ring (0-360), independent of which ring it's on
-  return ((minute % 720) / 720) * 360;
-}
-function ringOf(minute) { return minute < 720 ? "outer" : "inner"; }
-function radiusOf(ring) { return ring === "outer" ? R_OUTER : R_INNER; }
+function baseForMeridiem(m) { return m === "AM" ? 0 : 720; }
+function meridiemOf(minute) { return ((minute % 1440) + 1440) % 1440 < 720 ? "AM" : "PM"; }
 function svgNS(tag) { return document.createElementNS("http://www.w3.org/2000/svg", tag); }
  
 function minuteStatus(min) {
@@ -813,14 +825,22 @@ function minuteStatus(min) {
   return "open";
 }
  
-function describeArcSegment(ring, startMinInRing, endMinInRing) {
-  const r = radiusOf(ring);
-  const a1 = ((startMinInRing % 720) / 720) * 360;
-  const a2 = ((endMinInRing % 720) / 720) * 360;
-  const p1 = polarPoint(r, a2), p2 = polarPoint(r, a1);
+function describeArc(startLocalMin, endLocalMin) {
+  const a1 = (startLocalMin / 720) * 360;
+  const a2 = (endLocalMin / 720) * 360;
+  const p1 = polarPoint(R, a2), p2 = polarPoint(R, a1);
   const largeArc = (a2 - a1) <= 180 ? "0" : "1";
-  return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${largeArc} 0 ${p2.x} ${p2.y}`;
+  return `M ${p1.x} ${p1.y} A ${R} ${R} 0 ${largeArc} 0 ${p2.x} ${p2.y}`;
 }
+ 
+function setMeridiem(m) {
+  clockMeridiem = m;
+  document.getElementById("clockAmBtn").classList.toggle("active", m === "AM");
+  document.getElementById("clockPmBtn").classList.toggle("active", m === "PM");
+  drawClockFace();
+}
+document.getElementById("clockAmBtn").onclick = () => setMeridiem("AM");
+document.getElementById("clockPmBtn").onclick = () => setMeridiem("PM");
  
 async function renderAvailability() {
   const section = document.getElementById("availabilitySection");
@@ -866,7 +886,9 @@ async function renderAvailability() {
   });
  
   document.getElementById("clockReadout").innerHTML = "Select<br/>a time";
-  drawClockFace();
+  // Default to whichever half of the day this amenity actually opens in, so residents
+  // usually see available slots right away without needing to tap the AM/PM toggle.
+  setMeridiem(meridiemOf(clockOpenMin));
 }
  
 function drawClockFace() {
@@ -874,63 +896,64 @@ function drawClockFace() {
   svg.innerHTML = "";
   if (clockOpenMin === null) return;
  
-  // base ring circles (subtle track)
-  [R_OUTER, R_INNER].forEach(r => {
-    const c = svgNS("circle");
-    c.setAttribute("cx", CX); c.setAttribute("cy", CY); c.setAttribute("r", r);
-    c.setAttribute("fill", "none"); c.setAttribute("stroke", "var(--line)"); c.setAttribute("stroke-width", "16");
-    svg.appendChild(c);
-  });
+  const base = baseForMeridiem(clockMeridiem);
  
-  // 48 quarter-hour ticks per ring
-  ["outer", "inner"].forEach(ring => {
-    const base = ring === "outer" ? 0 : 720;
-    for (let i = 0; i < 48; i++) {
-      const min = base + i * 15;
-      const status = minuteStatus(min);
-      const isHour = i % 4 === 0;
-      const pt = polarPoint(radiusOf(ring), ringAngle(min));
-      const dot = svgNS("circle");
-      dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
-      dot.setAttribute("r", isHour ? 6 : 3.2);
-      dot.setAttribute("class", "clock-tick" + (status === "open" ? "" : " disabled"));
-      dot.setAttribute("data-min", min);
-      let fill = "#fff", stroke = "var(--line)";
-      if (status === "disabled") { fill = "#EDE9DD"; stroke = "#EDE9DD"; }
-      else if (status === "booked") { fill = "#FBE9E7"; stroke = "#F0B7AE"; }
-      else if (status === "booked-keys-out") { fill = "#F5DAD5"; stroke = "#E7A99C"; }
-      else { fill = "#fff"; stroke = "var(--amber-dark)"; }
-      dot.setAttribute("fill", fill);
-      dot.setAttribute("stroke", stroke);
-      dot.setAttribute("stroke-width", "1.5");
-      if (status === "open") dot.onclick = () => selectStart(min);
-      svg.appendChild(dot);
+  // base ring track
+  const track = svgNS("circle");
+  track.setAttribute("cx", CX); track.setAttribute("cy", CY); track.setAttribute("r", R);
+  track.setAttribute("fill", "none"); track.setAttribute("stroke", "var(--line)"); track.setAttribute("stroke-width", "16");
+  svg.appendChild(track);
  
-      if (isHour) {
-        const labelPt = polarPoint(radiusOf(ring) + (ring === "outer" ? 20 : -20), ringAngle(min));
-        const text = svgNS("text");
-        text.setAttribute("x", labelPt.x); text.setAttribute("y", labelPt.y + 4);
-        text.setAttribute("text-anchor", "middle");
-        text.setAttribute("font-family", "IBM Plex Mono, monospace");
-        text.setAttribute("font-size", "10");
-        text.setAttribute("fill", "var(--ink-soft)");
-        const hr = Math.floor(min / 60) % 24;
-        text.textContent = hr === 0 ? "12" : (hr > 12 ? hr - 12 : hr);
-        svg.appendChild(text);
-      }
+  // 48 quarter-hour ticks around the single ring, numbered 1-12 like a standard clock
+  for (let i = 0; i < 48; i++) {
+    const localMin = i * 15;
+    const min = base + localMin;
+    const status = minuteStatus(min);
+    const isHour = i % 4 === 0;
+    const angle = i * 7.5;
+    const pt = polarPoint(R, angle);
+    const dot = svgNS("circle");
+    dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
+    dot.setAttribute("r", isHour ? 6 : 3.2);
+    dot.setAttribute("class", "clock-tick" + (status === "open" ? "" : " disabled"));
+    dot.setAttribute("data-min", min);
+    let fill = "#fff", stroke = "var(--line)";
+    if (status === "disabled") { fill = "#EDE9DD"; stroke = "#EDE9DD"; }
+    else if (status === "booked") { fill = "#FBE9E7"; stroke = "#F0B7AE"; }
+    else if (status === "booked-keys-out") { fill = "#F5DAD5"; stroke = "#E7A99C"; }
+    else { fill = "#fff"; stroke = "var(--amber-dark)"; }
+    dot.setAttribute("fill", fill);
+    dot.setAttribute("stroke", stroke);
+    dot.setAttribute("stroke-width", "1.5");
+    if (status === "open") dot.onclick = () => selectStart(min);
+    svg.appendChild(dot);
+ 
+    if (isHour) {
+      const labelPt = polarPoint(R + 20, angle);
+      const text = svgNS("text");
+      text.setAttribute("x", labelPt.x); text.setAttribute("y", labelPt.y + 4);
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("font-family", "IBM Plex Mono, monospace");
+      text.setAttribute("font-size", "12");
+      text.setAttribute("fill", "var(--ink-soft)");
+      const hourNum = i / 4;
+      text.textContent = hourNum === 0 ? "12" : hourNum;
+      svg.appendChild(text);
     }
-  });
+  }
  
-  // "now" marker, only relevant when viewing today
+  // "now" marker, only relevant when viewing today's date AND the half of the day we're currently showing
   const now = new Date();
   if (clockDate === now.toISOString().split("T")[0]) {
     const nowMin = now.getHours() * 60 + now.getMinutes();
-    const pt = polarPoint(radiusOf(ringOf(nowMin)), ringAngle(nowMin));
-    const marker = svgNS("circle");
-    marker.setAttribute("cx", pt.x); marker.setAttribute("cy", pt.y); marker.setAttribute("r", 4);
-    marker.setAttribute("fill", "var(--clay)");
-    marker.setAttribute("pointer-events", "none");
-    svg.appendChild(marker);
+    if (meridiemOf(nowMin) === clockMeridiem) {
+      const pt = polarPoint(R, ((nowMin - base) / 720) * 360);
+      const marker = svgNS("circle");
+      marker.setAttribute("cx", pt.x); marker.setAttribute("cy", pt.y); marker.setAttribute("r", 4);
+      marker.setAttribute("fill", "var(--clay)");
+      marker.setAttribute("pointer-events", "none");
+      svg.appendChild(marker);
+    }
   }
  
   drawClockSelection();
@@ -955,38 +978,27 @@ function drawClockSelection() {
  
   const durationVal = parseInt(document.getElementById("resDuration").value, 10) || 60;
   const endMin = selectedStartMin + durationVal;
+  readout.innerHTML = `${minToLabel(selectedStartMin)}<br/>&ndash;<br/>${minToLabel(endMin)}`;
  
-  // duration arc, split at the 12-hour ring boundary if it crosses
-  const segments = [];
-  if (endMin <= 1440) {
-    if (ringOf(selectedStartMin) === ringOf(Math.min(endMin, 719))) {
-      segments.push([ringOf(selectedStartMin), selectedStartMin, endMin]);
-    }
-    if (selectedStartMin < 720 && endMin > 720) {
-      segments.push(["outer", selectedStartMin, 720]);
-      segments.push(["inner", 720, endMin]);
-    } else {
-      segments.length = 0;
-      segments.push([ringOf(selectedStartMin), selectedStartMin, endMin]);
-    }
-  }
-  segments.forEach(([ring, s, e]) => {
-    const path = svgNS("path");
-    path.setAttribute("d", describeArcSegment(ring, s, e));
-    path.setAttribute("class", "clock-duration-arc");
-    svg.appendChild(path);
-  });
+  // Only draw the hand/arc on the face when the selected start time is actually on the
+  // half of the day currently showing -- flip the AM/PM toggle to see the hand there.
+  if (meridiemOf(selectedStartMin) !== clockMeridiem) return;
  
-  // hand from center to the start point
-  const ring = ringOf(selectedStartMin);
-  const pt = polarPoint(radiusOf(ring), ringAngle(selectedStartMin));
+  const base = baseForMeridiem(clockMeridiem);
+  const localStart = selectedStartMin - base;
+  const localEnd = Math.min(endMin - base, 720); // clip the arc to this half, in case duration crosses noon/midnight
+ 
+  const path = svgNS("path");
+  path.setAttribute("d", describeArc(localStart, localEnd));
+  path.setAttribute("class", "clock-duration-arc");
+  svg.appendChild(path);
+ 
+  const pt = polarPoint(R, (localStart / 720) * 360);
   const hand = svgNS("line");
   hand.setAttribute("x1", CX); hand.setAttribute("y1", CY);
   hand.setAttribute("x2", pt.x); hand.setAttribute("y2", pt.y);
   hand.setAttribute("class", "clock-hand");
   svg.appendChild(hand);
- 
-  readout.innerHTML = `${minToLabel(selectedStartMin)}<br/>&ndash;<br/>${minToLabel(endMin)}`;
 }
  
 function attachClockDrag(svg) {
@@ -996,13 +1008,10 @@ function attachClockDrag(svg) {
     const scale = 300 / rect.width;
     const x = (evt.clientX - rect.left) * scale - CX;
     const y = (evt.clientY - rect.top) * scale - CY;
-    const dist = Math.sqrt(x * x + y * y);
-    const ring = dist > (R_OUTER + R_INNER) / 2 ? "outer" : "inner";
     let angle = Math.atan2(x, -y) * 180 / Math.PI;
     if (angle < 0) angle += 360;
-    let idx = Math.round(angle / 7.5) % 48;
-    const base = ring === "outer" ? 0 : 720;
-    return base + idx * 15;
+    const idx = Math.round(angle / 7.5) % 48;
+    return baseForMeridiem(clockMeridiem) + idx * 15;
   }
   function handleEvent(evt) {
     const min = pointToMinute(evt);
@@ -1234,7 +1243,7 @@ async function loadHomeCard() {
  
   const { data } = await sb
     .from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)")
-    .eq("status", "confirmed").gt("end_time", nowIso)
+    .eq("status", "confirmed").eq("key_returned", false).gt("end_time", nowIso)
     .order("start_time").limit(1);
  
   if (!data || data.length === 0) { box.innerHTML = ""; return; }
@@ -1271,7 +1280,7 @@ async function loadMyReservations() {
  
   const { data: myBookings } = await sb
     .from("bookings").select(amenitySelect)
-    .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
+    .eq("status", "confirmed").eq("key_returned", false).gt("end_time", nowIso).order("start_time");
  
   const { data: myPending } = await sb
     .from("bookings").select(amenitySelect)
@@ -1281,9 +1290,12 @@ async function loadMyReservations() {
     .from("waitlist").select(amenitySelect)
     .eq("status", "waiting").gt("end_time", nowIso).order("start_time");
  
+  // "Completed" now means either the scheduled end_time has passed, OR the resident
+  // already returned the keys early -- whichever happens first ends the reservation.
   const { data: pastBookings } = await sb
     .from("bookings").select(amenitySelect)
-    .in("status", ["confirmed", "cancelled"]).lte("end_time", nowIso)
+    .in("status", ["confirmed", "cancelled"])
+    .or(`end_time.lte.${nowIso},key_returned.eq.true`)
     .order("start_time", { ascending: false }).limit(10);
  
   listBox.innerHTML = "";
