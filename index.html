@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Cendana at Craig Ranch - Amenity Reservations</title>
+<title>Cendana Craig Ranch - Amenity Reservations</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,6 +22,18 @@
   header p{margin:4px 0 0; font-size:12px; color:#B8C0CC;}
   .wrap{max-width:520px; margin:0 auto; padding:20px;}
   .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(35,43,54,.06), 0 8px 24px rgba(35,43,54,.04);}
+ 
+  /* ---- Onboarding hero (auth + profile steps) ---- */
+  body.onboarding-bg{background:linear-gradient(160deg, #232B36 0%, #2E3A47 45%, #3B4A56 100%); min-height:100vh; position:relative; overflow-x:hidden;}
+  body.onboarding-bg::before{content:""; position:fixed; inset:0; background-image:radial-gradient(circle at 15% 20%, rgba(217,164,65,.14), transparent 45%), radial-gradient(circle at 85% 80%, rgba(110,147,172,.16), transparent 50%); pointer-events:none; z-index:0;}
+  body.onboarding-bg header, body.onboarding-bg #topBar{display:none;}
+  body.onboarding-bg .wrap{position:relative; z-index:1; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; max-width:none;}
+  body.onboarding-bg .wrap .card{max-width:400px; width:100%; padding:36px 32px; box-shadow:0 20px 50px rgba(15,20,26,.35);}
+  .onboarding-brand{text-align:center; margin-bottom:22px;}
+  .onboarding-brand .onboarding-mark{width:52px; height:52px; margin:0 auto 14px; border-radius:14px; background:linear-gradient(135deg, var(--amber), var(--clay)); display:flex; align-items:center; justify-content:center;}
+  .onboarding-brand .onboarding-mark svg{width:26px; height:26px; stroke:#fff;}
+  .onboarding-brand h1{font-family:var(--font-display); font-size:19px; font-weight:600; margin:0 0 4px; color:var(--ink);}
+  .onboarding-brand .onboarding-address{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
   .eyebrow{font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--amber-dark); margin-bottom:4px;}
   .page-heading{margin-bottom:18px;}
   .page-heading h2{font-family:var(--font-display); font-size:22px; font-weight:600; margin:2px 0 4px; color:var(--ink);}
@@ -170,7 +182,7 @@
 </head>
 <body>
 <header>
-  <h1>Cendana at Craig Ranch</h1>
+  <h1>Cendana Craig Ranch</h1>
   <p>Amenity Reservations</p>
 </header>
  
@@ -239,6 +251,13 @@
  
   <!-- AUTH STEP: apartment number + PIN, issued by staff at move-in -->
   <div class="card active" id="authStep">
+    <div class="onboarding-brand">
+      <div class="onboarding-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+      </div>
+      <h1>Cendana Craig Ranch</h1>
+      <div class="onboarding-address">6121 Alma Road &middot; McKinney, TX 75070</div>
+    </div>
     <div class="page-heading">
       <div class="eyebrow">Get Started</div>
       <h2>Welcome to Cendana Amenities</h2>
@@ -259,8 +278,15 @@
     </div>
   </div>
  
-  <!-- PROFILE STEP: first-time users only, after PIN verified -->
+  <!-- PROFILE STEP: first-time users only, after PIN verified (also reused for "Edit My Info", brand hidden then) -->
   <div class="card" id="profileStep">
+    <div class="onboarding-brand" id="profileBrand">
+      <div class="onboarding-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+      </div>
+      <h1>Cendana Craig Ranch</h1>
+      <div class="onboarding-address">6121 Alma Road &middot; McKinney, TX 75070</div>
+    </div>
     <div class="page-heading">
       <div class="eyebrow" id="profileEyebrow">Complete Your Profile</div>
       <h2 id="profileHeading">Tell us about yourself</h2>
@@ -436,14 +462,39 @@ let editingProfile = false;
  
 const ALL_SCREENS = ["authStep", "profileStep", "menuStep", "step2", "myResStep"];
  
+// ---------- DEVICE IDENTITY ----------
+// Supabase's dedicated "anonymous" sign-in has been unreliable to enable via dashboard,
+// so instead each device silently creates its own real (but fake/random) email+password
+// account on first visit. Functionally identical for our purposes: a real auth.uid() that
+// every RLS policy in this app already relies on. The credentials are cached in
+// localStorage purely as a resilience fallback in case the session/refresh token is ever
+// lost -- normal visits never touch this, since persistSession keeps you signed in.
+async function ensureDeviceIdentity() {
+  let { data: { session } } = await sb.auth.getSession();
+  if (session) return session;
+ 
+  let creds = null;
+  try { creds = JSON.parse(localStorage.getItem("ccr_device") || "null"); } catch (e) { /* ignore */ }
+ 
+  if (creds) {
+    const { data, error } = await sb.auth.signInWithPassword({ email: creds.email, password: creds.password });
+    if (!error && data.session) return data.session;
+  }
+ 
+  const deviceId = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const email = `device-${deviceId}@cendana.local`;
+  const password = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error || !data.session) return null;
+ 
+  localStorage.setItem("ccr_device", JSON.stringify({ email, password }));
+  return data.session;
+}
+ 
 // ---------- ESTABLISH A DEVICE IDENTITY, THEN RESTORE PROFILE IF ALREADY VERIFIED ----------
 (async function init() {
-  let { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    const { data, error } = await sb.auth.signInAnonymously();
-    if (error) { showScreen("authStep"); return; }
-    session = data.session;
-  }
+  const session = await ensureDeviceIdentity();
+  if (!session) { showScreen("authStep"); return; }
   await loadResidentProfile(session);
 })();
  
@@ -476,6 +527,11 @@ function showScreen(id) {
   }
   ALL_SCREENS.forEach(s => document.getElementById(s).classList.remove("active"));
   document.getElementById(id).classList.add("active");
+ 
+  const isOnboarding = (id === "authStep") || (id === "profileStep" && !editingProfile);
+  document.body.classList.toggle("onboarding-bg", isOnboarding);
+  document.getElementById("profileBrand").style.display = (id === "profileStep" && !editingProfile) ? "block" : "none";
+ 
   document.getElementById("topBar").classList.toggle("visible", hasIdentity && id !== "authStep" && id !== "profileStep");
   updateProfileChip();
   closeSidebar();
@@ -517,12 +573,12 @@ function goToEditInfo() {
 }
 async function logout() {
   // "logging out" just forgets this device's link locally; the underlying device
-  // identity stays valid, so re-entering the same PIN on this device signs right back in.
+  // identity stays valid (cached creds), so re-entering the same PIN on this device signs right back in.
   await sb.auth.signOut();
   resident = { name: "", phone: "", apt: "" };
   document.getElementById("authApt").value = "";
   document.getElementById("authPin").value = "";
-  const { data, error } = await sb.auth.signInAnonymously();
+  await ensureDeviceIdentity();
   showScreen("authStep");
 }
  
@@ -551,10 +607,12 @@ document.getElementById("sendCodeBtn").onclick = async () => {
   btn.disabled = true; btn.textContent = "Checking...";
  
   // make sure we have a device identity before verifying
-  let { data: { session } } = await sb.auth.getSession();
+  const session = await ensureDeviceIdentity();
   if (!session) {
-    const { data } = await sb.auth.signInAnonymously();
-    session = data.session;
+    btn.disabled = false; btn.textContent = "Continue";
+    errBox.textContent = "Couldn't establish a session on this device. Please try again.";
+    errBox.style.display = "block";
+    return;
   }
  
   const { data: ok, error } = await sb.rpc("verify_apartment_pin", { p_apartment: apt, p_pin: pin });
@@ -1504,3 +1562,6 @@ async function promoteNextWaitlisted(cancelledBooking) {
 </script>
 </body>
 </html>
+ 
+
+
