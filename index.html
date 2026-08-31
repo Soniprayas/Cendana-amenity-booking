@@ -5,96 +5,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Cendana at Craig Ranch - Amenity Reservations</title>
 <link rel="manifest" href="manifest.json" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --brown:#7a5230; --cream:#f4efe8; --ink:#2c241b; --line:#e2d8c8; --accent:#a8632f;
+    --ink:#232B36; --ink-soft:#4B5563; --sand:#F6F3EC; --line:#E4DFD2;
+    --amber:#D9A441; --amber-dark:#B9791E;
+    --sage:#7A9E7E; --dusty:#6E93AC; --clay:#C77B58; --gold:#D9A441;
+    --font-display:'Sora', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
   }
   *{box-sizing:border-box}
-  body{font-family:Georgia, 'Times New Roman', serif; background:var(--cream); color:var(--ink); margin:0; padding:0;}
-  header{background:var(--brown); color:#fff; padding:24px 20px; text-align:center;}
-  header h1{margin:0; font-size:22px; letter-spacing:.5px; font-weight:normal;}
-  header p{margin:4px 0 0; font-size:13px; opacity:.85;}
+  body{font-family:var(--font-body); background:var(--sand); color:var(--ink); margin:0; padding:0;}
+  header{background:var(--ink); color:#fff; padding:22px 20px; text-align:center;}
+  header h1{margin:0; font-family:var(--font-display); font-size:19px; font-weight:600; letter-spacing:.2px;}
+  header p{margin:4px 0 0; font-size:12px; color:#B8C0CC;}
   .wrap{max-width:520px; margin:0 auto; padding:20px;}
-  .card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px;}
-  label{display:block; font-weight:bold; margin-bottom:6px; margin-top:14px;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(35,43,54,.06), 0 8px 24px rgba(35,43,54,.04);}
+  .eyebrow{font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--amber-dark); margin-bottom:4px;}
+  .page-heading{margin-bottom:18px;}
+  .page-heading h2{font-family:var(--font-display); font-size:22px; font-weight:600; margin:2px 0 4px; color:var(--ink);}
+  .page-heading p{font-size:13px; color:var(--ink-soft); margin:0;}
+  .label-icon{display:inline-flex; vertical-align:middle; margin-right:6px; width:15px; height:15px; stroke:var(--amber-dark);}
+  .btn-outline{background:transparent; border:1.5px solid var(--amber-dark); color:var(--amber-dark);}
+  .btn-outline:hover{background:#FBF0DD;}
+  .profile-chip{width:32px; height:32px; border-radius:50%; background:var(--amber-dark); color:#fff; font-family:var(--font-display); font-weight:600; font-size:12px; display:none; align-items:center; justify-content:center; flex-shrink:0;}
+  .profile-chip.visible{display:flex;}
+  @keyframes fadeSlideIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  #authStep.active, #profileStep.active, #step2.active, #menuStep.active, #myResStep.active{animation:fadeSlideIn .25s ease;}
+  #confirmModalBackdrop.visible #confirmModal, #confirmDialogBackdrop.visible #confirmDialog{animation:fadeSlideIn .2s ease;}
+  label{display:block; font-family:var(--font-display); font-weight:600; font-size:13px; margin-bottom:6px; margin-top:14px; color:var(--ink);}
   label:first-child{margin-top:0;}
-  input, select, textarea{width:100%; padding:10px; border:1px solid var(--line); border-radius:6px; font-size:15px; font-family:inherit;}
+  input, select, textarea{width:100%; padding:10px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:var(--font-body); background:#fff;}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--amber);}
   textarea{min-height:70px}
-  .amenity-option{border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-top:8px; display:flex; align-items:center; gap:10px; cursor:pointer;}
+  .amenity-option{border:1px solid var(--line); border-left-width:4px; border-radius:8px; padding:10px 12px; margin-top:8px; display:flex; align-items:center; gap:10px; cursor:pointer;}
   .amenity-option input{width:auto}
-  .amenity-note{font-size:12px; color:#7a6a52; margin-top:2px}
-  button{background:var(--accent); color:#fff; border:none; padding:14px; border-radius:8px; font-size:16px; width:100%; margin-top:18px; cursor:pointer;}
+  .amenity-note{font-size:12px; color:var(--ink-soft); margin-top:2px}
+  button{background:var(--amber-dark); color:#fff; border:none; padding:13px; border-radius:8px; font-family:var(--font-display); font-weight:600; font-size:15px; width:100%; margin-top:18px; cursor:pointer;}
+  button:hover{background:#a3690f;}
   button:disabled{background:#ccc; cursor:not-allowed}
   .msg{padding:12px; border-radius:8px; margin-top:14px; font-size:14px;}
-  .msg.ok{background:#e7f3e5; color:#2c5c22; border:1px solid #b9dcb2;}
-  .msg.wait{background:#fff4e0; color:#8a5a00; border:1px solid #f0d59a;}
-  .msg.err{background:#fbe4e4; color:#8a1f1f; border:1px solid #f0b3b3;}
-  .hint{font-size:12px; color:#7a6a52; margin-top:4px;}
+  .msg.ok{background:#EAF3E8; color:#2C5C36; border:1px solid #C3DEC0;}
+  .msg.wait{background:#FBF0DD; color:#8A5A00; border:1px solid #F0D59A;}
+  .msg.err{background:#FBE9E7; color:#8A2F1F; border:1px solid #F0B7AE;}
+  .hint{font-size:12px; color:var(--ink-soft); margin-top:4px;}
   fieldset{border:none; padding:0; margin:0;}
   .agree{display:flex; gap:8px; align-items:flex-start; margin-top:16px;}
   .agree input{width:auto; margin-top:3px;}
-  .agree label{font-weight:normal; margin:0; font-size:13px;}
-  #step1, #step2, #menuStep, #myResStep{display:none}
-  #step1.active, #step2.active, #menuStep.active, #myResStep.active{display:block}
-  .res-item{border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:10px;}
-  .res-item .res-title{font-weight:bold;}
-  .res-item .res-time{font-size:14px; color:#555; margin:4px 0;}
-  .res-item .res-status{display:inline-block; font-size:12px; padding:2px 8px; border-radius:10px; margin-top:4px;}
-  .res-status.confirmed{background:#e7f3e5; color:#2c5c22;}
-  .res-status.waiting{background:#fff4e0; color:#8a5a00;}
-  .res-item button{background:#b34a4a; margin-top:10px; padding:8px; font-size:13px;}
-  #availabilityGrid{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0;}
-  .slot-btn{border:1px solid var(--line); border-radius:6px; padding:8px 6px; font-size:12px; text-align:center; min-width:64px; cursor:pointer; background:#e7f3e5; color:#2c5c22;}
-  .slot-btn.selected{background:var(--accent); color:#fff; border-color:var(--accent);}
-  .slot-btn.booked{background:#fbe4e4; color:#8a1f1f; cursor:not-allowed; opacity:.8;}
-  .slot-btn.booked.keys-out{background:#f0d9d9;}
-  .slot-legend{display:flex; gap:14px; font-size:12px; margin-bottom:6px; flex-wrap:wrap;}
+  .agree label{font-family:var(--font-body); font-weight:400; margin:0; font-size:13px;}
+  #authStep, #profileStep, #step2, #menuStep, #myResStep{display:none}
+  #authStep.active, #profileStep.active, #step2.active, #menuStep.active, #myResStep.active{display:block}
+  .res-item{border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px; box-shadow:0 1px 2px rgba(35,43,54,.05);}
+  .res-item .res-title{font-family:var(--font-display); font-weight:600; font-size:15px;}
+  .res-item .res-time{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft); margin:4px 0;}
+  .res-item .res-status{display:inline-block; font-family:var(--font-body); font-weight:600; font-size:11px; padding:3px 10px; border-radius:20px; margin-top:4px;}
+  .res-status.confirmed{background:#EAF3E8; color:#2C5C36;}
+  .res-status.waiting{background:#FBF0DD; color:#8A5A00;}
+  .res-item button{background:#B04A3E; margin-top:10px; padding:9px; font-size:13px;}
+  .res-item button:hover{background:#96392f;}
+  .timeline-container{border:1px solid var(--line); border-radius:10px; background:#fff; margin:10px 0; overflow:hidden;}
+  .timeline-scroll{position:relative; padding:10px 12px 10px 58px;}
+  .timeline-track{position:relative;}
+  .timeline-hour-row{height:52px; border-top:1px solid var(--line);}
+  .timeline-hour-row:first-child{border-top:none;}
+  .timeline-hour-label{position:absolute; left:0; width:50px; text-align:right; padding-right:8px; margin-top:-7px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);}
+  .timeline-block{position:absolute; left:0; right:0; border-radius:6px; font-family:var(--font-mono); font-size:11px; padding:4px 8px; box-sizing:border-box; overflow:hidden; cursor:default;}
+  .timeline-block.booked{background:#FBE9E7; color:#8A2F1F; border:1px solid #F0B7AE;}
+  .timeline-block.booked.keys-out{background:#F5DAD5;}
+  .timeline-block.open-fill{cursor:pointer;}
+  .timeline-selected-line{position:absolute; left:0; right:0; height:2px; background:var(--amber-dark); z-index:6;}
+  .timeline-selected-line::before{content:''; position:absolute; left:-5px; top:-4px; width:10px; height:10px; border-radius:50%; background:var(--amber-dark); border:2px solid #fff;}
+  .timeline-selected-label{position:absolute; right:6px; background:var(--amber-dark); color:#fff; font-family:var(--font-mono); font-size:10px; font-weight:600; padding:2px 7px; border-radius:5px; z-index:7;}
+  .timeline-now-line{position:absolute; left:0; right:0; height:2px; background:var(--clay); z-index:4;}
+  .timeline-now-line::before{content:''; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--clay);}
+  .slot-legend{display:flex; gap:14px; font-size:12px; margin-bottom:6px; flex-wrap:wrap; color:var(--ink-soft);}
   .slot-legend span{display:flex; align-items:center; gap:4px;}
+  .waiting-spinner{width:36px; height:36px; margin:0 auto 20px; border:3px solid var(--line); border-top-color:var(--amber-dark); border-radius:50%; animation:spin 0.9s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+ 
+  /* ---- Clock-dial time picker ---- */
+  .clock-container{display:flex; flex-direction:column; align-items:center; gap:12px; margin:14px 0 6px; padding:18px 10px; background:#fff; border:1px solid var(--line); border-radius:12px;}
+  .clock-face{position:relative; width:270px; height:270px; max-width:100%; touch-action:none;}
+  .clock-face svg{width:100%; height:100%; touch-action:none; user-select:none; -webkit-user-select:none;}
+  .clock-tick{cursor:pointer; transition:r .1s ease;}
+  .clock-tick.disabled{cursor:default;}
+  .clock-hand{stroke:var(--amber-dark); stroke-width:2.5; stroke-linecap:round; pointer-events:none;}
+  .clock-duration-arc{stroke:var(--amber); stroke-width:14; fill:none; opacity:.35; pointer-events:none;}
+  .clock-center-readout{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-mono); font-weight:600; font-size:13px; color:var(--ink); text-align:center; pointer-events:none; background:#fff; border-radius:50%; width:84px; height:84px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 5px rgba(35,43,54,.1); line-height:1.35; padding:4px;}
+  .clock-ring-legend{display:flex; gap:16px; font-size:11px; color:var(--ink-soft); flex-wrap:wrap; justify-content:center;}
+  .ring-dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:4px; vertical-align:middle; border:2.5px solid var(--amber-dark); box-sizing:border-box;}
+  .ring-dot.inner{border-color:var(--dusty);}
+  .key-countdown{font-family:var(--font-mono); font-size:13px; font-weight:600; padding:8px 10px; border-radius:8px; margin-top:8px;}
+  .key-countdown.ok{background:#EAF3E8; color:#2C5C36;}
+  .key-countdown.warn{background:#FBF0DD; color:#8A5A00;}
+  .key-countdown.urgent{background:#FBE9E7; color:#8A2F1F; animation:pulseUrgent 2s infinite;}
+  @keyframes pulseUrgent{0%,100%{opacity:1;} 50%{opacity:.6;}}
   .legend-dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
-  .footer-note{font-size:12px; color:#8a7a5f; text-align:center; margin-top:24px; line-height:1.5; padding:0 10px;}
-  .email-note{font-size:12px; color:#7a6a52; margin-top:4px; font-style:italic;}
+  .footer-note{font-size:11px; color:#9A9483; text-align:center; margin-top:24px; line-height:1.5; padding:0 10px;}
+  .email-note{font-size:12px; color:var(--ink-soft); margin-top:4px; font-style:italic;}
  
   /* ---- Top bar (Home / Menu / Logout) ---- */
   #topBar{display:none; align-items:center; justify-content:space-between; max-width:520px; margin:0 auto; padding:10px 20px; background:#fff; border-bottom:1px solid var(--line);}
   #topBar.visible{display:flex;}
   .topbar-left{display:flex; align-items:center; gap:14px;}
   .icon-btn{background:none; border:none; padding:6px; width:auto; margin:0; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px;}
-  .icon-btn:hover{background:#f0e9db;}
-  .icon-btn svg{width:24px; height:24px; stroke:var(--brown);}
+  .icon-btn:hover{background:var(--sand);}
+  .icon-btn svg{width:22px; height:22px; stroke:var(--ink);}
  
   /* ---- Sidebar drawer ---- */
   #sidebarBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:40;}
   #sidebarBackdrop.visible{display:block;}
-  #sidebar{position:fixed; top:0; left:-280px; width:260px; height:100%; background:#fff; z-index:50; transition:left .2s ease; padding:20px; box-shadow:2px 0 10px rgba(0,0,0,.15);}
+  #sidebar{position:fixed; top:0; left:-280px; width:260px; height:100%; background:var(--ink); z-index:50; transition:left .2s ease; padding:20px; box-shadow:2px 0 10px rgba(0,0,0,.15);}
   #sidebar.visible{left:0;}
-  #sidebar h3{margin-top:0; color:var(--brown);}
-  .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:10px; background:#f0e9db; color:var(--ink); text-align:left; justify-content:flex-start;}
-  .sidebar-link svg{width:18px; height:18px; stroke:var(--brown); flex-shrink:0;}
-  .sidebar-link.logout{background:#fbe4e4; color:#8a1f1f;}
-  .sidebar-link.logout svg{stroke:#8a1f1f;}
+  #sidebar h3{margin-top:0; font-family:var(--font-display); color:#fff; font-size:13px; text-transform:uppercase; letter-spacing:.5px; opacity:.6;}
+  .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:8px; background:rgba(255,255,255,.06); color:#fff; text-align:left; justify-content:flex-start; font-family:var(--font-body); font-weight:500; font-size:14px; padding:11px 12px;}
+  .sidebar-link:hover{background:rgba(255,255,255,.12);}
+  .sidebar-link svg{width:18px; height:18px; stroke:var(--amber); flex-shrink:0;}
+  .sidebar-link.logout{background:rgba(176,74,62,.18); color:#F2B3AA;}
+  .sidebar-link.logout svg{stroke:#F2B3AA;}
  
   /* ---- Square menu boxes (home screen) ---- */
   .menu-grid{display:flex; gap:14px; flex-wrap:wrap;}
-  .menu-box{flex:1 1 45%; aspect-ratio:1/1; background:#fff; border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; text-align:center; padding:12px; transition:box-shadow .15s;}
-  .menu-box:hover{box-shadow:0 4px 14px rgba(122,82,48,.18);}
-  .menu-box svg{width:40px; height:40px; stroke:var(--accent);}
-  .menu-box span{font-weight:bold; font-size:15px;}
+  .menu-box{flex:1 1 45%; aspect-ratio:1/1; background:#fff; border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; text-align:center; padding:12px; box-shadow:0 1px 3px rgba(35,43,54,.06); transition:box-shadow .15s, border-color .15s;}
+  .menu-box:hover{box-shadow:0 4px 14px rgba(35,43,54,.12); border-color:var(--amber);}
+  .menu-box svg{width:36px; height:36px; stroke:var(--amber-dark);}
+  .menu-box span{font-family:var(--font-display); font-weight:600; font-size:14px;}
  
   /* ---- Confirmation modal ---- */
-  #confirmModalBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #confirmModalBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
   #confirmModalBackdrop.visible{display:flex;}
   #confirmModal{background:#fff; border-radius:14px; padding:26px; max-width:360px; width:100%; text-align:center;}
-  #confirmModal svg{width:50px; height:50px; stroke:#2c5c22; margin-bottom:6px;}
-  #confirmModal h3{margin:6px 0;}
-  #confirmModal p{font-size:14px; color:#555; margin:6px 0;}
-  #confirmDialogBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #confirmModal svg{width:48px; height:48px; stroke:#2C5C36; margin-bottom:6px;}
+  #confirmModal h3{margin:6px 0; font-family:var(--font-display);}
+  #confirmModal p{font-size:14px; color:var(--ink-soft); margin:6px 0;}
+  #confirmDialogBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
   #confirmDialogBackdrop.visible{display:flex;}
   #confirmDialog{background:#fff; border-radius:14px; padding:26px; max-width:360px; width:100%; text-align:center;}
   #confirmDialog p{font-size:15px; margin:6px 0 16px;}
   #confirmDialog .btn-row{display:flex; gap:10px;}
   #confirmDialog button{margin-top:0;}
-  #confirmDialogCancelBtn{background:#e8ddc8; color:var(--ink);}
-  #confirmDialogYesBtn{background:#b34a4a;}
+  #confirmDialogCancelBtn{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
+  #confirmDialogCancelBtn:hover{background:var(--sand);}
+  #confirmDialogYesBtn{background:#B04A3E;}
+  #confirmDialogYesBtn:hover{background:#96392f;}
+ 
+  /* ==== DESKTOP / WIDE-SCREEN LAYOUT ====
+     Below this width: the compact mobile app (drawer sidebar, single centered column).
+     Above it: a real dashboard layout -- sidebar pinned open, content spread across the width. */
+  @media (min-width: 860px){
+    body{padding-left:240px;}
+    #sidebar{left:0 !important; width:240px; box-shadow:none; border-right:1px solid rgba(255,255,255,.08);}
+    #sidebarBackdrop{display:none !important;}
+    #hamburgerBtn{display:none;}
+    header{text-align:left; padding:22px 40px;}
+    #topBar{max-width:900px; margin:0 auto; padding:14px 40px;}
+    .wrap{max-width:900px; margin:0 auto; padding:32px 40px;}
+    .card{padding:28px;}
+    #amenityList{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .amenity-option{margin-top:0;}
+    .menu-grid{max-width:520px;}
+  }
 </style>
 </head>
 <body>
@@ -113,9 +184,12 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
     </button>
   </div>
-  <button class="icon-btn" id="logoutBtn" title="Log out">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-  </button>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div class="profile-chip" id="profileChip"></div>
+    <button class="icon-btn" id="logoutBtn" title="Log out">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
 </div>
  
 <!-- Sidebar drawer -->
@@ -143,8 +217,8 @@
 <!-- Confirmation modal -->
 <div id="confirmModalBackdrop">
   <div id="confirmModal">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
-    <h3>Reservation Confirmed</h3>
+    <svg id="confirmModalIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+    <h3 id="confirmModalTitle">Reservation Confirmed</h3>
     <p id="confirmModalText"></p>
     <button id="confirmModalDoneBtn">Done</button>
   </div>
@@ -163,28 +237,52 @@
  
 <div class="wrap">
  
-  <!-- STEP 1: who are you -->
-  <div class="card active" id="step1">
-    <label>Name *</label>
-    <input type="text" id="resName" placeholder="Your full name" />
- 
-    <label>Email *</label>
-    <input type="email" id="resEmail" placeholder="you@email.com" />
-    <div class="email-note">Please use your correct email, as you will receive communication related to your booking at the email entered.</div>
- 
+  <!-- AUTH STEP: apartment number + PIN, issued by staff at move-in -->
+  <div class="card active" id="authStep">
+    <div class="page-heading">
+      <div class="eyebrow">Get Started</div>
+      <h2>Welcome to Cendana Amenities</h2>
+      <p>Enter your apartment number and the PIN given to you by the leasing office. You'll only need to do this once on this device.</p>
+    </div>
     <label>Apartment Number *</label>
-    <input type="text" id="resApt" placeholder="e.g. 204" />
+    <input type="text" id="authApt" placeholder="e.g. 1042" inputmode="numeric" />
  
-    <button id="continueBtn">Continue</button>
-    <div class="msg err" id="step1Error" style="display:none"></div>
+    <label>PIN *</label>
+    <input type="text" id="authPin" placeholder="6-digit PIN" inputmode="numeric" maxlength="6" style="letter-spacing:4px; font-family:var(--font-mono); font-size:18px;" />
+    <div class="email-note">Don't have a PIN, or lost it? Contact the leasing office &mdash; they can look it up or issue a new one.</div>
+ 
+    <button id="sendCodeBtn">Continue</button>
+    <div class="msg err" id="authError" style="display:none"></div>
  
     <div class="footer-note">
       Note: This is a community-built website. Cendana and its staff are not responsible for downtime or errors related to bookings. Please be respectful to the staff if you face any booking-related issues, as they are only trying to help.
     </div>
   </div>
  
+  <!-- PROFILE STEP: first-time users only, after PIN verified -->
+  <div class="card" id="profileStep">
+    <div class="page-heading">
+      <div class="eyebrow" id="profileEyebrow">Complete Your Profile</div>
+      <h2 id="profileHeading">Tell us about yourself</h2>
+      <p>This just takes a moment, and you won't need to do it again.</p>
+    </div>
+    <label>Name *</label>
+    <input type="text" id="resName" placeholder="Your full name" />
+ 
+    <label>Phone Number *</label>
+    <input type="tel" id="resPhone" placeholder="(555) 555-5555" autocomplete="tel" />
+ 
+    <button id="saveProfileBtn">Save &amp; Continue</button>
+    <div class="msg err" id="profileError" style="display:none"></div>
+  </div>
+ 
   <!-- STEP 1B: menu / home -->
   <div class="card" id="menuStep">
+    <div class="page-heading">
+      <div class="eyebrow">Resident Booking</div>
+      <h2>What would you like to do?</h2>
+      <p>Reserve a shared space, or check on your existing bookings.</p>
+    </div>
     <div class="menu-grid">
       <div class="menu-box" id="newResBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
@@ -200,36 +298,54 @@
  
   <!-- STEP 3: my reservations -->
   <div class="card" id="myResStep">
-    <h3 style="margin-top:0;">My Reservations</h3>
+    <div class="page-heading">
+      <div class="eyebrow">My Reservations</div>
+      <h2>Your bookings</h2>
+      <p>View, track, and manage your reservations.</p>
+    </div>
     <div id="myResList"></div>
-    <h3 id="pastHeading" style="display:none; cursor:pointer;" onclick="document.getElementById('pastResList').style.display = document.getElementById('pastResList').style.display==='none' ? 'block' : 'none';">Past Reservations &#9662;</h3>
+    <h3 id="pastHeading" style="display:none; cursor:pointer; font-family:var(--font-display);" onclick="document.getElementById('pastResList').style.display = document.getElementById('pastResList').style.display==='none' ? 'block' : 'none';">Past Reservations &#9662;</h3>
     <div id="pastResList" style="display:none;"></div>
   </div>
  
   <!-- STEP 2: the booking form -->
   <div class="card" id="step2">
+    <div class="page-heading">
+      <div class="eyebrow">New Reservation</div>
+      <h2>Book a shared space</h2>
+      <p>Pick a space, choose an available time, and send your request.</p>
+    </div>
     <label>Which amenity would you like to reserve? *</label>
     <div id="amenityList"></div>
     <div class="hint" id="amenityDeposit" style="display:none"></div>
  
-    <label>Reservation Date *</label>
+    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reservation Date *</label>
     <input type="date" id="resDate" />
  
     <div id="availabilitySection" style="display:none;">
-      <label style="margin-top:14px;">Availability for this day &mdash; click an open slot</label>
+      <label style="margin-top:14px;">Availability for this day &mdash; drag the hand to pick a start time</label>
       <div class="slot-legend">
-        <span><span class="legend-dot" style="background:#e7f3e5;"></span>Open</span>
-        <span><span class="legend-dot" style="background:#fbe4e4;"></span>Booked</span>
-        <span><span class="legend-dot" style="background:#f0d9d9;"></span>Booked, keys still out</span>
+        <span><span class="legend-dot" style="background:#fff; border:1px solid var(--line);"></span>Open</span>
+        <span><span class="legend-dot" style="background:#FBE9E7;"></span>Booked</span>
+        <span><span class="legend-dot" style="background:#F5DAD5;"></span>Booked, keys still out</span>
       </div>
-      <div id="availabilityGrid"></div>
+      <div class="clock-container">
+        <div class="clock-face" id="clockFace">
+          <svg id="clockSvg" viewBox="0 0 300 300"></svg>
+          <div class="clock-center-readout" id="clockReadout">Select<br/>a time</div>
+        </div>
+        <div class="clock-ring-legend">
+          <span><span class="ring-dot outer"></span>12 AM&ndash;12 PM &middot; outer ring</span>
+          <span><span class="ring-dot inner"></span>12 PM&ndash;12 AM &middot; inner ring</span>
+        </div>
+      </div>
     </div>
  
-    <label>Start Time *</label>
-    <input type="time" id="resStart" />
-    <div class="hint">Or click a slot above to fill this in automatically.</div>
+    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Start Time *</label>
+    <input type="time" id="resStart" readonly />
+    <div class="hint">Drag the hand on the clock above to set this.</div>
  
-    <label>Duration *</label>
+    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9Zm0 0C7.03 22 3 17.97 3 13c4.97 0 9 4.03 9 9Z"/><path d="M12 13V2"/></svg>Duration *</label>
     <select id="resDuration">
       <option value="60">1 hour</option>
       <option value="120">2 hours</option>
@@ -239,12 +355,19 @@
     <div class="hint" id="durationHint">Maximum reservation length is 4 hours.</div>
     <div class="hint" id="closingNote" style="display:none; color:#8a5a00; font-weight:bold;"></div>
  
-    <label>Number of Guests (if applicable)</label>
+    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Number of Guests (if applicable)</label>
     <input type="number" id="resGuests" min="0" value="0" />
     <div class="hint" id="guestCapHint"></div>
  
     <label>Additional questions or comments</label>
     <textarea id="resComments"></textarea>
+ 
+    <div id="bulkBookingSection" style="display:none; border:1.5px dashed var(--amber); border-radius:8px; padding:12px; margin-top:16px; background:#FBF6EA;">
+      <div class="agree" style="margin-top:0;">
+        <input type="checkbox" id="resBulk" />
+        <label><strong>Plan the week</strong> &mdash; repeat this same time for the next 6 days. Day 1 is confirmed instantly. Days 2&ndash;6 need staff approval &mdash; you don't need to do anything; you'll be notified once each is approved.</label>
+      </div>
+    </div>
  
     <div class="agree">
       <input type="checkbox" id="resAgree" />
@@ -260,40 +383,113 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ====== CONFIG - your Supabase project ======
+// Register service worker so the browser recognizes this as an installable PWA
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => { /* non-critical if it fails */ });
+  });
+}
+ 
 const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
+ 
+// ---------- MODERN DATE/TIME FORMATTING ----------
+// "Today \u00b7 9:00 \u2013 11:00 PM" instead of "8/14/2026, 9:00:00 PM"
+function formatDateTimeRange(startIso, endIso) {
+  const start = new Date(startIso), end = new Date(endIso), now = new Date();
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.round((startDay - today) / 86400000);
+  let dateStr;
+  if (diffDays === 0) dateStr = "Today";
+  else if (diffDays === 1) dateStr = "Tomorrow";
+  else dateStr = start.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+ 
+  const startStr = start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const endStr = end.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const samePeriod = (start.getHours() < 12) === (end.getHours() < 12);
+  const timeStr = samePeriod ? `${startStr.replace(/\s?(AM|PM)$/i, "")} \u2013 ${endStr}` : `${startStr} \u2013 ${endStr}`;
+  return `${dateStr} \u00b7 ${timeStr}`;
+}
+function formatDateTime(iso) {
+  const d = new Date(iso), now = new Date();
+  const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.round((day - today) / 86400000);
+  let dateStr;
+  if (diffDays === 0) dateStr = "Today";
+  else if (diffDays === 1) dateStr = "Tomorrow";
+  else dateStr = d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  return `${dateStr} \u00b7 ${d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+}
  
 let amenities = [];
 let amenityHours = [];
 let officeHours = [];
 let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
-let resident = { name: "", email: "", apt: "" };
+let resident = { name: "", phone: "", apt: "" };
 let selectedAmenity = null;
+let editingProfile = false;
  
-// ---------- REMEMBER THIS RESIDENT ACROSS VISITS/REFRESHES ----------
-(function restoreResident() {
-  const saved = localStorage.getItem("ccr_resident");
-  if (saved) {
-    try {
-      resident = JSON.parse(saved);
-      document.getElementById("resName").value = resident.name;
-      document.getElementById("resEmail").value = resident.email;
-      document.getElementById("resApt").value = resident.apt;
-      showScreen("menuStep");
-      loadHomeCard();
-    } catch (e) { /* ignore corrupted storage, just show the normal form */ }
+const ALL_SCREENS = ["authStep", "profileStep", "menuStep", "step2", "myResStep"];
+ 
+// ---------- ESTABLISH A DEVICE IDENTITY, THEN RESTORE PROFILE IF ALREADY VERIFIED ----------
+(async function init() {
+  let { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    const { data, error } = await sb.auth.signInAnonymously();
+    if (error) { showScreen("authStep"); return; }
+    session = data.session;
   }
+  await loadResidentProfile(session);
 })();
+ 
+// checks whether this device has already verified an apartment PIN
+async function loadResidentProfile(session) {
+  const { data, error } = await sb.from("residents").select("*").eq("auth_user_id", session.user.id).maybeSingle();
+  if (error || !data || !data.active) { showScreen("authStep"); return; }
+ 
+  if (data.full_name && data.full_name.trim()) {
+    resident = { name: data.full_name, phone: data.phone || "", apt: data.apartment_number };
+    showScreen("menuStep");
+    loadHomeCard();
+  } else {
+    // PIN verified, but profile (name/phone) not completed yet
+    editingProfile = false;
+    document.getElementById("profileEyebrow").textContent = "Complete Your Profile";
+    document.getElementById("profileHeading").textContent = "Tell us about yourself";
+    document.getElementById("resName").value = "";
+    document.getElementById("resPhone").value = "";
+    showScreen("profileStep");
+  }
+}
  
 // ---------- NAVIGATION ----------
 function showScreen(id) {
-  ["step1", "menuStep", "step2", "myResStep"].forEach(s => document.getElementById(s).classList.remove("active"));
+  const requiresIdentity = (id === "step2" || id === "myResStep" || id === "menuStep");
+  const hasIdentity = resident.name && resident.apt;
+  if (requiresIdentity && !hasIdentity) {
+    id = "authStep";
+  }
+  ALL_SCREENS.forEach(s => document.getElementById(s).classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  document.getElementById("topBar").classList.toggle("visible", id !== "step1");
+  document.getElementById("topBar").classList.toggle("visible", hasIdentity && id !== "authStep" && id !== "profileStep");
+  updateProfileChip();
   closeSidebar();
+}
+ 
+function updateProfileChip() {
+  const chip = document.getElementById("profileChip");
+  if (resident.name) {
+    const initials = resident.name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    chip.textContent = initials;
+    chip.classList.add("visible");
+  } else {
+    chip.classList.remove("visible");
+  }
 }
  
 function openSidebar() {
@@ -312,18 +508,22 @@ document.getElementById("homeBtn").onclick = () => { showScreen("menuStep"); loa
 function goToNewReservation() { showScreen("step2"); }
 function goToMyReservations() { showScreen("myResStep"); loadMyReservations(); }
 function goToEditInfo() {
+  editingProfile = true;
+  document.getElementById("profileEyebrow").textContent = "Edit My Info";
+  document.getElementById("profileHeading").textContent = "Update your profile";
   document.getElementById("resName").value = resident.name;
-  document.getElementById("resEmail").value = resident.email;
-  document.getElementById("resApt").value = resident.apt;
-  showScreen("step1");
+  document.getElementById("resPhone").value = resident.phone || "";
+  showScreen("profileStep");
 }
-function logout() {
-  localStorage.removeItem("ccr_resident");
-  resident = { name: "", email: "", apt: "" };
-  document.getElementById("resName").value = "";
-  document.getElementById("resEmail").value = "";
-  document.getElementById("resApt").value = "";
-  showScreen("step1");
+async function logout() {
+  // "logging out" just forgets this device's link locally; the underlying device
+  // identity stays valid, so re-entering the same PIN on this device signs right back in.
+  await sb.auth.signOut();
+  resident = { name: "", phone: "", apt: "" };
+  document.getElementById("authApt").value = "";
+  document.getElementById("authPin").value = "";
+  const { data, error } = await sb.auth.signInAnonymously();
+  showScreen("authStep");
 }
  
 document.getElementById("newResBtn").onclick = goToNewReservation;
@@ -334,32 +534,83 @@ document.getElementById("sidebarEditInfo").onclick = goToEditInfo;
 document.getElementById("sidebarLogout").onclick = logout;
 document.getElementById("logoutBtn").onclick = logout;
  
-// ---------- STEP 1 ----------
-document.getElementById("continueBtn").onclick = async () => {
-  const name = document.getElementById("resName").value.trim();
-  const email = document.getElementById("resEmail").value.trim();
-  const apt = document.getElementById("resApt").value.trim();
-  const errBox = document.getElementById("step1Error");
+// ---------- AUTH STEP: verify apartment number + PIN ----------
+document.getElementById("sendCodeBtn").onclick = async () => {
+  const apt = document.getElementById("authApt").value.trim();
+  const pin = document.getElementById("authPin").value.trim();
+  const errBox = document.getElementById("authError");
   errBox.style.display = "none";
  
-  if (!name || !email || !apt) {
-    errBox.textContent = "Please fill in your name, email, and apartment number.";
+  if (!apt || !pin) {
+    errBox.textContent = "Please enter both your apartment number and PIN.";
     errBox.style.display = "block";
     return;
   }
  
-  // check apartment list only if enforcement is turned on in app_settings
-  if (settings.enforce_apartment_list) {
-    const { data, error } = await sb.from("apartments").select("unit_number").eq("unit_number", apt).eq("active", true).maybeSingle();
-    if (error || !data) {
-      errBox.textContent = "We don't recognize that apartment number. Please contact the leasing office.";
-      errBox.style.display = "block";
-      return;
-    }
+  const btn = document.getElementById("sendCodeBtn");
+  btn.disabled = true; btn.textContent = "Checking...";
+ 
+  // make sure we have a device identity before verifying
+  let { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    const { data } = await sb.auth.signInAnonymously();
+    session = data.session;
   }
  
-  resident = { name, email, apt };
-  localStorage.setItem("ccr_resident", JSON.stringify(resident));
+  const { data: ok, error } = await sb.rpc("verify_apartment_pin", { p_apartment: apt, p_pin: pin });
+  btn.disabled = false; btn.textContent = "Continue";
+ 
+  if (error) {
+    errBox.textContent = error.message && error.message.includes("too many attempts")
+      ? "Too many attempts. Please wait 15 minutes or contact the leasing office."
+      : "Something went wrong. Please try again.";
+    errBox.style.display = "block";
+    return;
+  }
+  if (!ok) {
+    errBox.textContent = "That apartment number or PIN doesn't match our records.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  await loadResidentProfile(session);
+};
+ 
+// ---------- PROFILE STEP: first-time setup, or editing later ----------
+document.getElementById("saveProfileBtn").onclick = async () => {
+  const name = document.getElementById("resName").value.trim();
+  const phone = document.getElementById("resPhone").value.trim();
+  const errBox = document.getElementById("profileError");
+  errBox.style.display = "none";
+ 
+  if (!name || !phone) {
+    errBox.textContent = "Please fill in your name and phone number.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { showScreen("authStep"); return; }
+ 
+  const btn = document.getElementById("saveProfileBtn");
+  btn.disabled = true; btn.textContent = "Saving...";
+ 
+  const { data: row, error: dbError } = await sb.from("residents")
+    .update({ full_name: name, phone })
+    .eq("auth_user_id", session.user.id)
+    .select("apartment_number")
+    .single();
+ 
+  btn.disabled = false; btn.textContent = "Save & Continue";
+ 
+  if (dbError) {
+    errBox.textContent = "Something went wrong saving your profile. Please try again.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  resident = { name, phone, apt: row.apartment_number };
+  editingProfile = false;
   showScreen("menuStep");
   loadHomeCard();
 };
@@ -380,9 +631,11 @@ async function loadData() {
  
   const list = document.getElementById("amenityList");
   list.innerHTML = "";
+  const accentCycle = ["var(--sage)", "var(--dusty)", "var(--clay)", "var(--gold)"];
   amenities.forEach((a, i) => {
     const div = document.createElement("div");
     div.className = "amenity-option";
+    div.style.borderLeftColor = accentCycle[i % accentCycle.length];
     div.innerHTML = `
       <input type="radio" name="amenity" value="${a.id}" id="amenity_${i}" />
       <label for="amenity_${i}" style="margin:0; font-weight:normal;">${a.name}
@@ -400,6 +653,14 @@ async function loadData() {
       }
       updateDurationOptions();
       renderAvailability();
+ 
+      const bulkSection = document.getElementById("bulkBookingSection");
+      if (a.name.startsWith("Private Office")) {
+        bulkSection.style.display = "block";
+      } else {
+        bulkSection.style.display = "none";
+        document.getElementById("resBulk").checked = false;
+      }
     };
     list.appendChild(div);
   });
@@ -473,26 +734,75 @@ function updateDurationOptions() {
   }
 }
 document.getElementById("resDate").addEventListener("change", () => { updateDurationOptions(); renderAvailability(); });
-document.getElementById("resStart").addEventListener("change", updateDurationOptions);
+document.getElementById("resDuration").addEventListener("change", () => { drawClockSelection(); });
  
-// ---------- AVAILABILITY CALENDAR (booking page) ----------
+// ---------- AVAILABILITY CLOCK DIAL (booking page) ----------
+// Double-ring 24-hour dial: outer ring = 12am-12pm, inner ring = 12pm-12am.
+// Dragging the hand snaps to the nearest open 15-minute slot; booked slots are shown in red and can't be selected.
+const CX = 150, CY = 150, R_OUTER = 124, R_INNER = 84;
+let clockOpenMin = null, clockCloseMin = null, clockBookings = [], clockDate = null;
+let selectedStartMin = null;
+ 
+function minToLabel(min) {
+  const h24 = Math.floor(min / 60) % 24, m = min % 60;
+  const ref = new Date(2000, 0, 1, h24, m);
+  return ref.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+function polarPoint(r, angleDeg) {
+  const a = (angleDeg - 90) * Math.PI / 180;
+  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
+}
+function ringAngle(minute) {
+  // angle within its own ring (0-360), independent of which ring it's on
+  return ((minute % 720) / 720) * 360;
+}
+function ringOf(minute) { return minute < 720 ? "outer" : "inner"; }
+function radiusOf(ring) { return ring === "outer" ? R_OUTER : R_INNER; }
+function svgNS(tag) { return document.createElementNS("http://www.w3.org/2000/svg", tag); }
+ 
+function minuteStatus(min) {
+  if (clockOpenMin === null || min < clockOpenMin || min >= clockCloseMin) return "disabled";
+  const slotEnd = min + 15;
+  const overlap = clockBookings.find(b => b.startMin < slotEnd && b.endMin > min);
+  if (overlap) return overlap.key_picked_up ? "booked" : "booked-keys-out";
+  return "open";
+}
+ 
+function describeArcSegment(ring, startMinInRing, endMinInRing) {
+  const r = radiusOf(ring);
+  const a1 = ((startMinInRing % 720) / 720) * 360;
+  const a2 = ((endMinInRing % 720) / 720) * 360;
+  const p1 = polarPoint(r, a2), p2 = polarPoint(r, a1);
+  const largeArc = (a2 - a1) <= 180 ? "0" : "1";
+  return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${largeArc} 0 ${p2.x} ${p2.y}`;
+}
+ 
 async function renderAvailability() {
   const section = document.getElementById("availabilitySection");
-  const grid = document.getElementById("availabilityGrid");
+  const svg = document.getElementById("clockSvg");
   const date = document.getElementById("resDate").value;
+  selectedStartMin = null;
+  document.getElementById("resStart").value = "";
  
   if (!selectedAmenity || !date) { section.style.display = "none"; return; }
  
   const dow = new Date(`${date}T00:00:00`).getDay();
   const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
+  section.style.display = "block";
+  svg.innerHTML = "";
+ 
   if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
-    section.style.display = "block";
-    grid.innerHTML = "<p>Closed this day.</p>";
+    clockOpenMin = clockCloseMin = null;
+    document.getElementById("clockReadout").innerHTML = "Closed<br/>this day";
     return;
   }
  
-  section.style.display = "block";
-  grid.innerHTML = "Loading availability...";
+  clockDate = date;
+  const [oh, om] = hoursRow.open_time.split(":").map(Number);
+  const [ch, cm] = hoursRow.close_time.split(":").map(Number);
+  clockOpenMin = oh * 60 + om;
+  clockCloseMin = ch * 60 + cm;
+  if (clockCloseMin <= clockOpenMin) clockCloseMin += 24 * 60; // safety, shouldn't normally happen
  
   const dayStart = new Date(`${date}T00:00:00`).toISOString();
   const dayEnd = new Date(`${date}T23:59:59`).toISOString();
@@ -504,34 +814,158 @@ async function renderAvailability() {
     .lt("start_time", dayEnd)
     .gt("end_time", dayStart);
  
-  grid.innerHTML = "";
-  const openTime = new Date(`${date}T${hoursRow.open_time}`);
-  const closeTime = new Date(`${date}T${hoursRow.close_time}`);
+  const dayBase = new Date(`${date}T00:00:00`);
+  clockBookings = (dayBookings || []).map(b => {
+    const s = new Date(b.start_time), e = new Date(b.end_time);
+    return { startMin: Math.round((s - dayBase) / 60000), endMin: Math.round((e - dayBase) / 60000), key_picked_up: b.key_picked_up };
+  });
  
-  // build 30-minute slots across the open window
-  for (let t = new Date(openTime); t < closeTime; t = new Date(t.getTime() + 30 * 60000)) {
-    const slotEnd = new Date(t.getTime() + 30 * 60000);
-    const covering = (dayBookings || []).find(b => new Date(b.start_time) < slotEnd && new Date(b.end_time) > t);
+  document.getElementById("clockReadout").innerHTML = "Select<br/>a time";
+  drawClockFace();
+}
  
-    const btn = document.createElement("div");
-    const timeLabel = t.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    btn.textContent = timeLabel;
+function drawClockFace() {
+  const svg = document.getElementById("clockSvg");
+  svg.innerHTML = "";
+  if (clockOpenMin === null) return;
  
-    if (covering) {
-      btn.className = "slot-btn booked" + (!covering.key_picked_up ? " keys-out" : "");
-      btn.title = covering.key_picked_up ? "Booked" : "Booked \u2014 keys not yet picked up";
-    } else {
-      btn.className = "slot-btn";
-      btn.title = "Click to select this start time";
-      btn.onclick = () => {
-        document.querySelectorAll(".slot-btn.selected").forEach(el => el.classList.remove("selected"));
-        btn.classList.add("selected");
-        document.getElementById("resStart").value = t.toTimeString().slice(0, 5);
-        updateDurationOptions();
-      };
+  // base ring circles (subtle track)
+  [R_OUTER, R_INNER].forEach(r => {
+    const c = svgNS("circle");
+    c.setAttribute("cx", CX); c.setAttribute("cy", CY); c.setAttribute("r", r);
+    c.setAttribute("fill", "none"); c.setAttribute("stroke", "var(--line)"); c.setAttribute("stroke-width", "16");
+    svg.appendChild(c);
+  });
+ 
+  // 48 quarter-hour ticks per ring
+  ["outer", "inner"].forEach(ring => {
+    const base = ring === "outer" ? 0 : 720;
+    for (let i = 0; i < 48; i++) {
+      const min = base + i * 15;
+      const status = minuteStatus(min);
+      const isHour = i % 4 === 0;
+      const pt = polarPoint(radiusOf(ring), ringAngle(min));
+      const dot = svgNS("circle");
+      dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
+      dot.setAttribute("r", isHour ? 6 : 3.2);
+      dot.setAttribute("class", "clock-tick" + (status === "open" ? "" : " disabled"));
+      dot.setAttribute("data-min", min);
+      let fill = "#fff", stroke = "var(--line)";
+      if (status === "disabled") { fill = "#EDE9DD"; stroke = "#EDE9DD"; }
+      else if (status === "booked") { fill = "#FBE9E7"; stroke = "#F0B7AE"; }
+      else if (status === "booked-keys-out") { fill = "#F5DAD5"; stroke = "#E7A99C"; }
+      else { fill = "#fff"; stroke = "var(--amber-dark)"; }
+      dot.setAttribute("fill", fill);
+      dot.setAttribute("stroke", stroke);
+      dot.setAttribute("stroke-width", "1.5");
+      if (status === "open") dot.onclick = () => selectStart(min);
+      svg.appendChild(dot);
+ 
+      if (isHour) {
+        const labelPt = polarPoint(radiusOf(ring) + (ring === "outer" ? 20 : -20), ringAngle(min));
+        const text = svgNS("text");
+        text.setAttribute("x", labelPt.x); text.setAttribute("y", labelPt.y + 4);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("font-family", "IBM Plex Mono, monospace");
+        text.setAttribute("font-size", "10");
+        text.setAttribute("fill", "var(--ink-soft)");
+        const hr = Math.floor(min / 60) % 24;
+        text.textContent = hr === 0 ? "12" : (hr > 12 ? hr - 12 : hr);
+        svg.appendChild(text);
+      }
     }
-    grid.appendChild(btn);
+  });
+ 
+  // "now" marker, only relevant when viewing today
+  const now = new Date();
+  if (clockDate === now.toISOString().split("T")[0]) {
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const pt = polarPoint(radiusOf(ringOf(nowMin)), ringAngle(nowMin));
+    const marker = svgNS("circle");
+    marker.setAttribute("cx", pt.x); marker.setAttribute("cy", pt.y); marker.setAttribute("r", 4);
+    marker.setAttribute("fill", "var(--clay)");
+    marker.setAttribute("pointer-events", "none");
+    svg.appendChild(marker);
   }
+ 
+  drawClockSelection();
+  attachClockDrag(svg);
+}
+ 
+function selectStart(min) {
+  if (minuteStatus(min) !== "open") return;
+  selectedStartMin = min;
+  const h = String(Math.floor(min / 60) % 24).padStart(2, "0");
+  const m = String(min % 60).padStart(2, "0");
+  document.getElementById("resStart").value = `${h}:${m}`;
+  updateDurationOptions();
+  drawClockSelection();
+}
+ 
+function drawClockSelection() {
+  const svg = document.getElementById("clockSvg");
+  svg.querySelectorAll(".clock-hand, .clock-duration-arc").forEach(el => el.remove());
+  const readout = document.getElementById("clockReadout");
+  if (selectedStartMin === null) { readout.innerHTML = "Select<br/>a time"; return; }
+ 
+  const durationVal = parseInt(document.getElementById("resDuration").value, 10) || 60;
+  const endMin = selectedStartMin + durationVal;
+ 
+  // duration arc, split at the 12-hour ring boundary if it crosses
+  const segments = [];
+  if (endMin <= 1440) {
+    if (ringOf(selectedStartMin) === ringOf(Math.min(endMin, 719))) {
+      segments.push([ringOf(selectedStartMin), selectedStartMin, endMin]);
+    }
+    if (selectedStartMin < 720 && endMin > 720) {
+      segments.push(["outer", selectedStartMin, 720]);
+      segments.push(["inner", 720, endMin]);
+    } else {
+      segments.length = 0;
+      segments.push([ringOf(selectedStartMin), selectedStartMin, endMin]);
+    }
+  }
+  segments.forEach(([ring, s, e]) => {
+    const path = svgNS("path");
+    path.setAttribute("d", describeArcSegment(ring, s, e));
+    path.setAttribute("class", "clock-duration-arc");
+    svg.appendChild(path);
+  });
+ 
+  // hand from center to the start point
+  const ring = ringOf(selectedStartMin);
+  const pt = polarPoint(radiusOf(ring), ringAngle(selectedStartMin));
+  const hand = svgNS("line");
+  hand.setAttribute("x1", CX); hand.setAttribute("y1", CY);
+  hand.setAttribute("x2", pt.x); hand.setAttribute("y2", pt.y);
+  hand.setAttribute("class", "clock-hand");
+  svg.appendChild(hand);
+ 
+  readout.innerHTML = `${minToLabel(selectedStartMin)}<br/>&ndash;<br/>${minToLabel(endMin)}`;
+}
+ 
+function attachClockDrag(svg) {
+  let dragging = false;
+  function pointToMinute(evt) {
+    const rect = svg.getBoundingClientRect();
+    const scale = 300 / rect.width;
+    const x = (evt.clientX - rect.left) * scale - CX;
+    const y = (evt.clientY - rect.top) * scale - CY;
+    const dist = Math.sqrt(x * x + y * y);
+    const ring = dist > (R_OUTER + R_INNER) / 2 ? "outer" : "inner";
+    let angle = Math.atan2(x, -y) * 180 / Math.PI;
+    if (angle < 0) angle += 360;
+    let idx = Math.round(angle / 7.5) % 48;
+    const base = ring === "outer" ? 0 : 720;
+    return base + idx * 15;
+  }
+  function handleEvent(evt) {
+    const min = pointToMinute(evt);
+    if (minuteStatus(min) === "open") selectStart(min);
+  }
+  svg.onpointerdown = (evt) => { dragging = true; handleEvent(evt); };
+  svg.onpointermove = (evt) => { if (dragging) handleEvent(evt); };
+  window.addEventListener("pointerup", () => { dragging = false; });
 }
  
 // ---------- SUBMIT ----------
@@ -539,6 +973,10 @@ document.getElementById("submitBtn").onclick = async () => {
   const resultBox = document.getElementById("resultMsg");
   resultBox.innerHTML = "";
  
+  if (!resident.name || !resident.apt) {
+    showScreen("authStep");
+    return;
+  }
   if (!selectedAmenity) return showMsg("err", "Please select an amenity.");
   const date = document.getElementById("resDate").value;
   const startStr = document.getElementById("resStart").value;
@@ -546,10 +984,15 @@ document.getElementById("submitBtn").onclick = async () => {
   const guests = parseInt(document.getElementById("resGuests").value || "0", 10);
   const comments = document.getElementById("resComments").value.trim();
   const agreed = document.getElementById("resAgree").checked;
+  const isBulk = document.getElementById("resBulk").checked;
  
   if (!date || !startStr) return showMsg("err", "Please choose a date and start time.");
   if (!agreed) return showMsg("err", "You must agree to the reservation agreement to continue.");
   if (guests > selectedAmenity.max_guests) return showMsg("err", `This space allows a maximum of ${selectedAmenity.max_guests} guests.`);
+ 
+  if (isBulk) {
+    return submitBulkBooking(date, startStr, duration, guests, comments);
+  }
  
   const startTime = new Date(`${date}T${startStr}:00`);
   const endTime = new Date(startTime.getTime() + duration * 60000);
@@ -582,7 +1025,6 @@ document.getElementById("submitBtn").onclick = async () => {
     const { data: waitRow, error: waitErr } = await sb.from("waitlist").insert({
       amenity_id: selectedAmenity.id,
       resident_name: resident.name,
-      resident_email: resident.email,
       apartment_number: resident.apt,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
@@ -599,7 +1041,8 @@ document.getElementById("submitBtn").onclick = async () => {
       .lt("start_time", endTime.toISOString())
       .gt("end_time", startTime.toISOString());
  
-    showMsg("wait", `That time is already booked. You've been added to the waitlist — you are position #${count}. ${count === 1 ? "You're first in line: if the current holder does not pick up their keys, this room may become available to you." : ""} We'll email you if it opens up.`);
+    showConfirmationModal(`That time is already booked for ${selectedAmenity.name}. You've been added to the waitlist \u2014 you are position #${count}. ${count === 1 ? "You're first in line: if the current holder does not pick up their keys, this room may become available to you. " : ""}We'll notify you if it opens up.`, "wait");
+    resetBookingForm();
     return;
   }
  
@@ -607,7 +1050,6 @@ document.getElementById("submitBtn").onclick = async () => {
   const { error: insertErr } = await sb.from("bookings").insert({
     amenity_id: selectedAmenity.id,
     resident_name: resident.name,
-    resident_email: resident.email,
     apartment_number: resident.apt,
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
@@ -617,12 +1059,83 @@ document.getElementById("submitBtn").onclick = async () => {
   if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
  
   const pickupInstructions = getPickupInstructions(selectedAmenity, startTime, date);
-  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${startTime.toLocaleString()}. ${pickupInstructions}`);
+  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${formatDateTime(startTime.toISOString())}. ${pickupInstructions}`);
   resetBookingForm();
 };
  
-function showConfirmationModal(text) {
-  document.getElementById("confirmModalText").textContent = text;
+// ---------- BULK BOOKING (private offices only, plan the week) ----------
+async function submitBulkBooking(date, startStr, duration, guests, comments) {
+  const groupId = crypto.randomUUID();
+  const results = []; // { date, outcome: 'confirmed'|'pending'|'skipped-closed'|'skipped-booked' }
+ 
+  for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
+    const d = new Date(`${date}T00:00:00`);
+    d.setDate(d.getDate() + dayOffset);
+    const dStr = d.toISOString().split("T")[0];
+ 
+    const startTime = new Date(`${dStr}T${startStr}:00`);
+    const endTime = new Date(startTime.getTime() + duration * 60000);
+    const dow = startTime.getDay();
+    const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
+ 
+    if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
+      results.push({ date: dStr, outcome: "skipped-closed" });
+      continue;
+    }
+    const openTime = new Date(`${dStr}T${hoursRow.open_time}`);
+    const closeTime = new Date(`${dStr}T${hoursRow.close_time}`);
+    if (startTime < openTime || endTime > closeTime) {
+      results.push({ date: dStr, outcome: "skipped-closed" });
+      continue;
+    }
+ 
+    const { data: overlaps } = await sb
+      .from("bookings").select("id")
+      .eq("amenity_id", selectedAmenity.id).eq("status", "confirmed")
+      .lt("start_time", endTime.toISOString()).gt("end_time", startTime.toISOString());
+ 
+    if (overlaps && overlaps.length > 0) {
+      results.push({ date: dStr, outcome: "skipped-booked" });
+      continue;
+    }
+ 
+    const status = dayOffset === 0 ? "confirmed" : "pending";
+    const { error } = await sb.from("bookings").insert({
+      amenity_id: selectedAmenity.id,
+      resident_name: resident.name, apartment_number: resident.apt,
+      start_time: startTime.toISOString(), end_time: endTime.toISOString(),
+      guests, comments, status, bulk_group_id: groupId
+    });
+ 
+    results.push({ date: dStr, outcome: error ? "skipped-error" : status });
+  }
+ 
+  const fmt = (iso) => new Date(iso + "T00:00:00").toLocaleDateString([], { weekday: "short", month: "numeric", day: "numeric" });
+  const lines = results.map(r => {
+    if (r.outcome === "confirmed") return `${fmt(r.date)}: Confirmed`;
+    if (r.outcome === "pending") return `${fmt(r.date)}: Pending admin approval`;
+    if (r.outcome === "skipped-closed") return `${fmt(r.date)}: Skipped (closed or outside hours)`;
+    if (r.outcome === "skipped-booked") return `${fmt(r.date)}: Skipped (already booked \u2014 book manually if needed)`;
+    return `${fmt(r.date)}: Something went wrong, please try that day again`;
+  });
+ 
+  showConfirmationModal(`Your 6-day plan for ${selectedAmenity.name}:<br/>` + lines.join("<br/>"));
+  resetBookingForm();
+}
+ 
+function showConfirmationModal(text, type = "ok") {
+  document.getElementById("confirmModalText").innerHTML = text;
+  const icon = document.getElementById("confirmModalIcon");
+  const title = document.getElementById("confirmModalTitle");
+  if (type === "wait") {
+    icon.style.stroke = "#8A5A00";
+    icon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+    title.textContent = "Added to Waitlist";
+  } else {
+    icon.style.stroke = "#2C5C36";
+    icon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/>';
+    title.textContent = "Reservation Confirmed";
+  }
   document.getElementById("confirmModalBackdrop").classList.add("visible");
 }
  
@@ -634,6 +1147,8 @@ function resetBookingForm() {
   document.getElementById("resGuests").value = "0";
   document.getElementById("resComments").value = "";
   document.getElementById("resAgree").checked = false;
+  document.getElementById("resBulk").checked = false;
+  document.getElementById("bulkBookingSection").style.display = "none";
   document.getElementById("availabilitySection").style.display = "none";
   document.getElementById("resultMsg").innerHTML = "";
 }
@@ -669,31 +1184,33 @@ document.getElementById("confirmModalDoneBtn").onclick = () => {
 // ---------- HOME CARD (shows next upcoming booking right on the home screen) ----------
 async function loadHomeCard() {
   const box = document.getElementById("homeUpcomingCard");
-  if (!resident.email) { box.innerHTML = ""; return; }
+  if (!resident.apt) { box.innerHTML = ""; return; }
   const nowIso = new Date().toISOString();
  
   const { data } = await sb
     .from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)")
-    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
     .eq("status", "confirmed").gt("end_time", nowIso)
     .order("start_time").limit(1);
  
   if (!data || data.length === 0) { box.innerHTML = ""; return; }
   const b = data[0];
+  const showCountdown = !b.key_picked_up && new Date(b.start_time) <= new Date() && await hasOverlappingWaitlist(b);
   const div = document.createElement("div");
   div.className = "res-item";
   div.style.marginTop = "16px";
   div.innerHTML = `
     <div class="res-title">Your Next Reservation</div>
     <div class="res-title">${b.amenities.name}</div>
-    <div class="res-time">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</div>
+    <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
     <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
     <div class="res-time">${keyStatusText(b)}</div>
+    ${showCountdown ? keyCountdownPlaceholder(b) : ""}
     ${depositReminderHtml(b)}
     <button data-id="${b.id}" data-type="booking">Give Up / Cancel This Reservation</button>`;
   div.querySelector("button").onclick = (e) => { cancelReservation(b.id, "booking", e.target); };
   box.innerHTML = "";
   box.appendChild(div);
+  tickAllCountdowns();
 }
  
 // ---------- MY RESERVATIONS ----------
@@ -709,40 +1226,59 @@ async function loadMyReservations() {
  
   const { data: myBookings } = await sb
     .from("bookings").select(amenitySelect)
-    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
     .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
+ 
+  const { data: myPending } = await sb
+    .from("bookings").select(amenitySelect)
+    .eq("status", "pending").gt("end_time", nowIso).order("start_time");
  
   const { data: myWaitlist } = await sb
     .from("waitlist").select(amenitySelect)
-    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
     .eq("status", "waiting").gt("end_time", nowIso).order("start_time");
  
   const { data: pastBookings } = await sb
     .from("bookings").select(amenitySelect)
-    .eq("resident_email", resident.email).eq("apartment_number", resident.apt)
     .in("status", ["confirmed", "cancelled"]).lte("end_time", nowIso)
     .order("start_time", { ascending: false }).limit(10);
  
   listBox.innerHTML = "";
  
-  if ((!myBookings || myBookings.length === 0) && (!myWaitlist || myWaitlist.length === 0)) {
+  if ((!myBookings || myBookings.length === 0) && (!myPending || myPending.length === 0) && (!myWaitlist || myWaitlist.length === 0)) {
     listBox.innerHTML = "<p>You have no upcoming reservations or waitlist entries.</p>";
   }
  
-  for (const b of (myBookings || [])) {
+  for (const b of (myPending || [])) {
     const div = document.createElement("div");
     div.className = "res-item";
     div.innerHTML = `
       <div class="res-title">${b.amenities.name}</div>
-      <div class="res-time">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</div>
+      <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
+      <span class="res-status waiting">Pending Admin Approval</span>
+      <div class="hint">Part of a 6-day office plan &mdash; the leasing office needs to approve this day.</div>
+      <button data-id="${b.id}" data-type="pending">Cancel This Request</button>`;
+    div.querySelector("button").onclick = (e) => cancelReservation(b.id, "pending", e.target);
+    listBox.appendChild(div);
+  }
+ 
+  for (const b of (myBookings || [])) {
+    const showCountdown = !b.key_picked_up && new Date(b.start_time) <= new Date() && await hasOverlappingWaitlist(b);
+    const div = document.createElement("div");
+    div.className = "res-item";
+    div.innerHTML = `
+      <div class="res-title">${b.amenities.name}</div>
+      <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
       <span class="res-status confirmed">Confirmed</span>
       <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
       <div class="res-time">${keyStatusText(b)}</div>
+      ${showCountdown ? keyCountdownPlaceholder(b) : ""}
       ${depositReminderHtml(b)}
+      <div id="ext-${b.id}"></div>
       <button data-id="${b.id}" data-type="booking">Give Up / Cancel This Reservation</button>`;
     div.querySelector("button").onclick = (e) => cancelReservation(b.id, "booking", e.target);
     listBox.appendChild(div);
+    renderExtensionControls(b);
   }
+  tickAllCountdowns();
  
   for (const w of (myWaitlist || [])) {
     const position = await waitlistPosition(w);
@@ -750,7 +1286,7 @@ async function loadMyReservations() {
     div.className = "res-item";
     div.innerHTML = `
       <div class="res-title">${w.amenities.name}</div>
-      <div class="res-time">${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</div>
+      <div class="res-time">${formatDateTimeRange(w.start_time, w.end_time)}</div>
       <span class="res-status waiting">Waiting &mdash; position #${position}</span>
       <button data-id="${w.id}" data-type="waitlist">Leave Waitlist</button>`;
     div.querySelector("button").onclick = (e) => cancelReservation(w.id, "waitlist", e.target);
@@ -767,7 +1303,7 @@ async function loadMyReservations() {
       const statusLabel = b.status === "cancelled" ? "Cancelled" : "Completed";
       div.innerHTML = `
         <div class="res-title">${b.amenities.name}</div>
-        <div class="res-time">${new Date(b.start_time).toLocaleString()}</div>
+        <div class="res-time">${formatDateTime(b.start_time)}</div>
         <span class="res-status confirmed">${statusLabel}</span>`;
       pastBox.appendChild(div);
     });
@@ -798,6 +1334,100 @@ function keyStatusText(b) {
   if (b.key_picked_up) return "Key: picked up, not yet returned.";
   return "Key: not yet picked up from the leasing office.";
 }
+ 
+// ---------- EXTENSION REQUESTS (always require staff approval) ----------
+async function renderExtensionControls(booking) {
+  const box = document.getElementById(`ext-${booking.id}`);
+  if (!box) return;
+ 
+  const { data: existing } = await sb
+    .from("extension_requests").select("*")
+    .eq("booking_id", booking.id).order("created_at", { ascending: false }).limit(1);
+ 
+  const latest = existing && existing[0];
+  if (latest && latest.status === "pending") {
+    box.innerHTML = `<div class="msg wait">Extension request pending: +${latest.requested_hours} hr(s), awaiting leasing office approval.</div>`;
+    return;
+  }
+ 
+  const dow = new Date(booking.start_time).getDay();
+  const dateStr = booking.start_time.split("T")[0];
+  const hoursRow = amenityHours.find(h => h.amenity_id === booking.amenity_id && h.day_of_week === dow);
+  if (!hoursRow || !hoursRow.close_time) { box.innerHTML = ""; return; }
+ 
+  const closeTime = new Date(`${dateStr}T${hoursRow.close_time}`);
+  const currentEnd = new Date(booking.end_time);
+  const maxExtendMinutes = Math.floor((closeTime - currentEnd) / 60000);
+  const maxHours = Math.min(4, Math.floor(maxExtendMinutes / 30) * 0.5); // in 30-min increments, capped at 4hrs
+ 
+  if (maxHours <= 0) { box.innerHTML = ""; return; } // no room left before closing
+ 
+  const options = [];
+  for (let h = 0.5; h <= maxHours; h += 0.5) options.push(h);
+ 
+  box.innerHTML = `
+    <button type="button" style="background:transparent; border:1.5px solid var(--amber-dark); color:var(--amber-dark); margin-top:10px;" id="extToggle-${booking.id}">Request Extension</button>
+    <div id="extForm-${booking.id}" style="display:none; margin-top:8px;">
+      <select id="extHours-${booking.id}">
+        ${options.map(h => `<option value="${h}">${h} hour${h === 1 ? "" : "s"}</option>`).join("")}
+      </select>
+      <div class="hint">Closes at ${hoursRow.close_time.slice(0,5)} \u2014 max extension shown accordingly. Requires leasing office approval.</div>
+      <button type="button" id="extSubmit-${booking.id}">Submit Extension Request</button>
+    </div>`;
+ 
+  document.getElementById(`extToggle-${booking.id}`).onclick = () => {
+    document.getElementById(`extForm-${booking.id}`).style.display = "block";
+    document.getElementById(`extToggle-${booking.id}`).style.display = "none";
+  };
+  document.getElementById(`extSubmit-${booking.id}`).onclick = async () => {
+    const hrs = parseFloat(document.getElementById(`extHours-${booking.id}`).value);
+    const newEnd = new Date(currentEnd.getTime() + hrs * 3600000);
+    const btn = document.getElementById(`extSubmit-${booking.id}`);
+    btn.disabled = true; btn.textContent = "Submitting...";
+    await sb.from("extension_requests").insert({
+      booking_id: booking.id, requested_hours: hrs,
+      current_end_time: currentEnd.toISOString(), new_end_time: newEnd.toISOString()
+    });
+    loadMyReservations();
+  };
+}
+ 
+// Per our rule: the pickup countdown only exists at all if someone else is actually waiting.
+async function hasOverlappingWaitlist(booking) {
+  const { count } = await sb
+    .from("waitlist").select("id", { count: "exact", head: true })
+    .eq("amenity_id", booking.amenity_id).eq("status", "waiting")
+    .lt("start_time", booking.end_time).gt("end_time", booking.start_time);
+  return (count || 0) > 0;
+}
+ 
+// Renders a placeholder div with data attributes; tickAllCountdowns() fills in the live text.
+function keyCountdownPlaceholder(booking) {
+  return `<div class="key-countdown" data-start="${booking.start_time}"></div>`;
+}
+ 
+function tickAllCountdowns() {
+  document.querySelectorAll(".key-countdown[data-start]").forEach(el => {
+    const start = new Date(el.getAttribute("data-start"));
+    const elapsedMin = (new Date() - start) / 60000;
+    const remaining = Math.ceil(45 - elapsedMin);
+ 
+    if (remaining <= 0) {
+      el.className = "key-countdown urgent";
+      el.textContent = "Key pickup window has passed \u2014 this room may be reassigned to the next person on the waitlist shortly.";
+    } else if (remaining <= 10) {
+      el.className = "key-countdown urgent";
+      el.textContent = `\u23F1 ${remaining} minute${remaining === 1 ? "" : "s"} remaining to pick up your keys \u2014 someone is waiting.`;
+    } else if (remaining <= 20) {
+      el.className = "key-countdown warn";
+      el.textContent = `\u23F1 ${remaining} minutes remaining to pick up your keys.`;
+    } else {
+      el.className = "key-countdown ok";
+      el.textContent = `\u23F1 ${remaining} minutes remaining to pick up your keys before it may be released to the waitlist.`;
+    }
+  });
+}
+setInterval(tickAllCountdowns, 15000);
  
 function depositReminderHtml(b) {
   if (!b.amenities.requires_deposit || b.deposit_paid) return "";
@@ -833,6 +1463,8 @@ document.getElementById("confirmDialogYesBtn").onclick = () => {
 function cancelReservation(id, type, btn) {
   const message = type === "waitlist"
     ? "Are you sure you want to leave the waitlist for this reservation?"
+    : type === "pending"
+    ? "Are you sure you want to cancel this pending request?"
     : "Are you sure you want to give up / cancel this reservation?";
   askToConfirm(message, () => performCancel(id, type, btn));
 }
@@ -843,6 +1475,9 @@ async function performCancel(id, type, btn) {
  
   if (type === "waitlist") {
     await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
+  } else if (type === "pending") {
+    // A bulk-booking day still awaiting approval -- never occupied a confirmed slot, so no waitlist to promote.
+    await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
   } else {
     // type === "booking": fetch it first so we know amenity/time to promote the right waitlist entry
     const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
@@ -860,34 +1495,12 @@ async function performCancel(id, type, btn) {
  
 // Finds the earliest-joined ("waiting") waitlist entry that overlapped this now-cancelled booking,
 // and confirms it -- matches our FIFO rule, and fires immediately on cancellation (not the 45-min timeout).
+// Runs server-side (SECURITY DEFINER) since the promoted booking belongs to a different
+// resident than whoever triggered this by cancelling -- RLS would otherwise block it.
 async function promoteNextWaitlisted(cancelledBooking) {
-  const { data: candidates } = await sb
-    .from("waitlist")
-    .select("*")
-    .eq("amenity_id", cancelledBooking.amenity_id)
-    .eq("status", "waiting")
-    .lt("start_time", cancelledBooking.end_time)
-    .gt("end_time", cancelledBooking.start_time)
-    .order("created_at", { ascending: true })
-    .limit(1);
- 
-  if (!candidates || candidates.length === 0) return;
-  const next = candidates[0];
- 
-  await sb.from("bookings").insert({
-    amenity_id: next.amenity_id,
-    resident_name: next.resident_name,
-    resident_email: next.resident_email,
-    apartment_number: next.apartment_number,
-    start_time: next.start_time,
-    end_time: next.end_time,
-    guests: next.guests,
-    comments: next.comments
-  });
-  await sb.from("waitlist").update({ status: "promoted" }).eq("id", next.id);
-  // Note: the promoted resident finding out is email-based (Phase 6) -- not shown live in this browser tab.
+  await sb.rpc("promote_next_waitlisted", { p_cancelled_booking_id: cancelledBooking.id });
+  // Note: the promoted resident finding out is push/notification-based (Phase 6) -- not shown live in this browser tab.
 }
 </script>
 </body>
 </html>
- 
