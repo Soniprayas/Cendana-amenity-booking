@@ -302,6 +302,9 @@
     <label>Phone Number *</label>
     <input type="tel" id="resPhone" placeholder="(555) 555-5555" autocomplete="tel" />
  
+    <label>Email *</label>
+    <input type="email" id="resEmail" placeholder="you@example.com" autocomplete="email" />
+ 
     <button id="saveProfileBtn">Save &amp; Continue</button>
     <div class="msg err" id="profileError" style="display:none"></div>
   </div>
@@ -460,7 +463,7 @@ let amenities = [];
 let amenityHours = [];
 let officeHours = [];
 let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
-let resident = { name: "", phone: "", apt: "" };
+let resident = { name: "", phone: "", email: "", apt: "" };
 let selectedAmenity = null;
 let editingProfile = false;
  
@@ -495,16 +498,17 @@ async function loadResidentProfile(session) {
   if (error || !data || !data.active) { showScreen("authStep"); return; }
  
   if (data.full_name && data.full_name.trim()) {
-    resident = { name: data.full_name, phone: data.phone || "", apt: data.apartment_number };
+    resident = { name: data.full_name, phone: data.phone || "", email: data.email || "", apt: data.apartment_number };
     showScreen("menuStep");
     loadHomeCard();
   } else {
-    // PIN verified, but profile (name/phone) not completed yet
+    // PIN verified, but profile (name/phone/email) not completed yet
     editingProfile = false;
     document.getElementById("profileEyebrow").textContent = "Complete Your Profile";
     document.getElementById("profileHeading").textContent = "Tell us about yourself";
     document.getElementById("resName").value = "";
     document.getElementById("resPhone").value = "";
+    document.getElementById("resEmail").value = "";
     showScreen("profileStep");
   }
 }
@@ -571,13 +575,14 @@ function goToEditInfo() {
   document.getElementById("profileHeading").textContent = "Update your profile";
   document.getElementById("resName").value = resident.name;
   document.getElementById("resPhone").value = resident.phone || "";
+  document.getElementById("resEmail").value = resident.email || "";
   showScreen("profileStep");
 }
 async function logout() {
   // "logging out" just forgets this device's link locally; the underlying device
   // identity stays valid (cached creds), so re-entering the same PIN on this device signs right back in.
   await sb.auth.signOut();
-  resident = { name: "", phone: "", apt: "" };
+  resident = { name: "", phone: "", email: "", apt: "" };
   document.getElementById("authApt").value = "";
   document.getElementById("authPin").value = "";
   await ensureDeviceIdentity();
@@ -640,11 +645,17 @@ document.getElementById("sendCodeBtn").onclick = async () => {
 document.getElementById("saveProfileBtn").onclick = async () => {
   const name = document.getElementById("resName").value.trim();
   const phone = document.getElementById("resPhone").value.trim();
+  const email = document.getElementById("resEmail").value.trim();
   const errBox = document.getElementById("profileError");
   errBox.style.display = "none";
  
-  if (!name || !phone) {
-    errBox.textContent = "Please fill in your name and phone number.";
+  if (!name || !phone || !email) {
+    errBox.textContent = "Please fill in your name, phone number, and email.";
+    errBox.style.display = "block";
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errBox.textContent = "Please enter a valid email address.";
     errBox.style.display = "block";
     return;
   }
@@ -656,7 +667,7 @@ document.getElementById("saveProfileBtn").onclick = async () => {
   btn.disabled = true; btn.textContent = "Saving...";
  
   const { data: row, error: dbError } = await sb.from("residents")
-    .update({ full_name: name, phone })
+    .update({ full_name: name, phone, email })
     .eq("auth_user_id", session.user.id)
     .select("apartment_number")
     .single();
@@ -669,7 +680,7 @@ document.getElementById("saveProfileBtn").onclick = async () => {
     return;
   }
  
-  resident = { name, phone, apt: row.apartment_number };
+  resident = { name, phone, email, apt: row.apartment_number };
   editingProfile = false;
   showScreen("menuStep");
   loadHomeCard();
