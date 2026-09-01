@@ -96,19 +96,23 @@
   .waiting-spinner{width:36px; height:36px; margin:0 auto 20px; border:3px solid var(--line); border-top-color:var(--amber-dark); border-radius:50%; animation:spin 0.9s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
  
-  /* ---- Clock-dial time picker ---- */
-  .clock-container{display:flex; flex-direction:column; align-items:center; gap:12px; margin:14px 0 6px; padding:18px 10px; background:#fff; border:1px solid var(--line); border-radius:12px;}
-  .clock-face{position:relative; width:270px; height:270px; max-width:100%; touch-action:none;}
-  .clock-face svg{width:100%; height:100%; touch-action:none; user-select:none; -webkit-user-select:none;}
-  .clock-tick{cursor:pointer; transition:r .1s ease;}
-  .clock-tick.disabled{cursor:default;}
-  .clock-hand{stroke:var(--amber-dark); stroke-width:2.5; stroke-linecap:round; pointer-events:none;}
-  .clock-duration-arc{stroke:var(--amber); stroke-width:14; fill:none; opacity:.35; pointer-events:none;}
-  .clock-center-readout{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-mono); font-weight:600; font-size:13px; color:var(--ink); text-align:center; pointer-events:none; background:#fff; border-radius:50%; width:84px; height:84px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 5px rgba(35,43,54,.1); line-height:1.35; padding:4px;}
-  .ampm-toggle{display:flex; gap:6px;}
-  .ampm-toggle button{width:auto; margin-top:0; padding:8px 22px; font-size:13px; background:#fff; color:var(--ink-soft); border:1.5px solid var(--line);}
-  .ampm-toggle button:hover{background:#FBF6EA;}
-  .ampm-toggle button.active{background:var(--amber-dark); color:#fff; border-color:var(--amber-dark);}
+  /* ---- Availability list + AM/PM time scroller ---- */
+  .booked-range-row{display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius:8px; background:#FBE9E7; border:1px solid #F0B7AE; font-size:13px; margin-bottom:6px;}
+  .booked-range-row.keys-out{background:#F5DAD5; border-color:#E7A99C;}
+  .booked-range-row .range-time{font-family:var(--font-mono); font-weight:600;}
+  .booked-range-empty{font-size:13px; color:var(--ink-soft); padding:6px 0;}
+  .ampm-tabs{display:flex; gap:8px; margin-bottom:10px;}
+  .ampm-tab{flex:1; padding:9px; border:1.5px solid var(--line); background:#fff; border-radius:8px; font-family:var(--font-display); font-weight:600; font-size:13px; color:var(--ink-soft); cursor:pointer;}
+  .ampm-tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .time-scroller{max-height:260px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; background:#fff;}
+  .time-slot-row{display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-bottom:1px solid var(--line); cursor:pointer; font-family:var(--font-mono); font-size:14px;}
+  .time-slot-row:last-child{border-bottom:none;}
+  .time-slot-row:hover{background:var(--sand);}
+  .time-slot-row.selected{background:var(--amber); color:#fff; font-weight:600;}
+  .time-slot-row.booked{color:#B5473A;}
+  .time-slot-row.booked.selected{background:var(--clay); color:#fff;}
+  .time-slot-row.disabled{color:#C9C4B4; cursor:not-allowed; background:#FAF8F2;}
+  .time-slot-row .slot-tag{font-family:var(--font-body); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px;}
   .key-countdown{font-family:var(--font-mono); font-size:13px; font-weight:600; padding:8px 10px; border-radius:8px; margin-top:8px;}
   .key-countdown.ok{background:#EAF3E8; color:#2C5C36;}
   .key-countdown.warn{background:#FBF0DD; color:#8A5A00;}
@@ -302,8 +306,9 @@
     <label>Phone Number *</label>
     <input type="tel" id="resPhone" placeholder="(555) 555-5555" autocomplete="tel" />
  
-    <label>Email *</label>
-    <input type="email" id="resEmail" placeholder="you@example.com" autocomplete="email" />
+    <label>Email (optional)</label>
+    <input type="email" id="resEmail" placeholder="you@email.com" autocomplete="email" />
+    <div class="hint">Only used if the leasing office wants to reach you about a booking.</div>
  
     <button id="saveProfileBtn">Save &amp; Continue</button>
     <div class="msg err" id="profileError" style="display:none"></div>
@@ -356,27 +361,26 @@
     <input type="date" id="resDate" />
  
     <div id="availabilitySection" style="display:none;">
-      <label style="margin-top:14px;">Availability for this day &mdash; drag the hand to pick a start time</label>
+      <label style="margin-top:14px;">Availability for this day</label>
       <div class="slot-legend">
         <span><span class="legend-dot" style="background:#fff; border:1px solid var(--line);"></span>Open</span>
         <span><span class="legend-dot" style="background:#FBE9E7;"></span>Booked</span>
         <span><span class="legend-dot" style="background:#F5DAD5;"></span>Booked, keys still out</span>
       </div>
-      <div class="clock-container">
-        <div class="ampm-toggle">
-          <button type="button" id="clockAmBtn" class="active">AM</button>
-          <button type="button" id="clockPmBtn">PM</button>
-        </div>
-        <div class="clock-face" id="clockFace">
-          <svg id="clockSvg" viewBox="0 0 300 300"></svg>
-          <div class="clock-center-readout" id="clockReadout">Select<br/>a time</div>
-        </div>
+      <div id="bookedRangesList" style="margin-bottom:14px;"></div>
+ 
+      <label>Pick a Start Time</label>
+      <div class="ampm-tabs">
+        <button type="button" class="ampm-tab active" id="amTabBtn">AM</button>
+        <button type="button" class="ampm-tab" id="pmTabBtn">PM</button>
       </div>
+      <div class="time-scroller" id="timeScroller"></div>
+      <div class="hint">Times already booked are shown in red &mdash; you can still select one to join the waitlist for that slot.</div>
     </div>
  
     <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Start Time *</label>
     <input type="time" id="resStart" readonly />
-    <div class="hint">Drag the hand on the clock above to set this.</div>
+    <div class="hint">Pick a time slot above to set this.</div>
  
     <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9Zm0 0C7.03 22 3 17.97 3 13c4.97 0 9 4.03 9 9Z"/><path d="M12 13V2"/></svg>Duration *</label>
     <select id="resDuration">
@@ -470,18 +474,31 @@ let editingProfile = false;
 const ALL_SCREENS = ["authStep", "profileStep", "menuStep", "step2", "myResStep"];
  
 // ---------- DEVICE IDENTITY ----------
-// Each device gets a real Supabase anonymous session (auth.uid()) that every RLS
-// policy in this app relies on. Supabase persists this session in localStorage for
-// us (persistSession: true), so normal repeat visits just restore it via getSession()
-// -- signInAnonymously() is only called once, on a device's very first visit.
-// Requires "Anonymous Sign-Ins" to be enabled in Supabase: Authentication > Providers.
+// Supabase's dedicated "anonymous" sign-in has been unreliable to enable via dashboard,
+// so instead each device silently creates its own real (but fake/random) email+password
+// account on first visit. Functionally identical for our purposes: a real auth.uid() that
+// every RLS policy in this app already relies on. The credentials are cached in
+// localStorage purely as a resilience fallback in case the session/refresh token is ever
+// lost -- normal visits never touch this, since persistSession keeps you signed in.
 async function ensureDeviceIdentity() {
   let { data: { session } } = await sb.auth.getSession();
   if (session) return session;
  
-  const { data, error } = await sb.auth.signInAnonymously();
+  let creds = null;
+  try { creds = JSON.parse(localStorage.getItem("ccr_device") || "null"); } catch (e) { /* ignore */ }
+ 
+  if (creds) {
+    const { data, error } = await sb.auth.signInWithPassword({ email: creds.email, password: creds.password });
+    if (!error && data.session) return data.session;
+  }
+ 
+  const deviceId = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const email = `device-${deviceId}@cendana.local`;
+  const password = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  const { data, error } = await sb.auth.signUp({ email, password });
   if (error || !data.session) return null;
  
+  localStorage.setItem("ccr_device", JSON.stringify({ email, password }));
   return data.session;
 }
  
@@ -502,7 +519,7 @@ async function loadResidentProfile(session) {
     showScreen("menuStep");
     loadHomeCard();
   } else {
-    // PIN verified, but profile (name/phone/email) not completed yet
+    // PIN verified, but profile (name/phone) not completed yet
     editingProfile = false;
     document.getElementById("profileEyebrow").textContent = "Complete Your Profile";
     document.getElementById("profileHeading").textContent = "Tell us about yourself";
@@ -528,19 +545,15 @@ function showScreen(id) {
   document.getElementById("profileBrand").style.display = (id === "profileStep" && !editingProfile) ? "block" : "none";
  
   document.getElementById("topBar").classList.toggle("visible", hasIdentity && id !== "authStep" && id !== "profileStep");
-  updateProfileChip();
-  updateSidebarActive(id);
-  closeSidebar();
-}
  
-// Highlights whichever sidebar item matches the section you're actually on,
-// so the sidebar reflects real state instead of nothing ever looking "selected".
-const SIDEBAR_SCREEN_MAP = { step2: "sidebarNewRes", myResStep: "sidebarMyRes" };
-function updateSidebarActive(id) {
+  const SIDEBAR_SCREEN_MAP = { step2: "sidebarNewRes", myResStep: "sidebarMyRes" };
   const activeBtnId = (id === "profileStep" && editingProfile) ? "sidebarEditInfo" : SIDEBAR_SCREEN_MAP[id];
   ["sidebarNewRes", "sidebarMyRes", "sidebarEditInfo"].forEach(btnId => {
     document.getElementById(btnId).classList.toggle("active", btnId === activeBtnId);
   });
+ 
+  updateProfileChip();
+  closeSidebar();
 }
  
 function updateProfileChip() {
@@ -582,7 +595,7 @@ async function logout() {
   // "logging out" just forgets this device's link locally; the underlying device
   // identity stays valid (cached creds), so re-entering the same PIN on this device signs right back in.
   await sb.auth.signOut();
-  resident = { name: "", phone: "", email: "", apt: "" };
+  resident = { name: "", phone: "", apt: "" };
   document.getElementById("authApt").value = "";
   document.getElementById("authPin").value = "";
   await ensureDeviceIdentity();
@@ -649,13 +662,8 @@ document.getElementById("saveProfileBtn").onclick = async () => {
   const errBox = document.getElementById("profileError");
   errBox.style.display = "none";
  
-  if (!name || !phone || !email) {
-    errBox.textContent = "Please fill in your name, phone number, and email.";
-    errBox.style.display = "block";
-    return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errBox.textContent = "Please enter a valid email address.";
+  if (!name || !phone) {
+    errBox.textContent = "Please fill in your name and phone number.";
     errBox.style.display = "block";
     return;
   }
@@ -667,7 +675,7 @@ document.getElementById("saveProfileBtn").onclick = async () => {
   btn.disabled = true; btn.textContent = "Saving...";
  
   const { data: row, error: dbError } = await sb.from("residents")
-    .update({ full_name: name, phone, email })
+    .update({ full_name: name, phone, email: email || null })
     .eq("auth_user_id", session.user.id)
     .select("apartment_number")
     .single();
@@ -805,57 +813,27 @@ function updateDurationOptions() {
   }
 }
 document.getElementById("resDate").addEventListener("change", () => { updateDurationOptions(); renderAvailability(); });
-document.getElementById("resDuration").addEventListener("change", () => { drawClockSelection(); });
+document.getElementById("resDuration").addEventListener("change", () => { renderTimeScroller(); });
  
-// ---------- AVAILABILITY CLOCK DIAL (booking page) ----------
-// Standard single-ring 12-hour dial (numbers 1-12) with an AM/PM toggle above it.
-// Dragging the hand snaps to the nearest open 15-minute slot; booked slots are shown in red and can't be selected.
-const CX = 150, CY = 150, R = 112;
-let clockOpenMin = null, clockCloseMin = null, clockBookings = [], clockDate = null;
-let selectedStartMin = null;
-let clockMeridiem = "AM"; // which half of the day the dial is currently showing
+// ---------- AVAILABILITY LIST + AM/PM TIME SCROLLER (booking page) ----------
+let dayOpenMin = null, dayCloseMin = null, dayBookingsCache = [], selectedStartMin = null, ampmMode = "AM";
  
 function minToLabel(min) {
   const h24 = Math.floor(min / 60) % 24, m = min % 60;
   const ref = new Date(2000, 0, 1, h24, m);
   return ref.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
-function polarPoint(r, angleDeg) {
-  const a = (angleDeg - 90) * Math.PI / 180;
-  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
-}
-function baseForMeridiem(m) { return m === "AM" ? 0 : 720; }
-function meridiemOf(minute) { return ((minute % 1440) + 1440) % 1440 < 720 ? "AM" : "PM"; }
-function svgNS(tag) { return document.createElementNS("http://www.w3.org/2000/svg", tag); }
  
 function minuteStatus(min) {
-  if (clockOpenMin === null || min < clockOpenMin || min >= clockCloseMin) return "disabled";
+  if (dayOpenMin === null || min < dayOpenMin || min >= dayCloseMin) return "disabled";
   const slotEnd = min + 15;
-  const overlap = clockBookings.find(b => b.startMin < slotEnd && b.endMin > min);
+  const overlap = dayBookingsCache.find(b => b.startMin < slotEnd && b.endMin > min);
   if (overlap) return overlap.key_picked_up ? "booked" : "booked-keys-out";
   return "open";
 }
  
-function describeArc(startLocalMin, endLocalMin) {
-  const a1 = (startLocalMin / 720) * 360;
-  const a2 = (endLocalMin / 720) * 360;
-  const p1 = polarPoint(R, a2), p2 = polarPoint(R, a1);
-  const largeArc = (a2 - a1) <= 180 ? "0" : "1";
-  return `M ${p1.x} ${p1.y} A ${R} ${R} 0 ${largeArc} 0 ${p2.x} ${p2.y}`;
-}
- 
-function setMeridiem(m) {
-  clockMeridiem = m;
-  document.getElementById("clockAmBtn").classList.toggle("active", m === "AM");
-  document.getElementById("clockPmBtn").classList.toggle("active", m === "PM");
-  drawClockFace();
-}
-document.getElementById("clockAmBtn").onclick = () => setMeridiem("AM");
-document.getElementById("clockPmBtn").onclick = () => setMeridiem("PM");
- 
 async function renderAvailability() {
   const section = document.getElementById("availabilitySection");
-  const svg = document.getElementById("clockSvg");
   const date = document.getElementById("resDate").value;
   selectedStartMin = null;
   document.getElementById("resStart").value = "";
@@ -865,20 +843,19 @@ async function renderAvailability() {
   const dow = new Date(`${date}T00:00:00`).getDay();
   const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
   section.style.display = "block";
-  svg.innerHTML = "";
  
   if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
-    clockOpenMin = clockCloseMin = null;
-    document.getElementById("clockReadout").innerHTML = "Closed<br/>this day";
+    dayOpenMin = dayCloseMin = null;
+    document.getElementById("bookedRangesList").innerHTML = '<div class="booked-range-empty">Closed this day.</div>';
+    document.getElementById("timeScroller").innerHTML = "";
     return;
   }
  
-  clockDate = date;
   const [oh, om] = hoursRow.open_time.split(":").map(Number);
   const [ch, cm] = hoursRow.close_time.split(":").map(Number);
-  clockOpenMin = oh * 60 + om;
-  clockCloseMin = ch * 60 + cm;
-  if (clockCloseMin <= clockOpenMin) clockCloseMin += 24 * 60; // safety, shouldn't normally happen
+  dayOpenMin = oh * 60 + om;
+  dayCloseMin = ch * 60 + cm;
+  if (dayCloseMin <= dayOpenMin) dayCloseMin += 24 * 60;
  
   const dayStart = new Date(`${date}T00:00:00`).toISOString();
   const dayEnd = new Date(`${date}T23:59:59`).toISOString();
@@ -891,146 +868,74 @@ async function renderAvailability() {
     .gt("end_time", dayStart);
  
   const dayBase = new Date(`${date}T00:00:00`);
-  clockBookings = (dayBookings || []).map(b => {
+  dayBookingsCache = (dayBookings || []).map(b => {
     const s = new Date(b.start_time), e = new Date(b.end_time);
     return { startMin: Math.round((s - dayBase) / 60000), endMin: Math.round((e - dayBase) / 60000), key_picked_up: b.key_picked_up };
-  });
+  }).sort((a, b) => a.startMin - b.startMin);
  
-  document.getElementById("clockReadout").innerHTML = "Select<br/>a time";
-  // Default to whichever half of the day this amenity actually opens in, so residents
-  // usually see available slots right away without needing to tap the AM/PM toggle.
-  setMeridiem(meridiemOf(clockOpenMin));
+  renderBookedRangesList();
+  // default to whichever half of the day the amenity opens in
+  ampmMode = dayOpenMin < 720 ? "AM" : "PM";
+  syncAmPmTabs();
+  renderTimeScroller();
 }
  
-function drawClockFace() {
-  const svg = document.getElementById("clockSvg");
-  svg.innerHTML = "";
-  if (clockOpenMin === null) return;
+function renderBookedRangesList() {
+  const box = document.getElementById("bookedRangesList");
+  if (dayBookingsCache.length === 0) {
+    box.innerHTML = '<div class="booked-range-empty">Nothing booked yet this day &mdash; fully open.</div>';
+    return;
+  }
+  box.innerHTML = dayBookingsCache.map(b => `
+    <div class="booked-range-row${b.key_picked_up ? "" : " keys-out"}">
+      <span class="range-time">${minToLabel(b.startMin)} \u2013 ${minToLabel(b.endMin)}</span>
+      <span>${b.key_picked_up ? "Booked" : "Booked \u00b7 keys still out"}</span>
+    </div>`).join("");
+}
  
-  const base = baseForMeridiem(clockMeridiem);
+function syncAmPmTabs() {
+  document.getElementById("amTabBtn").classList.toggle("active", ampmMode === "AM");
+  document.getElementById("pmTabBtn").classList.toggle("active", ampmMode === "PM");
+}
+document.getElementById("amTabBtn").onclick = () => { ampmMode = "AM"; syncAmPmTabs(); renderTimeScroller(); };
+document.getElementById("pmTabBtn").onclick = () => { ampmMode = "PM"; syncAmPmTabs(); renderTimeScroller(); };
  
-  // base ring track
-  const track = svgNS("circle");
-  track.setAttribute("cx", CX); track.setAttribute("cy", CY); track.setAttribute("r", R);
-  track.setAttribute("fill", "none"); track.setAttribute("stroke", "var(--line)"); track.setAttribute("stroke-width", "16");
-  svg.appendChild(track);
+function renderTimeScroller() {
+  const scroller = document.getElementById("timeScroller");
+  if (dayOpenMin === null) { scroller.innerHTML = ""; return; }
  
-  // 48 quarter-hour ticks around the single ring, numbered 1-12 like a standard clock
+  const base = ampmMode === "AM" ? 0 : 720;
+  const rows = [];
   for (let i = 0; i < 48; i++) {
-    const localMin = i * 15;
-    const min = base + localMin;
+    const min = base + i * 15;
     const status = minuteStatus(min);
-    const isHour = i % 4 === 0;
-    const angle = i * 7.5;
-    const pt = polarPoint(R, angle);
-    const dot = svgNS("circle");
-    dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
-    dot.setAttribute("r", isHour ? 6 : 3.2);
-    dot.setAttribute("class", "clock-tick" + (status === "open" ? "" : " disabled"));
-    dot.setAttribute("data-min", min);
-    let fill = "#fff", stroke = "var(--line)";
-    if (status === "disabled") { fill = "#EDE9DD"; stroke = "#EDE9DD"; }
-    else if (status === "booked") { fill = "#FBE9E7"; stroke = "#F0B7AE"; }
-    else if (status === "booked-keys-out") { fill = "#F5DAD5"; stroke = "#E7A99C"; }
-    else { fill = "#fff"; stroke = "var(--amber-dark)"; }
-    dot.setAttribute("fill", fill);
-    dot.setAttribute("stroke", stroke);
-    dot.setAttribute("stroke-width", "1.5");
-    if (status === "open") dot.onclick = () => selectStart(min);
-    svg.appendChild(dot);
- 
-    if (isHour) {
-      const labelPt = polarPoint(R + 20, angle);
-      const text = svgNS("text");
-      text.setAttribute("x", labelPt.x); text.setAttribute("y", labelPt.y + 4);
-      text.setAttribute("text-anchor", "middle");
-      text.setAttribute("font-family", "IBM Plex Mono, monospace");
-      text.setAttribute("font-size", "12");
-      text.setAttribute("fill", "var(--ink-soft)");
-      const hourNum = i / 4;
-      text.textContent = hourNum === 0 ? "12" : hourNum;
-      svg.appendChild(text);
-    }
+    if (status === "disabled") continue; // outside open hours -- just hide, nothing useful to show
+    rows.push({ min, status });
   }
  
-  // "now" marker, only relevant when viewing today's date AND the half of the day we're currently showing
-  const now = new Date();
-  if (clockDate === now.toISOString().split("T")[0]) {
-    const nowMin = now.getHours() * 60 + now.getMinutes();
-    if (meridiemOf(nowMin) === clockMeridiem) {
-      const pt = polarPoint(R, ((nowMin - base) / 720) * 360);
-      const marker = svgNS("circle");
-      marker.setAttribute("cx", pt.x); marker.setAttribute("cy", pt.y); marker.setAttribute("r", 4);
-      marker.setAttribute("fill", "var(--clay)");
-      marker.setAttribute("pointer-events", "none");
-      svg.appendChild(marker);
-    }
+  if (rows.length === 0) {
+    scroller.innerHTML = `<div class="booked-range-empty" style="padding:14px;">Closed during ${ampmMode === "AM" ? "the morning" : "the afternoon/evening"} on this day.</div>`;
+    return;
   }
  
-  drawClockSelection();
-  attachClockDrag(svg);
+  scroller.innerHTML = rows.map(r => `
+    <div class="time-slot-row ${r.status === "open" ? "" : "booked"} ${selectedStartMin === r.min ? "selected" : ""}" data-min="${r.min}">
+      <span>${minToLabel(r.min)}</span>
+      ${r.status !== "open" ? `<span class="slot-tag">${r.status === "booked-keys-out" ? "Keys Out" : "Booked"}</span>` : ""}
+    </div>`).join("");
+ 
+  scroller.querySelectorAll(".time-slot-row").forEach(row => {
+    row.onclick = () => selectStart(parseInt(row.dataset.min, 10));
+  });
 }
  
 function selectStart(min) {
-  if (minuteStatus(min) !== "open") return;
   selectedStartMin = min;
   const h = String(Math.floor(min / 60) % 24).padStart(2, "0");
   const m = String(min % 60).padStart(2, "0");
   document.getElementById("resStart").value = `${h}:${m}`;
   updateDurationOptions();
-  drawClockSelection();
-}
- 
-function drawClockSelection() {
-  const svg = document.getElementById("clockSvg");
-  svg.querySelectorAll(".clock-hand, .clock-duration-arc").forEach(el => el.remove());
-  const readout = document.getElementById("clockReadout");
-  if (selectedStartMin === null) { readout.innerHTML = "Select<br/>a time"; return; }
- 
-  const durationVal = parseInt(document.getElementById("resDuration").value, 10) || 60;
-  const endMin = selectedStartMin + durationVal;
-  readout.innerHTML = `${minToLabel(selectedStartMin)}<br/>&ndash;<br/>${minToLabel(endMin)}`;
- 
-  // Only draw the hand/arc on the face when the selected start time is actually on the
-  // half of the day currently showing -- flip the AM/PM toggle to see the hand there.
-  if (meridiemOf(selectedStartMin) !== clockMeridiem) return;
- 
-  const base = baseForMeridiem(clockMeridiem);
-  const localStart = selectedStartMin - base;
-  const localEnd = Math.min(endMin - base, 720); // clip the arc to this half, in case duration crosses noon/midnight
- 
-  const path = svgNS("path");
-  path.setAttribute("d", describeArc(localStart, localEnd));
-  path.setAttribute("class", "clock-duration-arc");
-  svg.appendChild(path);
- 
-  const pt = polarPoint(R, (localStart / 720) * 360);
-  const hand = svgNS("line");
-  hand.setAttribute("x1", CX); hand.setAttribute("y1", CY);
-  hand.setAttribute("x2", pt.x); hand.setAttribute("y2", pt.y);
-  hand.setAttribute("class", "clock-hand");
-  svg.appendChild(hand);
-}
- 
-function attachClockDrag(svg) {
-  let dragging = false;
-  function pointToMinute(evt) {
-    const rect = svg.getBoundingClientRect();
-    const scale = 300 / rect.width;
-    const x = (evt.clientX - rect.left) * scale - CX;
-    const y = (evt.clientY - rect.top) * scale - CY;
-    let angle = Math.atan2(x, -y) * 180 / Math.PI;
-    if (angle < 0) angle += 360;
-    const idx = Math.round(angle / 7.5) % 48;
-    return baseForMeridiem(clockMeridiem) + idx * 15;
-  }
-  function handleEvent(evt) {
-    const min = pointToMinute(evt);
-    if (minuteStatus(min) === "open") selectStart(min);
-  }
-  svg.onpointerdown = (evt) => { dragging = true; handleEvent(evt); };
-  svg.onpointermove = (evt) => { if (dragging) handleEvent(evt); };
-  window.addEventListener("pointerup", () => { dragging = false; });
+  renderTimeScroller();
 }
  
 // ---------- SUBMIT ----------
@@ -1124,7 +1029,7 @@ document.getElementById("submitBtn").onclick = async () => {
   if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
  
   const pickupInstructions = getPickupInstructions(selectedAmenity, startTime, date);
-  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${formatDateTime(startTime.toISOString())}. ${pickupInstructions}`);
+  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${formatDateTime(startTime.toISOString())}. ${pickupInstructions} If keys aren't picked up within 45 minutes of your reservation's start time, this space will be released and offered to the next person on the waitlist.`);
   resetBookingForm();
 };
  
@@ -1254,7 +1159,7 @@ async function loadHomeCard() {
  
   const { data } = await sb
     .from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)")
-    .eq("status", "confirmed").eq("key_returned", false).gt("end_time", nowIso)
+    .eq("status", "confirmed").gt("end_time", nowIso)
     .order("start_time").limit(1);
  
   if (!data || data.length === 0) { box.innerHTML = ""; return; }
@@ -1301,8 +1206,8 @@ async function loadMyReservations() {
     .from("waitlist").select(amenitySelect)
     .eq("status", "waiting").gt("end_time", nowIso).order("start_time");
  
-  // "Completed" now means either the scheduled end_time has passed, OR the resident
-  // already returned the keys early -- whichever happens first ends the reservation.
+  // "Completed" means either the scheduled end_time has passed, OR the resident
+  // already returned their key early -- either way it's no longer "upcoming"
   const { data: pastBookings } = await sb
     .from("bookings").select(amenitySelect)
     .in("status", ["confirmed", "cancelled"])
