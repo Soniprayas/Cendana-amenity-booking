@@ -34,6 +34,28 @@
   .onboarding-brand .onboarding-mark svg{width:26px; height:26px; stroke:#fff;}
   .onboarding-brand h1{font-family:var(--font-display); font-size:19px; font-weight:600; margin:0 0 4px; color:var(--ink);}
   .onboarding-brand .onboarding-address{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+ 
+  .profile-tile-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
+  .profile-tile{border:1.5px solid var(--line); border-radius:10px; padding:16px 10px; text-align:center; cursor:pointer; background:#fff; transition:border-color .15s ease, background .15s ease;}
+  .profile-tile:hover{border-color:var(--amber-dark); background:#FBF6EA;}
+  .profile-tile .tile-avatar{width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, var(--amber), var(--clay)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:600; font-size:16px; margin:0 auto 8px;}
+  .profile-tile .tile-name{font-family:var(--font-display); font-weight:600; font-size:13.5px; color:var(--ink); word-break:break-word;}
+  .profile-tile.add-tile{border-style:dashed; color:var(--ink-soft);}
+  .profile-tile.add-tile .tile-avatar{background:var(--sand); color:var(--amber-dark); border:1.5px dashed var(--amber-dark);}
+ 
+  /* ---- Notification center ---- */
+  #notifBackdrop{display:none; position:fixed; inset:0; background:rgba(20,20,20,.35); z-index:250;}
+  #notifBackdrop.visible{display:block;}
+  #notifPanel{position:fixed; top:0; right:-360px; width:340px; max-width:90vw; height:100%; background:#fff; z-index:251; box-shadow:-4px 0 20px rgba(0,0,0,.15); transition:right .2s ease; display:flex; flex-direction:column;}
+  #notifPanel.visible{right:0;}
+  .notif-panel-header{display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid var(--line);}
+  .notif-panel-header h3{margin:0; font-family:var(--font-display); font-size:16px;}
+  #notifList{overflow-y:auto; flex:1; padding:8px;}
+  .notif-item{padding:12px 10px; border-radius:8px; margin-bottom:4px; font-size:13.5px; line-height:1.5;}
+  .notif-item.unread{background:#FBF6EA;}
+  .notif-item .notif-type{font-family:var(--font-display); font-weight:600; font-size:12px; color:var(--amber-dark); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px;}
+  .notif-item .notif-time{font-size:11px; color:var(--ink-soft); margin-top:4px;}
+  .notif-empty{padding:30px 16px; text-align:center; color:var(--ink-soft); font-size:13px;}
   .eyebrow{font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--amber-dark); margin-bottom:4px;}
   .page-heading{margin-bottom:18px;}
   .page-heading h2{font-family:var(--font-display); font-size:22px; font-weight:600; margin:2px 0 4px; color:var(--ink);}
@@ -66,8 +88,8 @@
   .agree{display:flex; gap:8px; align-items:flex-start; margin-top:16px;}
   .agree input{width:auto; margin-top:3px;}
   .agree label{font-family:var(--font-body); font-weight:400; margin:0; font-size:13px;}
-  #authStep, #profileStep, #step2, #menuStep, #myResStep{display:none}
-  #authStep.active, #profileStep.active, #step2.active, #menuStep.active, #myResStep.active{display:block}
+  #authStep, #profileStep, #profilePickerStep, #step2, #menuStep, #myResStep{display:none}
+  #authStep.active, #profileStep.active, #profilePickerStep.active, #step2.active, #menuStep.active, #myResStep.active{display:block}
   .res-item{border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px; box-shadow:0 1px 2px rgba(35,43,54,.05);}
   .res-item .res-title{font-family:var(--font-display); font-weight:600; font-size:15px;}
   .res-item .res-time{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft); margin:4px 0;}
@@ -205,11 +227,27 @@
     </button>
   </div>
   <div style="display:flex; align-items:center; gap:12px;">
+    <button class="icon-btn" id="notifBellBtn" title="Notifications" style="position:relative;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="notifBadge" style="display:none; position:absolute; top:-2px; right:-2px; background:var(--clay); color:#fff; font-size:10px; font-weight:700; border-radius:10px; min-width:16px; height:16px; padding:0 3px; align-items:center; justify-content:center;"></span>
+    </button>
     <div class="profile-chip" id="profileChip"></div>
     <button class="icon-btn" id="logoutBtn" title="Log out">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
+</div>
+ 
+<!-- Notification panel -->
+<div id="notifBackdrop"></div>
+<div id="notifPanel">
+  <div class="notif-panel-header">
+    <h3>Notifications</h3>
+    <button class="icon-btn" id="notifCloseBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="notifList"></div>
 </div>
  
 <!-- Sidebar drawer -->
@@ -227,6 +265,10 @@
   <button class="sidebar-link" id="sidebarEditInfo">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     Edit My Info
+  </button>
+  <button class="sidebar-link" id="sidebarSwitchProfile" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    Switch Profile
   </button>
   <button class="sidebar-link logout" id="sidebarLogout">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -288,13 +330,6 @@
  
   <!-- PROFILE STEP: first-time users only, after PIN verified (also reused for "Edit My Info", brand hidden then) -->
   <div class="card" id="profileStep">
-    <div class="onboarding-brand" id="profileBrand">
-      <div class="onboarding-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
-      </div>
-      <h1>Cendana Craig Ranch</h1>
-      <div class="onboarding-address">6121 Alma Road &middot; McKinney, TX 75070</div>
-    </div>
     <div class="page-heading">
       <div class="eyebrow" id="profileEyebrow">Complete Your Profile</div>
       <h2 id="profileHeading">Tell us about yourself</h2>
@@ -306,12 +341,25 @@
     <label>Phone Number *</label>
     <input type="tel" id="resPhone" placeholder="(555) 555-5555" autocomplete="tel" />
  
-    <label>Email (optional)</label>
+    <label>Email *</label>
     <input type="email" id="resEmail" placeholder="you@email.com" autocomplete="email" />
-    <div class="hint">Only used if the leasing office wants to reach you about a booking.</div>
+    <div class="hint">Used for booking confirmations and updates from the leasing office.</div>
  
     <button id="saveProfileBtn">Save &amp; Continue</button>
     <div class="msg err" id="profileError" style="display:none"></div>
+    <div id="cancelAddProfileWrap" style="display:none; text-align:center; margin-top:12px;">
+      <a href="#" id="cancelAddProfileLink" style="color:var(--ink-soft); font-size:13px; text-decoration:none;">&larr; Back to profiles</a>
+    </div>
+  </div>
+ 
+  <!-- WHO'S BOOKING: pick which household profile is using the app right now -->
+  <div class="card" id="profilePickerStep">
+    <div class="page-heading">
+      <div class="eyebrow">Get Started</div>
+      <h2>Who's booking?</h2>
+      <p>Pick your name, or add a new household member.</p>
+    </div>
+    <div id="profileTileGrid" class="profile-tile-grid"></div>
   </div>
  
   <!-- STEP 1B: menu / home -->
@@ -362,6 +410,7 @@
  
     <div id="availabilitySection" style="display:none;">
       <label style="margin-top:14px;">Availability for this day</label>
+      <div class="hint" style="margin-top:-6px; margin-bottom:10px;">You can book a time that overlaps an existing reservation, subject to availability and approval from the leasing office.</div>
       <div class="slot-legend">
         <span><span class="legend-dot" style="background:#fff; border:1px solid var(--line);"></span>Open</span>
         <span><span class="legend-dot" style="background:#FBE9E7;"></span>Booked</span>
@@ -467,11 +516,13 @@ let amenities = [];
 let amenityHours = [];
 let officeHours = [];
 let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
-let resident = { name: "", phone: "", email: "", apt: "" };
+let resident = { name: "", phone: "", email: "", apt: "", profileId: null };
+let apartmentProfiles = [];
 let selectedAmenity = null;
 let editingProfile = false;
+let addingNewProfile = false;
  
-const ALL_SCREENS = ["authStep", "profileStep", "menuStep", "step2", "myResStep"];
+const ALL_SCREENS = ["authStep", "profileStep", "profilePickerStep", "menuStep", "step2", "myResStep"];
  
 // ---------- DEVICE IDENTITY ----------
 // Supabase's dedicated "anonymous" sign-in has been unreliable to enable via dashboard,
@@ -502,33 +553,98 @@ async function ensureDeviceIdentity() {
   return data.session;
 }
  
-// ---------- ESTABLISH A DEVICE IDENTITY, THEN RESTORE PROFILE IF ALREADY VERIFIED ----------
+// ---------- ESTABLISH A DEVICE IDENTITY, THEN RESTORE APARTMENT LINK IF ALREADY VERIFIED ----------
 (async function init() {
   const session = await ensureDeviceIdentity();
   if (!session) { showScreen("authStep"); return; }
   await loadResidentProfile(session);
 })();
  
-// checks whether this device has already verified an apartment PIN
+// checks whether this device has already verified an apartment PIN; if so, moves on
+// to the "who's booking" profile picker for that apartment (skipping it entirely
+// if there's exactly one profile on file, or going straight to add-profile if there are none)
 async function loadResidentProfile(session) {
   const { data, error } = await sb.from("residents").select("*").eq("auth_user_id", session.user.id).maybeSingle();
   if (error || !data || !data.active) { showScreen("authStep"); return; }
+  await loadApartmentProfilesAndRoute(data.apartment_number);
+}
  
-  if (data.full_name && data.full_name.trim()) {
-    resident = { name: data.full_name, phone: data.phone || "", email: data.email || "", apt: data.apartment_number };
-    showScreen("menuStep");
-    loadHomeCard();
-  } else {
-    // PIN verified, but profile (name/phone) not completed yet
+async function loadApartmentProfilesAndRoute(apt) {
+  const { data: profiles } = await sb.from("profiles").select("*").eq("apartment_number", apt).order("created_at");
+  apartmentProfiles = profiles || [];
+ 
+  if (apartmentProfiles.length === 0) {
+    addingNewProfile = true;
     editingProfile = false;
     document.getElementById("profileEyebrow").textContent = "Complete Your Profile";
     document.getElementById("profileHeading").textContent = "Tell us about yourself";
     document.getElementById("resName").value = "";
     document.getElementById("resPhone").value = "";
     document.getElementById("resEmail").value = "";
+    document.getElementById("cancelAddProfileWrap").style.display = "none";
+    resident.apt = apt;
     showScreen("profileStep");
+  } else if (apartmentProfiles.length === 1) {
+    selectProfile(apartmentProfiles[0]);
+  } else {
+    resident.apt = apt;
+    renderProfileTiles(apt);
+    showScreen("profilePickerStep");
   }
 }
+ 
+function renderProfileTiles(apt) {
+  const grid = document.getElementById("profileTileGrid");
+  grid.innerHTML = apartmentProfiles.map(p => `
+    <div class="profile-tile" data-id="${p.id}">
+      <div class="tile-avatar">${(p.full_name || "?").trim().charAt(0).toUpperCase()}</div>
+      <div class="tile-name">${p.full_name}</div>
+    </div>`).join("") + `
+    <div class="profile-tile add-tile" id="addProfileTile">
+      <div class="tile-avatar">+</div>
+      <div class="tile-name">Add someone</div>
+    </div>`;
+ 
+  grid.querySelectorAll(".profile-tile[data-id]").forEach(tile => {
+    tile.onclick = () => {
+      const p = apartmentProfiles.find(x => x.id === tile.dataset.id);
+      if (p) selectProfile(p);
+    };
+  });
+  document.getElementById("addProfileTile").onclick = () => {
+    addingNewProfile = true;
+    editingProfile = false;
+    document.getElementById("profileEyebrow").textContent = "Add Someone";
+    document.getElementById("profileHeading").textContent = "New household profile";
+    document.getElementById("resName").value = "";
+    document.getElementById("resPhone").value = "";
+    document.getElementById("resEmail").value = "";
+    document.getElementById("cancelAddProfileWrap").style.display = apartmentProfiles.length > 0 ? "block" : "none";
+    resident.apt = apt;
+    showScreen("profileStep");
+  };
+}
+ 
+function selectProfile(p) {
+  resident = { name: p.full_name, phone: p.phone || "", email: p.email || "", apt: p.apartment_number, profileId: p.id };
+  localStorage.setItem("ccr_last_profile_" + p.apartment_number, p.id);
+  showScreen("menuStep");
+  loadHomeCard();
+  loadNotifications();
+}
+ 
+document.getElementById("cancelAddProfileLink").onclick = (e) => {
+  e.preventDefault();
+  renderProfileTiles(resident.apt);
+  showScreen("profilePickerStep");
+};
+ 
+document.getElementById("sidebarSwitchProfile").onclick = () => {
+  // Always reopen the picker itself, even if there's only one profile on file —
+  // this is the one path that shouldn't auto-skip straight back into that profile.
+  renderProfileTiles(resident.apt);
+  showScreen("profilePickerStep");
+};
  
 // ---------- NAVIGATION ----------
 function showScreen(id) {
@@ -540,17 +656,27 @@ function showScreen(id) {
   ALL_SCREENS.forEach(s => document.getElementById(s).classList.remove("active"));
   document.getElementById(id).classList.add("active");
  
-  const isOnboarding = (id === "authStep") || (id === "profileStep" && !editingProfile);
+  // Only the PIN entry screen (page 1) gets the hero/onboarding treatment.
+  // Everything past it — profile picker, first-time profile setup, menu, etc. —
+  // is a normal in-app page with the persistent header, top bar, and sidebar.
+  const isOnboarding = (id === "authStep");
   document.body.classList.toggle("onboarding-bg", isOnboarding);
-  document.getElementById("profileBrand").style.display = (id === "profileStep" && !editingProfile) ? "block" : "none";
  
-  document.getElementById("topBar").classList.toggle("visible", hasIdentity && id !== "authStep" && id !== "profileStep");
+  // Past the PIN screen means resident.apt has been set, even before a name is chosen
+  // (e.g. mid-way through the profile picker or first-time profile setup).
+  const pastAuth = !!resident.apt;
+  document.getElementById("topBar").classList.toggle("visible", pastAuth && !isOnboarding);
  
   const SIDEBAR_SCREEN_MAP = { step2: "sidebarNewRes", myResStep: "sidebarMyRes" };
   const activeBtnId = (id === "profileStep" && editingProfile) ? "sidebarEditInfo" : SIDEBAR_SCREEN_MAP[id];
   ["sidebarNewRes", "sidebarMyRes", "sidebarEditInfo"].forEach(btnId => {
     document.getElementById(btnId).classList.toggle("active", btnId === activeBtnId);
   });
+ 
+  // Switch Profile only makes sense once a resident has actually landed on a profile
+  // (menu/new-res/my-res/editing) — not while still mid-picker or first-time setup.
+  const showSwitchProfile = (pastAuth && hasIdentity && ["menuStep", "step2", "myResStep"].includes(id)) || (id === "profileStep" && editingProfile);
+  document.getElementById("sidebarSwitchProfile").style.display = showSwitchProfile ? "flex" : "none";
  
   updateProfileChip();
   closeSidebar();
@@ -566,6 +692,59 @@ function updateProfileChip() {
     chip.classList.remove("visible");
   }
 }
+ 
+// ---------- NOTIFICATION CENTER ----------
+const NOTIF_TYPE_LABELS = {
+  waitlist_promoted: "You're in!",
+  booking_rejected: "Reservation Rejected",
+  booking_cancelled: "Reservation Cancelled",
+  keys_ready: "Keys Ready",
+  approval: "Request Approved",
+  general: "Notice"
+};
+ 
+async function loadNotifications() {
+  if (!resident.apt) return;
+  const { data } = await sb.from("notifications").select("*").eq("apartment_number", resident.apt).order("created_at", { ascending: false }).limit(30);
+  renderNotifications(data || []);
+}
+ 
+function renderNotifications(list) {
+  const badge = document.getElementById("notifBadge");
+  const unreadCount = list.filter(n => !n.read).length;
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+    badge.style.display = "flex";
+  } else {
+    badge.style.display = "none";
+  }
+ 
+  const box = document.getElementById("notifList");
+  if (list.length === 0) {
+    box.innerHTML = '<div class="notif-empty">Nothing yet. Waitlist updates, cancellations, and key-ready alerts will show up here.</div>';
+    return;
+  }
+  box.innerHTML = list.map(n => `
+    <div class="notif-item ${n.read ? "" : "unread"}">
+      <div class="notif-type">${NOTIF_TYPE_LABELS[n.type] || "Notice"}</div>
+      <div>${n.message}</div>
+      <div class="notif-time">${new Date(n.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</div>
+    </div>`).join("");
+}
+ 
+async function openNotifPanel() {
+  document.getElementById("notifPanel").classList.add("visible");
+  document.getElementById("notifBackdrop").classList.add("visible");
+  await sb.from("notifications").update({ read: true }).eq("apartment_number", resident.apt).eq("read", false);
+  await loadNotifications();
+}
+function closeNotifPanel() {
+  document.getElementById("notifPanel").classList.remove("visible");
+  document.getElementById("notifBackdrop").classList.remove("visible");
+}
+document.getElementById("notifBellBtn").onclick = openNotifPanel;
+document.getElementById("notifCloseBtn").onclick = closeNotifPanel;
+document.getElementById("notifBackdrop").onclick = closeNotifPanel;
  
 function openSidebar() {
   document.getElementById("sidebar").classList.add("visible");
@@ -584,18 +763,21 @@ function goToNewReservation() { showScreen("step2"); }
 function goToMyReservations() { showScreen("myResStep"); loadMyReservations(); }
 function goToEditInfo() {
   editingProfile = true;
+  addingNewProfile = false;
   document.getElementById("profileEyebrow").textContent = "Edit My Info";
   document.getElementById("profileHeading").textContent = "Update your profile";
   document.getElementById("resName").value = resident.name;
   document.getElementById("resPhone").value = resident.phone || "";
   document.getElementById("resEmail").value = resident.email || "";
+  document.getElementById("cancelAddProfileWrap").style.display = "none";
   showScreen("profileStep");
 }
 async function logout() {
   // "logging out" just forgets this device's link locally; the underlying device
   // identity stays valid (cached creds), so re-entering the same PIN on this device signs right back in.
   await sb.auth.signOut();
-  resident = { name: "", phone: "", apt: "" };
+  resident = { name: "", phone: "", email: "", apt: "", profileId: null };
+  apartmentProfiles = [];
   document.getElementById("authApt").value = "";
   document.getElementById("authPin").value = "";
   await ensureDeviceIdentity();
@@ -662,23 +844,32 @@ document.getElementById("saveProfileBtn").onclick = async () => {
   const errBox = document.getElementById("profileError");
   errBox.style.display = "none";
  
-  if (!name || !phone) {
-    errBox.textContent = "Please fill in your name and phone number.";
+  if (!name || !phone || !email) {
+    errBox.textContent = "Please fill in your name, phone number, and email.";
+    errBox.style.display = "block";
+    return;
+  }
+  if (!email.includes("@")) {
+    errBox.textContent = "Please enter a valid email address.";
     errBox.style.display = "block";
     return;
   }
  
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { showScreen("authStep"); return; }
- 
   const btn = document.getElementById("saveProfileBtn");
   btn.disabled = true; btn.textContent = "Saving...";
  
-  const { data: row, error: dbError } = await sb.from("residents")
-    .update({ full_name: name, phone, email: email || null })
-    .eq("auth_user_id", session.user.id)
-    .select("apartment_number")
-    .single();
+  let dbError;
+  if (editingProfile && resident.profileId) {
+    ({ error: dbError } = await sb.from("profiles")
+      .update({ full_name: name, phone, email })
+      .eq("id", resident.profileId));
+  } else {
+    let inserted;
+    ({ data: inserted, error: dbError } = await sb.from("profiles")
+      .insert({ apartment_number: resident.apt, full_name: name, phone, email })
+      .select().single());
+    if (!dbError) resident.profileId = inserted.id;
+  }
  
   btn.disabled = false; btn.textContent = "Save & Continue";
  
@@ -688,10 +879,13 @@ document.getElementById("saveProfileBtn").onclick = async () => {
     return;
   }
  
-  resident = { name, phone, email, apt: row.apartment_number };
+  resident = { ...resident, name, phone, email };
   editingProfile = false;
+  addingNewProfile = false;
+  localStorage.setItem("ccr_last_profile_" + resident.apt, resident.profileId);
   showScreen("menuStep");
   loadHomeCard();
+  loadNotifications();
 };
  
 // ---------- LOAD AMENITIES + SETTINGS ----------
@@ -996,6 +1190,7 @@ document.getElementById("submitBtn").onclick = async () => {
       amenity_id: selectedAmenity.id,
       resident_name: resident.name,
       apartment_number: resident.apt,
+      profile_id: resident.profileId,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       guests, comments
@@ -1021,6 +1216,7 @@ document.getElementById("submitBtn").onclick = async () => {
     amenity_id: selectedAmenity.id,
     resident_name: resident.name,
     apartment_number: resident.apt,
+    profile_id: resident.profileId,
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     guests, comments
@@ -1072,7 +1268,7 @@ async function submitBulkBooking(date, startStr, duration, guests, comments) {
     const status = dayOffset === 0 ? "confirmed" : "pending";
     const { error } = await sb.from("bookings").insert({
       amenity_id: selectedAmenity.id,
-      resident_name: resident.name, apartment_number: resident.apt,
+      resident_name: resident.name, apartment_number: resident.apt, profile_id: resident.profileId,
       start_time: startTime.toISOString(), end_time: endTime.toISOString(),
       guests, comments, status, bulk_group_id: groupId
     });
@@ -1472,8 +1668,11 @@ async function performCancel(id, type, btn) {
 // resident than whoever triggered this by cancelling -- RLS would otherwise block it.
 async function promoteNextWaitlisted(cancelledBooking) {
   await sb.rpc("promote_next_waitlisted", { p_cancelled_booking_id: cancelledBooking.id });
-  // Note: the promoted resident finding out is push/notification-based (Phase 6) -- not shown live in this browser tab.
+  // Note: the promoted resident finding out is via the notification center (bell icon).
 }
+ 
+// keep the unread badge reasonably fresh while the app is open
+setInterval(() => { if (resident.apt) loadNotifications(); }, 45000);
 </script>
 </body>
 </html>
