@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Cendana Craig Ranch - Amenity Reservations</title>
-<link rel="manifest" href="manifest.json" />
+<title>Cendana Craig Ranch - Staff Admin Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
@@ -16,1663 +15,974 @@
     --font-display:'Sora', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
   }
   *{box-sizing:border-box}
-  body{font-family:var(--font-body); background:var(--sand); color:var(--ink); margin:0; padding:0;}
-  header{background:var(--ink); color:#fff; padding:22px 20px; text-align:center;}
-  header h1{margin:0; font-family:var(--font-display); font-size:19px; font-weight:600; letter-spacing:.2px;}
-  header p{margin:4px 0 0; font-size:12px; color:#B8C0CC;}
-  .wrap{max-width:520px; margin:0 auto; padding:20px;}
-  .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(35,43,54,.06), 0 8px 24px rgba(35,43,54,.04);}
+  body{font-family:var(--font-body); background:var(--sand); color:var(--ink); margin:0;}
+  a{color:inherit;}
+  #loginScreen, #accessGateScreen{min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, #232B36 0%, #2E3A47 45%, #3B4A56 100%); position:relative; overflow:hidden; padding:20px;}
+  #loginScreen::before, #accessGateScreen::before{content:""; position:absolute; inset:0; background-image:radial-gradient(circle at 15% 20%, rgba(217,164,65,.14), transparent 45%), radial-gradient(circle at 85% 80%, rgba(110,147,172,.16), transparent 50%); pointer-events:none;}
+  #loginCard, #accessGateCard{position:relative; z-index:1; max-width:400px; width:100%; background:#fff; border-radius:16px; padding:36px 32px; box-shadow:0 20px 50px rgba(15,20,26,.35);}
+  #loginCard .login-brand, #accessGateCard .login-brand{text-align:center; margin-bottom:26px;}
+  #loginCard .login-brand .login-mark, #accessGateCard .login-brand .login-mark{width:52px; height:52px; margin:0 auto 14px; border-radius:14px; background:linear-gradient(135deg, var(--amber), var(--clay)); display:flex; align-items:center; justify-content:center;}
+  #loginCard .login-brand .login-mark svg, #accessGateCard .login-brand .login-mark svg{width:26px; height:26px; stroke:#fff;}
+  #loginCard .login-brand h1, #accessGateCard .login-brand h1{font-family:var(--font-display); font-size:19px; font-weight:600; margin:0 0 4px;}
+  #loginCard .login-brand .login-address, #accessGateCard .login-brand .login-address{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+  #loginCard .login-eyebrow, #accessGateCard .login-eyebrow{font-family:var(--font-display); font-weight:600; font-size:11px; letter-spacing:.6px; text-transform:uppercase; color:var(--amber-dark); text-align:center; margin-bottom:18px;}
+  #loginCard label, #accessGateCard label{display:block; font-family:var(--font-display); font-weight:600; font-size:13px; margin-bottom:6px;}
+  #loginCard input, #accessGateCard input{width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; font-size:15px; margin-bottom:14px; font-family:var(--font-body);}
+  #loginCard button, #accessGateCard button{width:100%; padding:11px; font-size:14px;}
+  #loginCard .login-footer, #accessGateCard .login-footer{text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:20px; line-height:1.5;}
  
-  /* ---- Onboarding hero (auth + profile steps) ---- */
-  body.onboarding-bg{background:linear-gradient(160deg, #232B36 0%, #2E3A47 45%, #3B4A56 100%); min-height:100vh; position:relative; overflow-x:hidden;}
-  body.onboarding-bg::before{content:""; position:fixed; inset:0; background-image:radial-gradient(circle at 15% 20%, rgba(217,164,65,.14), transparent 45%), radial-gradient(circle at 85% 80%, rgba(110,147,172,.16), transparent 50%); pointer-events:none; z-index:0;}
-  body.onboarding-bg header, body.onboarding-bg #topBar{display:none;}
-  body.onboarding-bg .wrap{position:relative; z-index:1; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; max-width:none;}
-  body.onboarding-bg .wrap .card{max-width:400px; width:100%; padding:36px 32px; box-shadow:0 20px 50px rgba(15,20,26,.35);}
-  .onboarding-brand{text-align:center; margin-bottom:22px;}
-  .onboarding-brand .onboarding-mark{width:52px; height:52px; margin:0 auto 14px; border-radius:14px; background:linear-gradient(135deg, var(--amber), var(--clay)); display:flex; align-items:center; justify-content:center;}
-  .onboarding-brand .onboarding-mark svg{width:26px; height:26px; stroke:#fff;}
-  .onboarding-brand h1{font-family:var(--font-display); font-size:19px; font-weight:600; margin:0 0 4px; color:var(--ink);}
-  .onboarding-brand .onboarding-address{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+  /* ---- Sidebar ---- */
+  #sidebar{position:fixed; top:0; left:0; width:220px; height:100%; background:var(--ink); z-index:30; padding:20px 14px;}
+  #sidebar .brand{font-family:var(--font-display); font-weight:600; color:#fff; font-size:15px; margin-bottom:24px; padding:0 8px;}
+  #sidebar .brand small{display:block; font-family:var(--font-body); font-weight:400; font-size:11px; color:#B8C0CC; margin-top:2px;}
+  .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:4px; background:transparent; color:#D8DEE6; text-align:left; justify-content:flex-start; font-family:var(--font-body); font-weight:500; font-size:14px; padding:11px 12px; border:none; border-radius:8px; cursor:pointer;}
+  .sidebar-link:hover{background:rgba(255,255,255,.08);}
+  .sidebar-link.active{background:rgba(217,164,65,.18); color:#fff;}
+  .sidebar-link svg{width:18px; height:18px; stroke:var(--amber); flex-shrink:0;}
  
-  .profile-tile-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
-  .profile-tile{border:1.5px solid var(--line); border-radius:10px; padding:16px 10px; text-align:center; cursor:pointer; background:#fff; transition:border-color .15s ease, background .15s ease;}
-  .profile-tile:hover{border-color:var(--amber-dark); background:#FBF6EA;}
-  .profile-tile .tile-avatar{width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, var(--amber), var(--clay)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:600; font-size:16px; margin:0 auto 8px;}
-  .profile-tile .tile-name{font-family:var(--font-display); font-weight:600; font-size:13.5px; color:var(--ink); word-break:break-word;}
-  .profile-tile.add-tile{border-style:dashed; color:var(--ink-soft);}
-  .profile-tile.add-tile .tile-avatar{background:var(--sand); color:var(--amber-dark); border:1.5px dashed var(--amber-dark);}
- 
-  /* ---- Notification center ---- */
-  #notifBackdrop{display:none; position:fixed; inset:0; background:rgba(20,20,20,.35); z-index:250;}
-  #notifBackdrop.visible{display:block;}
-  #notifPanel{position:fixed; top:0; right:-360px; width:340px; max-width:90vw; height:100%; background:#fff; z-index:251; box-shadow:-4px 0 20px rgba(0,0,0,.15); transition:right .2s ease; display:flex; flex-direction:column;}
-  #notifPanel.visible{right:0;}
-  .notif-panel-header{display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid var(--line);}
-  .notif-panel-header h3{margin:0; font-family:var(--font-display); font-size:16px;}
-  #notifList{overflow-y:auto; flex:1; padding:8px;}
-  .notif-item{padding:12px 10px; border-radius:8px; margin-bottom:4px; font-size:13.5px; line-height:1.5;}
-  .notif-item.unread{background:#FBF6EA;}
-  .notif-item .notif-type{font-family:var(--font-display); font-weight:600; font-size:12px; color:var(--amber-dark); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px;}
-  .notif-item .notif-time{font-size:11px; color:var(--ink-soft); margin-top:4px;}
-  .notif-empty{padding:30px 16px; text-align:center; color:var(--ink-soft); font-size:13px;}
-  .eyebrow{font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--amber-dark); margin-bottom:4px;}
-  .page-heading{margin-bottom:18px;}
-  .page-heading h2{font-family:var(--font-display); font-size:22px; font-weight:600; margin:2px 0 4px; color:var(--ink);}
-  .page-heading p{font-size:13px; color:var(--ink-soft); margin:0;}
-  .label-icon{display:inline-flex; vertical-align:middle; margin-right:6px; width:15px; height:15px; stroke:var(--amber-dark);}
-  .btn-outline{background:transparent; border:1.5px solid var(--amber-dark); color:var(--amber-dark);}
-  .btn-outline:hover{background:#FBF0DD;}
-  .profile-chip{width:32px; height:32px; border-radius:50%; background:var(--amber-dark); color:#fff; font-family:var(--font-display); font-weight:600; font-size:12px; display:none; align-items:center; justify-content:center; flex-shrink:0;}
-  .profile-chip.visible{display:flex;}
-  @keyframes fadeSlideIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
-  #authStep.active, #profileStep.active, #step2.active, #menuStep.active, #myResStep.active{animation:fadeSlideIn .25s ease;}
-  #confirmModalBackdrop.visible #confirmModal, #confirmDialogBackdrop.visible #confirmDialog{animation:fadeSlideIn .2s ease;}
-  label{display:block; font-family:var(--font-display); font-weight:600; font-size:13px; margin-bottom:6px; margin-top:14px; color:var(--ink);}
-  label:first-child{margin-top:0;}
-  input, select, textarea{width:100%; padding:10px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:var(--font-body); background:#fff;}
-  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--amber);}
-  textarea{min-height:70px}
-  .amenity-option{border:1px solid var(--line); border-left-width:4px; border-radius:8px; padding:10px 12px; margin-top:8px; display:flex; align-items:center; gap:10px; cursor:pointer;}
-  .amenity-option input{width:auto}
-  .amenity-note{font-size:12px; color:var(--ink-soft); margin-top:2px}
-  button{background:var(--amber-dark); color:#fff; border:none; padding:13px; border-radius:8px; font-family:var(--font-display); font-weight:600; font-size:15px; width:100%; margin-top:18px; cursor:pointer;}
-  button:hover{background:#a3690f;}
-  button:disabled{background:#ccc; cursor:not-allowed}
-  .msg{padding:12px; border-radius:8px; margin-top:14px; font-size:14px;}
-  .msg.ok{background:#EAF3E8; color:#2C5C36; border:1px solid #C3DEC0;}
-  .msg.wait{background:#FBF0DD; color:#8A5A00; border:1px solid #F0D59A;}
-  .msg.err{background:#FBE9E7; color:#8A2F1F; border:1px solid #F0B7AE;}
-  .hint{font-size:12px; color:var(--ink-soft); margin-top:4px;}
-  fieldset{border:none; padding:0; margin:0;}
-  .agree{display:flex; gap:8px; align-items:flex-start; margin-top:16px;}
-  .agree input{width:auto; margin-top:3px;}
-  .agree label{font-family:var(--font-body); font-weight:400; margin:0; font-size:13px;}
-  #authStep, #profileStep, #profilePickerStep, #step2, #menuStep, #myResStep{display:none}
-  #authStep.active, #profileStep.active, #profilePickerStep.active, #step2.active, #menuStep.active, #myResStep.active{display:block}
-  .res-item{border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px; box-shadow:0 1px 2px rgba(35,43,54,.05);}
-  .res-item .res-title{font-family:var(--font-display); font-weight:600; font-size:15px;}
-  .res-item .res-time{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft); margin:4px 0;}
-  .res-item .res-status{display:inline-block; font-family:var(--font-body); font-weight:600; font-size:11px; padding:3px 10px; border-radius:20px; margin-top:4px;}
-  .res-status.confirmed{background:#EAF3E8; color:#2C5C36;}
-  .res-status.waiting{background:#FBF0DD; color:#8A5A00;}
-  .res-item button{background:#B04A3E; margin-top:10px; padding:9px; font-size:13px;}
-  .res-item button:hover{background:#96392f;}
-  .timeline-container{border:1px solid var(--line); border-radius:10px; background:#fff; margin:10px 0; overflow:hidden;}
-  .timeline-scroll{position:relative; padding:10px 12px 10px 58px;}
-  .timeline-track{position:relative;}
-  .timeline-hour-row{height:52px; border-top:1px solid var(--line);}
-  .timeline-hour-row:first-child{border-top:none;}
-  .timeline-hour-label{position:absolute; left:0; width:50px; text-align:right; padding-right:8px; margin-top:-7px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);}
-  .timeline-block{position:absolute; left:0; right:0; border-radius:6px; font-family:var(--font-mono); font-size:11px; padding:4px 8px; box-sizing:border-box; overflow:hidden; cursor:default;}
-  .timeline-block.booked{background:#FBE9E7; color:#8A2F1F; border:1px solid #F0B7AE;}
-  .timeline-block.booked.keys-out{background:#F5DAD5;}
-  .timeline-block.open-fill{cursor:pointer;}
-  .timeline-selected-line{position:absolute; left:0; right:0; height:2px; background:var(--amber-dark); z-index:6;}
-  .timeline-selected-line::before{content:''; position:absolute; left:-5px; top:-4px; width:10px; height:10px; border-radius:50%; background:var(--amber-dark); border:2px solid #fff;}
-  .timeline-selected-label{position:absolute; right:6px; background:var(--amber-dark); color:#fff; font-family:var(--font-mono); font-size:10px; font-weight:600; padding:2px 7px; border-radius:5px; z-index:7;}
-  .timeline-now-line{position:absolute; left:0; right:0; height:2px; background:var(--clay); z-index:4;}
-  .timeline-now-line::before{content:''; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--clay);}
-  .slot-legend{display:flex; gap:14px; font-size:12px; margin-bottom:6px; flex-wrap:wrap; color:var(--ink-soft);}
-  .slot-legend span{display:flex; align-items:center; gap:4px;}
-  .waiting-spinner{width:36px; height:36px; margin:0 auto 20px; border:3px solid var(--line); border-top-color:var(--amber-dark); border-radius:50%; animation:spin 0.9s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
- 
-  /* ---- Availability list + AM/PM time scroller ---- */
-  .booked-range-row{display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius:8px; background:#FBE9E7; border:1px solid #F0B7AE; font-size:13px; margin-bottom:6px;}
-  .booked-range-row.keys-out{background:#F5DAD5; border-color:#E7A99C;}
-  .booked-range-row .range-time{font-family:var(--font-mono); font-weight:600;}
-  .booked-range-empty{font-size:13px; color:var(--ink-soft); padding:6px 0;}
-  .ampm-tabs{display:flex; gap:8px; margin-bottom:10px;}
-  .ampm-tab{flex:1; padding:9px; border:1.5px solid var(--line); background:#fff; border-radius:8px; font-family:var(--font-display); font-weight:600; font-size:13px; color:var(--ink-soft); cursor:pointer;}
-  .ampm-tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
-  .time-scroller{max-height:260px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; background:#fff;}
-  .time-slot-row{display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-bottom:1px solid var(--line); cursor:pointer; font-family:var(--font-mono); font-size:14px;}
-  .time-slot-row:last-child{border-bottom:none;}
-  .time-slot-row:hover{background:var(--sand);}
-  .time-slot-row.selected{background:var(--amber); color:#fff; font-weight:600;}
-  .time-slot-row.booked{color:#B5473A;}
-  .time-slot-row.booked.selected{background:var(--clay); color:#fff;}
-  .time-slot-row.disabled{color:#C9C4B4; cursor:not-allowed; background:#FAF8F2;}
-  .time-slot-row .slot-tag{font-family:var(--font-body); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px;}
-  .key-countdown{font-family:var(--font-mono); font-size:13px; font-weight:600; padding:8px 10px; border-radius:8px; margin-top:8px;}
-  .key-countdown.ok{background:#EAF3E8; color:#2C5C36;}
-  .key-countdown.warn{background:#FBF0DD; color:#8A5A00;}
-  .key-countdown.urgent{background:#FBE9E7; color:#8A2F1F; animation:pulseUrgent 2s infinite;}
-  @keyframes pulseUrgent{0%,100%{opacity:1;} 50%{opacity:.6;}}
-  .legend-dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
-  .footer-note{font-size:11px; color:#9A9483; text-align:center; margin-top:24px; line-height:1.5; padding:0 10px;}
-  .email-note{font-size:12px; color:var(--ink-soft); margin-top:4px; font-style:italic;}
- 
-  /* ---- Top bar (Home / Menu / Logout) ---- */
-  #topBar{display:none; align-items:center; justify-content:space-between; max-width:520px; margin:0 auto; padding:10px 20px; background:#fff; border-bottom:1px solid var(--line);}
-  #topBar.visible{display:flex;}
-  .topbar-left{display:flex; align-items:center; gap:14px;}
-  .icon-btn{background:none; border:none; padding:6px; width:auto; margin:0; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px;}
+  /* ---- Top bar ---- */
+  #topBar{margin-left:220px; display:flex; align-items:center; justify-content:space-between; padding:14px 28px; background:#fff; border-bottom:1px solid var(--line);}
+  .icon-btn{background:none; border:none; padding:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:8px;}
   .icon-btn:hover{background:var(--sand);}
   .icon-btn svg{width:22px; height:22px; stroke:var(--ink);}
+  #topBar h2{font-family:var(--font-display); font-size:16px; margin:0;}
  
-  /* ---- Sidebar drawer ---- */
-  #sidebarBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:40;}
+  #portalBody{margin-left:220px; padding:24px 28px;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(35,43,54,.06);}
+  label{display:block; font-family:var(--font-display); font-weight:600; font-size:13px; margin-bottom:6px;}
+  button{background:var(--amber-dark); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-family:var(--font-display); font-weight:600; font-size:13px; cursor:pointer;}
+  button:hover{background:#a3690f;}
+  button.danger{background:#B04A3E;} button.danger:hover{background:#96392f;}
+  button.warn{background:#8A6A2F;}
+  button.neutral{background:#6b6b6b;}
+  button.outline{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
+  button:disabled{background:#ccc; cursor:not-allowed;}
+  .tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .tabs button{background:#EEE8DA; color:var(--ink);}
+  .tabs button.active{background:var(--amber-dark); color:#fff;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th, td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{background:var(--sand); font-family:var(--font-display); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft);}
+  td .mono{font-family:var(--font-mono); font-size:12px;}
+  .badge{display:inline-block; font-family:var(--font-body); font-weight:600; font-size:11px; padding:3px 10px; border-radius:20px; margin:2px 2px 0 0;}
+  .badge.yes{background:#EAF3E8; color:#2C5C36;}
+  .badge.no{background:#FBE9E7; color:#8A2F1F;}
+  .badge.wait{background:#FBF0DD; color:#8A5A00;}
+  .btn-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .msg{padding:12px; border-radius:8px; margin-bottom:14px; font-size:14px;}
+  .msg.err{background:#FBE9E7; color:#8A2F1F;}
+  .msg.ok{background:#EAF3E8; color:#2C5C36;}
+  .security-note{background:#FBF0DD; border:1px solid #F0D59A; color:#8A5A00; padding:12px; border-radius:8px; font-size:13px; margin-bottom:16px;}
+  .stat-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:20px;}
+  .stat-tile{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:0 1px 3px rgba(35,43,54,.06);}
+  .stat-tile .stat-label{font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); font-weight:600;}
+  .stat-tile .stat-num{font-family:var(--font-display); font-size:30px; font-weight:600; margin-top:4px;}
+  .section-title{font-family:var(--font-display); font-weight:600; font-size:15px; margin:0 0 10px;}
+ 
+  /* ---- Calendar ---- */
+  .cal-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+  .cal-nav{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600;}
+  .cal-nav button{background:#EEE8DA; color:var(--ink); padding:6px 10px;}
+  .cal-mode-toggle{display:flex; gap:6px;}
+  .cal-mode-toggle button{background:#EEE8DA; color:var(--ink); padding:6px 14px;}
+  .cal-mode-toggle button.active{background:var(--amber-dark); color:#fff;}
+  .cal-grid{display:grid; grid-template-columns:repeat(7, 1fr); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .cal-day-header{background:var(--sand); padding:8px; text-align:center; font-family:var(--font-display); font-weight:600; font-size:12px; border-bottom:1px solid var(--line); border-right:1px solid var(--line);}
+  .cal-day-header:last-child{border-right:none;}
+  .cal-cell{border-right:1px solid var(--line); border-bottom:1px solid var(--line); min-height:110px; padding:6px; background:#fff; position:relative;}
+  .cal-grid.week-mode .cal-cell{min-height:320px;}
+  .cal-cell:nth-child(7n){border-right:none;}
+  .cal-cell.outside{background:#FAFAF7;}
+  .cal-cell.outside .cal-date-num{color:#B0AA98;}
+  .cal-cell .cal-date-num{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-bottom:4px;}
+  .cal-chip{font-size:10.5px; font-family:var(--font-body); font-weight:500; padding:2px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; border-left:3px solid; color:var(--ink); background:var(--sand);}
+  .cal-chip.pending{border-style:dashed; opacity:.85;}
+  .cal-more{font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-weight:600; margin-top:2px;}
+ 
+  /* ---- Detail modal ---- */
+  #detailBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #detailBackdrop.visible{display:flex;}
+  #detailModal{background:#fff; border-radius:14px; padding:24px; max-width:420px; width:100%;}
+  #detailModal h3{margin:0 0 10px; font-family:var(--font-display);}
+ 
+  /* ---- Mobile responsive ---- */
+  .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  #sidebarBackdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:29;}
   #sidebarBackdrop.visible{display:block;}
-  #sidebar{position:fixed; top:0; left:-280px; width:260px; height:100%; background:var(--ink); z-index:50; transition:left .2s ease; padding:20px; box-shadow:2px 0 10px rgba(0,0,0,.15);}
-  #sidebar.visible{left:0;}
-  #sidebar h3{margin-top:0; font-family:var(--font-display); color:#fff; font-size:13px; text-transform:uppercase; letter-spacing:.5px; opacity:.6;}
-  .sidebar-link{display:flex; align-items:center; gap:10px; width:100%; margin-top:8px; background:rgba(255,255,255,.06); color:#fff; text-align:left; justify-content:flex-start; font-family:var(--font-body); font-weight:500; font-size:14px; padding:11px 12px;}
-  .sidebar-link:hover{background:rgba(255,255,255,.12);}
-  .sidebar-link svg{width:18px; height:18px; stroke:var(--amber); flex-shrink:0;}
-  .sidebar-link.active{background:rgba(217,164,65,.22); color:#fff;}
-  .sidebar-link.active svg{stroke:#fff;}
-  .sidebar-link.logout{margin-top:20px; border-top:1px solid rgba(255,255,255,.12); padding-top:16px; border-radius:0;}
-  .sidebar-link.logout:hover{background:rgba(176,74,62,.18); color:#F2B3AA;}
-  .sidebar-link.logout:hover svg{stroke:#F2B3AA;}
- 
-  /* ---- Square menu boxes (home screen) ---- */
-  .menu-grid{display:flex; gap:14px; flex-wrap:wrap;}
-  .menu-box{flex:1 1 45%; aspect-ratio:1/1; background:#fff; border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; text-align:center; padding:12px; box-shadow:0 1px 3px rgba(35,43,54,.06); transition:box-shadow .15s, border-color .15s;}
-  .menu-box:hover{box-shadow:0 4px 14px rgba(35,43,54,.12); border-color:var(--amber);}
-  .menu-box svg{width:36px; height:36px; stroke:var(--amber-dark);}
-  .menu-box span{font-family:var(--font-display); font-weight:600; font-size:14px;}
- 
-  /* ---- Confirmation modal ---- */
-  #confirmModalBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
-  #confirmModalBackdrop.visible{display:flex;}
-  #confirmModal{background:#fff; border-radius:14px; padding:26px; max-width:360px; width:100%; text-align:center;}
-  #confirmModal svg{width:48px; height:48px; stroke:#2C5C36; margin-bottom:6px;}
-  #confirmModal h3{margin:6px 0; font-family:var(--font-display);}
-  #confirmModal p{font-size:14px; color:var(--ink-soft); margin:6px 0;}
-  #confirmDialogBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
-  #confirmDialogBackdrop.visible{display:flex;}
-  #confirmDialog{background:#fff; border-radius:14px; padding:26px; max-width:360px; width:100%; text-align:center;}
-  #confirmDialog p{font-size:15px; margin:6px 0 16px;}
-  #confirmDialog .btn-row{display:flex; gap:10px;}
-  #confirmDialog button{margin-top:0;}
-  #confirmDialogCancelBtn{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
-  #confirmDialogCancelBtn:hover{background:var(--sand);}
-  #confirmDialogYesBtn{background:#B04A3E;}
-  #confirmDialogYesBtn:hover{background:#96392f;}
- 
-  /* ==== DESKTOP / WIDE-SCREEN LAYOUT ====
-     Below this width: the compact mobile app (drawer sidebar, single centered column).
-     Above it: a real dashboard layout -- sidebar pinned open, content spread across the width. */
-  @media (min-width: 860px){
-    body{padding-left:240px;}
-    #sidebar{left:0 !important; width:240px; box-shadow:none; border-right:1px solid rgba(255,255,255,.08);}
-    #sidebarBackdrop{display:none !important;}
-    #hamburgerBtn{display:none;}
-    header{text-align:left; padding:22px 40px;}
-    #topBar{max-width:900px; margin:0 auto; padding:14px 40px;}
-    .wrap{max-width:900px; margin:0 auto; padding:32px 40px;}
-    .card{padding:28px;}
-    #amenityList{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-    .amenity-option{margin-top:0;}
-    .menu-grid{max-width:520px;}
+  #mobileMenuBtn{display:none;}
+  @media (max-width: 900px) {
+    #sidebar{left:-240px; width:220px; transition:left .2s ease; box-shadow:2px 0 12px rgba(0,0,0,.2);}
+    #sidebar.visible{left:0;}
+    #topBar, #portalBody{margin-left:0;}
+    #topBar{padding:12px 16px;}
+    #portalBody{padding:16px;}
+    #mobileMenuBtn{display:flex;}
+    table{font-size:12px;}
+    th, td{padding:8px 6px;}
+    .cal-grid{grid-template-columns:repeat(7, minmax(84px, 1fr)); overflow-x:auto; display:grid;}
+    .cal-toolbar{flex-direction:column; align-items:flex-start;}
+    .stat-row{grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));}
+    #loginCard, #accessGateCard{padding:28px 22px;}
+    .btn-row button{font-size:12px; padding:7px 10px;}
+  }
+  @media (max-width: 480px) {
+    .cal-cell{min-height:80px;}
+    .cal-grid.week-mode .cal-cell{min-height:220px;}
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>Cendana Craig Ranch</h1>
-  <p>Amenity Reservations</p>
-</header>
  
-<!-- Persistent top bar: Home on left, Logout on right -->
-<div id="topBar">
-  <div class="topbar-left">
-    <button class="icon-btn" id="hamburgerBtn" title="Menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-    <button class="icon-btn" id="homeBtn" title="Home">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
-    </button>
-  </div>
-  <div style="display:flex; align-items:center; gap:12px;">
-    <button class="icon-btn" id="notifBellBtn" title="Notifications" style="position:relative;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span id="notifBadge" style="display:none; position:absolute; top:-2px; right:-2px; background:var(--clay); color:#fff; font-size:10px; font-weight:700; border-radius:10px; min-width:16px; height:16px; padding:0 3px; align-items:center; justify-content:center;"></span>
-    </button>
-    <div class="profile-chip" id="profileChip"></div>
-    <button class="icon-btn" id="logoutBtn" title="Log out">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    </button>
-  </div>
-</div>
- 
-<!-- Notification panel -->
-<div id="notifBackdrop"></div>
-<div id="notifPanel">
-  <div class="notif-panel-header">
-    <h3>Notifications</h3>
-    <button class="icon-btn" id="notifCloseBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div id="notifList"></div>
-</div>
- 
-<!-- Sidebar drawer -->
-<div id="sidebarBackdrop"></div>
-<div id="sidebar">
-  <h3>Menu</h3>
-  <button class="sidebar-link" id="sidebarNewRes">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-    Make a New Reservation
-  </button>
-  <button class="sidebar-link" id="sidebarMyRes">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-    My Reservations
-  </button>
-  <button class="sidebar-link" id="sidebarEditInfo">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    Edit My Info
-  </button>
-  <button class="sidebar-link" id="sidebarSwitchProfile" style="display:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-    Switch Profile
-  </button>
-  <button class="sidebar-link logout" id="sidebarLogout">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    Log Out
-  </button>
-</div>
- 
-<!-- Confirmation modal -->
-<div id="confirmModalBackdrop">
-  <div id="confirmModal">
-    <svg id="confirmModalIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
-    <h3 id="confirmModalTitle">Reservation Confirmed</h3>
-    <p id="confirmModalText"></p>
-    <button id="confirmModalDoneBtn">Done</button>
-  </div>
-</div>
- 
-<!-- Are-you-sure dialog, used before any cancel action -->
-<div id="confirmDialogBackdrop">
-  <div id="confirmDialog">
-    <p id="confirmDialogText"></p>
-    <div class="btn-row">
-      <button id="confirmDialogCancelBtn">No, Keep It</button>
-      <button id="confirmDialogYesBtn">Yes, Cancel It</button>
+  <div id="accessGateScreen">
+    <div class="card" id="accessGateCard">
+      <div class="login-brand">
+        <div class="login-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+        </div>
+        <h1>Cendana Craig Ranch</h1>
+        <div class="login-address">6121 Alma Road &middot; McKinney, TX 75070</div>
+      </div>
+      <div class="login-eyebrow">Staff Access</div>
+      <label>Access Code</label>
+      <input type="password" id="gateCodeInput" autocomplete="off" />
+      <button id="gateSubmitBtn">Continue</button>
+      <div class="msg err" id="gateError" style="display:none"></div>
+      <div class="login-footer">Ask the property manager for the current staff access code.</div>
     </div>
   </div>
-</div>
  
-<div class="wrap">
+  <div id="loginScreen" style="display:none;">
+    <div class="card" id="loginCard">
+      <div class="login-brand">
+        <div class="login-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+        </div>
+        <h1>Cendana Craig Ranch</h1>
+        <div class="login-address">6121 Alma Road &middot; McKinney, TX 75070</div>
+      </div>
+      <div class="login-eyebrow">Staff Admin Portal</div>
+      <label>Staff Email</label>
+      <input type="email" id="loginEmail" autocomplete="username" />
+      <label>Password</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" />
+      <button id="loginBtn">Log In</button>
+      <div class="msg err" id="loginError" style="display:none"></div>
+      <div class="login-footer">Amenity reservations for private offices, the Huddle Room, and the Cinema.</div>
+    </div>
+  </div>
  
-  <!-- AUTH STEP: apartment number + PIN, issued by staff at move-in -->
-  <div class="card active" id="authStep">
-    <div class="onboarding-brand">
-      <div class="onboarding-mark">
+  <div id="portal" style="display:none;">
+    <div id="sidebarBackdrop"></div>
+    <div id="sidebar">
+      <div class="brand">Cendana Craig Ranch<small>6121 Alma Rd, McKinney, TX 75070</small></div>
+      <button class="sidebar-link" id="sidebarCalendarBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </button>
+      <button class="sidebar-link" id="sidebarRequestsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Requests
+      </button>
+      <button class="sidebar-link" id="sidebarApartmentsBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
+        Apartments
+      </button>
+      <button class="sidebar-link" id="sidebarCommsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Communications
+      </button>
+    </div>
+ 
+    <div id="topBar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="icon-btn" id="mobileMenuBtn" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <button class="icon-btn" id="homeBtn" title="Home (Calendar)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        </button>
+        <h2 id="topBarTitle">Calendar</h2>
       </div>
-      <h1>Cendana Craig Ranch</h1>
-      <div class="onboarding-address">6121 Alma Road &middot; McKinney, TX 75070</div>
+      <button class="icon-btn" id="logoutBtn" title="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
     </div>
-    <div class="page-heading">
-      <div class="eyebrow">Get Started</div>
-      <h2>Welcome to Cendana Amenities</h2>
-      <p>Enter your apartment number and the PIN given to you by the leasing office. You'll only need to do this once on this device.</p>
-    </div>
-    <label>Apartment Number *</label>
-    <input type="text" id="authApt" placeholder="e.g. 1042" inputmode="numeric" />
  
-    <label>PIN *</label>
-    <input type="text" id="authPin" placeholder="6-digit PIN" inputmode="numeric" maxlength="6" style="letter-spacing:4px; font-family:var(--font-mono); font-size:18px;" />
-    <div class="email-note">Don't have a PIN, or lost it? Contact the leasing office &mdash; they can look it up or issue a new one.</div>
+    <div id="portalBody">
+      <div id="calendarView">
+        <div class="cal-toolbar">
+          <div class="cal-nav">
+            <button id="calPrevBtn">&larr;</button>
+            <span id="calLabel"></span>
+            <button id="calNextBtn">&rarr;</button>
+            <button id="calTodayBtn" class="outline">Today</button>
+          </div>
+          <div class="cal-mode-toggle">
+            <button id="calWeekBtn">Week</button>
+            <button id="calMonthBtn" class="active">Month</button>
+          </div>
+        </div>
+        <div id="calGrid" class="cal-grid"></div>
+      </div>
  
-    <button id="sendCodeBtn">Continue</button>
-    <div class="msg err" id="authError" style="display:none"></div>
+      <div id="requestsView" style="display:none;">
+        <div class="stat-row" id="statRow"></div>
+        <div class="tabs">
+          <button id="tabBookingsBtn" class="active">Upcoming Bookings</button>
+          <button id="tabApprovalsBtn">Approvals</button>
+          <button id="tabWaitlistBtn">Waitlist</button>
+        </div>
+        <div class="card" id="bookingsView"></div>
+        <div class="card" id="approvalsView" style="display:none"></div>
+        <div class="card" id="waitlistView" style="display:none"></div>
+      </div>
  
-    <div class="footer-note">
-      Note: This is a community-built website. Cendana and its staff are not responsible for downtime or errors related to bookings. Please be respectful to the staff if you face any booking-related issues, as they are only trying to help.
+      <div id="apartmentsView" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="section-title" style="margin-top:0;">Add Apartments</div>
+          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">One unit number per line (or comma-separated). Each gets a fresh unique 6-digit PIN automatically.</p>
+          <textarea id="addAptInput" rows="3" style="width:100%; font-family:var(--font-mono, monospace); padding:8px; box-sizing:border-box;" placeholder="e.g.&#10;3068&#10;3069, 3070"></textarea>
+          <button id="addAptBtn" style="margin-top:10px;">Add Apartment(s)</button>
+          <div class="msg err" id="addAptError" style="display:none; margin-top:8px;"></div>
+        </div>
+ 
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="section-title" style="margin-top:0;">Apartment List &amp; PINs</div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="aptSearchInput" placeholder="Search unit #..." style="padding:6px 10px; font-size:13px;" />
+              <button class="outline" id="exportPinsBtn">Export CSV</button>
+            </div>
+          </div>
+          <div id="aptListBody" style="margin-top:12px;">Loading...</div>
+        </div>
+      </div>
+ 
+      <div id="commsView" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="section-title" style="margin-top:0;">Send Community Announcement</div>
+          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">One-way message sent to every active resident's notification center (e.g. closures, cancellations, policy changes). Residents can't reply from this.</p>
+          <textarea id="commsMessageInput" rows="4" style="width:100%; font-family:var(--font-body); padding:10px; box-sizing:border-box; font-size:14px;" placeholder="e.g. The Cinema will be closed for maintenance this Friday, June 12th."></textarea>
+          <button id="commsSendBtn" style="margin-top:10px;">Send to All Residents</button>
+          <div class="msg err" id="commsError" style="display:none; margin-top:8px;"></div>
+          <div class="msg ok" id="commsSuccess" style="display:none; margin-top:8px;"></div>
+        </div>
+ 
+        <div class="card">
+          <div class="section-title" style="margin-top:0;">Sent History</div>
+          <div id="commsHistoryBody">Loading...</div>
+        </div>
+      </div>
     </div>
   </div>
  
-  <!-- PROFILE STEP: first-time users only, after PIN verified (also reused for "Edit My Info", brand hidden then) -->
-  <div class="card" id="profileStep">
-    <div class="page-heading">
-      <div class="eyebrow" id="profileEyebrow">Complete Your Profile</div>
-      <h2 id="profileHeading">Tell us about yourself</h2>
-      <p>This just takes a moment, and you won't need to do it again.</p>
-    </div>
-    <label>Name *</label>
-    <input type="text" id="resName" placeholder="Your full name" />
- 
-    <label>Phone Number *</label>
-    <input type="tel" id="resPhone" placeholder="(555) 555-5555" autocomplete="tel" />
- 
-    <label>Email *</label>
-    <input type="email" id="resEmail" placeholder="you@email.com" autocomplete="email" />
-    <div class="hint">Used for booking confirmations and updates from the leasing office.</div>
- 
-    <button id="saveProfileBtn">Save &amp; Continue</button>
-    <div class="msg err" id="profileError" style="display:none"></div>
-    <div id="cancelAddProfileWrap" style="display:none; text-align:center; margin-top:12px;">
-      <a href="#" id="cancelAddProfileLink" style="color:var(--ink-soft); font-size:13px; text-decoration:none;">&larr; Back to profiles</a>
+  <!-- shown once after a PIN is generated/rotated, since staff must relay it manually -->
+  <div id="pinRevealBackdrop" style="display:none; position:fixed; inset:0; background:rgba(20,20,20,.45); z-index:200; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; padding:28px; max-width:360px; width:90%; text-align:center;">
+      <div style="font-size:13px; color:var(--ink-soft,#666); margin-bottom:6px;" id="pinRevealUnit"></div>
+      <div style="font-family:var(--font-mono,monospace); font-size:32px; font-weight:700; letter-spacing:6px; margin:10px 0;" id="pinRevealCode"></div>
+      <p style="font-size:13px; color:var(--ink-soft,#666);">Give this PIN to the resident directly &mdash; it won't be shown again automatically, but you can always look it up here later.</p>
+      <button id="pinRevealCopyBtn" class="outline" style="width:100%; margin-bottom:8px;">Copy PIN</button>
+      <button id="pinRevealCloseBtn" style="width:100%;">Done</button>
     </div>
   </div>
  
-  <!-- WHO'S BOOKING: pick which household profile is using the app right now -->
-  <div class="card" id="profilePickerStep">
-    <div class="page-heading">
-      <div class="eyebrow">Get Started</div>
-      <h2>Who's booking?</h2>
-      <p>Pick your name, or add a new household member.</p>
+  <div id="detailBackdrop">
+    <div id="detailModal">
+      <div id="detailModalBody"></div>
+      <button class="outline" id="detailCloseBtn" style="margin-top:14px; width:100%;">Close</button>
     </div>
-    <div id="profileTileGrid" class="profile-tile-grid"></div>
   </div>
- 
-  <!-- STEP 1B: menu / home -->
-  <div class="card" id="menuStep">
-    <div class="page-heading">
-      <div class="eyebrow">Resident Booking</div>
-      <h2>What would you like to do?</h2>
-      <p>Reserve a shared space, or check on your existing bookings.</p>
-    </div>
-    <div class="menu-grid">
-      <div class="menu-box" id="newResBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-        <span>Make a New<br/>Reservation</span>
-      </div>
-      <div class="menu-box" id="myResBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <span>My<br/>Reservations</span>
-      </div>
-    </div>
-    <div id="homeUpcomingCard"></div>
-  </div>
- 
-  <!-- STEP 3: my reservations -->
-  <div class="card" id="myResStep">
-    <div class="page-heading">
-      <div class="eyebrow">My Reservations</div>
-      <h2>Your bookings</h2>
-      <p>View, track, and manage your reservations.</p>
-    </div>
-    <div id="myResList"></div>
-    <h3 id="pastHeading" style="display:none; cursor:pointer; font-family:var(--font-display);" onclick="document.getElementById('pastResList').style.display = document.getElementById('pastResList').style.display==='none' ? 'block' : 'none';">Past Reservations &#9662;</h3>
-    <div id="pastResList" style="display:none;"></div>
-  </div>
- 
-  <!-- STEP 2: the booking form -->
-  <div class="card" id="step2">
-    <div class="page-heading">
-      <div class="eyebrow">New Reservation</div>
-      <h2>Book a shared space</h2>
-      <p>Pick a space, choose an available time, and send your request.</p>
-    </div>
-    <label>Which amenity would you like to reserve? *</label>
-    <div id="amenityList"></div>
-    <div class="hint" id="amenityDeposit" style="display:none"></div>
- 
-    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reservation Date *</label>
-    <input type="date" id="resDate" />
- 
-    <div id="availabilitySection" style="display:none;">
-      <label style="margin-top:14px;">Availability for this day</label>
-      <div class="hint" style="margin-top:-6px; margin-bottom:10px;">You can book a time that overlaps an existing reservation, subject to availability and approval from the leasing office.</div>
-      <div class="slot-legend">
-        <span><span class="legend-dot" style="background:#fff; border:1px solid var(--line);"></span>Open</span>
-        <span><span class="legend-dot" style="background:#FBE9E7;"></span>Booked</span>
-        <span><span class="legend-dot" style="background:#F5DAD5;"></span>Booked, keys still out</span>
-      </div>
-      <div id="bookedRangesList" style="margin-bottom:14px;"></div>
- 
-      <label>Pick a Start Time</label>
-      <div class="ampm-tabs">
-        <button type="button" class="ampm-tab active" id="amTabBtn">AM</button>
-        <button type="button" class="ampm-tab" id="pmTabBtn">PM</button>
-      </div>
-      <div class="time-scroller" id="timeScroller"></div>
-      <div class="hint">Times already booked are shown in red &mdash; you can still select one to join the waitlist for that slot.</div>
-    </div>
- 
-    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Start Time *</label>
-    <input type="time" id="resStart" readonly />
-    <div class="hint">Pick a time slot above to set this.</div>
- 
-    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9Zm0 0C7.03 22 3 17.97 3 13c4.97 0 9 4.03 9 9Z"/><path d="M12 13V2"/></svg>Duration *</label>
-    <select id="resDuration">
-      <option value="60">1 hour</option>
-      <option value="120">2 hours</option>
-      <option value="180">3 hours</option>
-      <option value="240">4 hours</option>
-    </select>
-    <div class="hint" id="durationHint">Maximum reservation length is 4 hours.</div>
-    <div class="hint" id="closingNote" style="display:none; color:#8a5a00; font-weight:bold;"></div>
- 
-    <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Number of Guests (if applicable)</label>
-    <input type="number" id="resGuests" min="0" value="0" />
-    <div class="hint" id="guestCapHint"></div>
- 
-    <label>Additional questions or comments</label>
-    <textarea id="resComments"></textarea>
- 
-    <div id="bulkBookingSection" style="display:none; border:1.5px dashed var(--amber); border-radius:8px; padding:12px; margin-top:16px; background:#FBF6EA;">
-      <div class="agree" style="margin-top:0;">
-        <input type="checkbox" id="resBulk" />
-        <label><strong>Plan the week</strong> &mdash; repeat this same time for the next 6 days. Day 1 is confirmed instantly. Days 2&ndash;6 need staff approval &mdash; you don't need to do anything; you'll be notified once each is approved.</label>
-      </div>
-    </div>
- 
-    <div class="agree">
-      <input type="checkbox" id="resAgree" />
-      <label>By checking this box, I agree that I have read and understand the amenity reservation agreement.</label>
-    </div>
- 
-    <button id="submitBtn">Submit Reservation</button>
-    <div id="resultMsg"></div>
-  </div>
- 
-</div>
  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ====== CONFIG - your Supabase project ======
-// Register service worker so the browser recognizes this as an installable PWA
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => { /* non-critical if it fails */ });
-  });
+// ---------- STAFF ACCESS GATE ----------
+// NOTE: This is a casual-discovery deterrent only (stops random URL-guessers from
+// even seeing a login form) — it is NOT a real security boundary. The code lives in
+// this file's source, same as everything else client-side. Actual access control is,
+// and remains, Supabase auth + the is_staff() role check on every table/RPC.
+// Change this string with your team whenever you want to rotate it.
+const STAFF_ACCESS_CODE = "cendana2026";
+const GATE_SESSION_KEY = "ccr_staff_gate_passed";
+ 
+function passGate() {
+  document.getElementById("accessGateScreen").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
 }
+ 
+document.getElementById("gateSubmitBtn").onclick = () => {
+  const code = document.getElementById("gateCodeInput").value;
+  const errBox = document.getElementById("gateError");
+  errBox.style.display = "none";
+  if (code === STAFF_ACCESS_CODE) {
+    sessionStorage.setItem(GATE_SESSION_KEY, "true");
+    passGate();
+  } else {
+    errBox.textContent = "Incorrect access code.";
+    errBox.style.display = "block";
+  }
+};
+document.getElementById("gateCodeInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("gateSubmitBtn").click();
+});
+ 
+if (sessionStorage.getItem(GATE_SESSION_KEY) === "true") passGate();
  
 const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
 });
  
-// ---------- MODERN DATE/TIME FORMATTING ----------
-// "Today \u00b7 9:00 \u2013 11:00 PM" instead of "8/14/2026, 9:00:00 PM"
-function formatDateTimeRange(startIso, endIso) {
-  const start = new Date(startIso), end = new Date(endIso), now = new Date();
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diffDays = Math.round((startDay - today) / 86400000);
-  let dateStr;
-  if (diffDays === 0) dateStr = "Today";
-  else if (diffDays === 1) dateStr = "Tomorrow";
-  else dateStr = start.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
- 
-  const startStr = start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  const endStr = end.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  const samePeriod = (start.getHours() < 12) === (end.getHours() < 12);
-  const timeStr = samePeriod ? `${startStr.replace(/\s?(AM|PM)$/i, "")} \u2013 ${endStr}` : `${startStr} \u2013 ${endStr}`;
-  return `${dateStr} \u00b7 ${timeStr}`;
-}
-function formatDateTime(iso) {
-  const d = new Date(iso), now = new Date();
-  const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diffDays = Math.round((day - today) / 86400000);
-  let dateStr;
-  if (diffDays === 0) dateStr = "Today";
-  else if (diffDays === 1) dateStr = "Tomorrow";
-  else dateStr = d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
-  return `${dateStr} \u00b7 ${d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
-}
- 
-let amenities = [];
-let amenityHours = [];
-let officeHours = [];
-let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
-let resident = { name: "", phone: "", email: "", apt: "", profileId: null };
-let apartmentProfiles = [];
-let selectedAmenity = null;
-let editingProfile = false;
-let addingNewProfile = false;
- 
-const ALL_SCREENS = ["authStep", "profileStep", "profilePickerStep", "menuStep", "step2", "myResStep"];
- 
-// ---------- DEVICE IDENTITY ----------
-// Supabase's dedicated "anonymous" sign-in has been unreliable to enable via dashboard,
-// so instead each device silently creates its own real (but fake/random) email+password
-// account on first visit. Functionally identical for our purposes: a real auth.uid() that
-// every RLS policy in this app already relies on. The credentials are cached in
-// localStorage purely as a resilience fallback in case the session/refresh token is ever
-// lost -- normal visits never touch this, since persistSession keeps you signed in.
-async function ensureDeviceIdentity() {
-  let { data: { session } } = await sb.auth.getSession();
-  if (session) return session;
- 
-  let creds = null;
-  try { creds = JSON.parse(localStorage.getItem("ccr_device") || "null"); } catch (e) { /* ignore */ }
- 
-  if (creds) {
-    const { data, error } = await sb.auth.signInWithPassword({ email: creds.email, password: creds.password });
-    if (!error && data.session) return data.session;
-  }
- 
-  const deviceId = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  const email = `device-${deviceId}@cendana.local`;
-  const password = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  const { data, error } = await sb.auth.signUp({ email, password });
-  if (error || !data.session) return null;
- 
-  localStorage.setItem("ccr_device", JSON.stringify({ email, password }));
-  return data.session;
-}
- 
-// ---------- ESTABLISH A DEVICE IDENTITY, THEN RESTORE APARTMENT LINK IF ALREADY VERIFIED ----------
-(async function init() {
-  const session = await ensureDeviceIdentity();
-  if (!session) { showScreen("authStep"); return; }
-  await loadResidentProfile(session);
-})();
- 
-// checks whether this device has already verified an apartment PIN; if so, moves on
-// to the "who's booking" profile picker for that apartment (skipping it entirely
-// if there's exactly one profile on file, or going straight to add-profile if there are none)
-async function loadResidentProfile(session) {
-  const { data, error } = await sb.from("residents").select("*").eq("auth_user_id", session.user.id).maybeSingle();
-  if (error || !data || !data.active) { showScreen("authStep"); return; }
-  await loadApartmentProfilesAndRoute(data.apartment_number);
-}
- 
-async function loadApartmentProfilesAndRoute(apt) {
-  const { data: profiles } = await sb.from("profiles").select("*").eq("apartment_number", apt).order("created_at");
-  apartmentProfiles = profiles || [];
- 
-  if (apartmentProfiles.length === 0) {
-    addingNewProfile = true;
-    editingProfile = false;
-    document.getElementById("profileEyebrow").textContent = "Complete Your Profile";
-    document.getElementById("profileHeading").textContent = "Tell us about yourself";
-    document.getElementById("resName").value = "";
-    document.getElementById("resPhone").value = "";
-    document.getElementById("resEmail").value = "";
-    document.getElementById("cancelAddProfileWrap").style.display = "none";
-    resident.apt = apt;
-    showScreen("profileStep");
-  } else if (apartmentProfiles.length === 1) {
-    selectProfile(apartmentProfiles[0]);
-  } else {
-    resident.apt = apt;
-    renderProfileTiles(apt);
-    showScreen("profilePickerStep");
-  }
-}
- 
-function renderProfileTiles(apt) {
-  const grid = document.getElementById("profileTileGrid");
-  grid.innerHTML = apartmentProfiles.map(p => `
-    <div class="profile-tile" data-id="${p.id}">
-      <div class="tile-avatar">${(p.full_name || "?").trim().charAt(0).toUpperCase()}</div>
-      <div class="tile-name">${p.full_name}</div>
-    </div>`).join("") + `
-    <div class="profile-tile add-tile" id="addProfileTile">
-      <div class="tile-avatar">+</div>
-      <div class="tile-name">Add someone</div>
-    </div>`;
- 
-  grid.querySelectorAll(".profile-tile[data-id]").forEach(tile => {
-    tile.onclick = () => {
-      const p = apartmentProfiles.find(x => x.id === tile.dataset.id);
-      if (p) selectProfile(p);
-    };
-  });
-  document.getElementById("addProfileTile").onclick = () => {
-    addingNewProfile = true;
-    editingProfile = false;
-    document.getElementById("profileEyebrow").textContent = "Add Someone";
-    document.getElementById("profileHeading").textContent = "New household profile";
-    document.getElementById("resName").value = "";
-    document.getElementById("resPhone").value = "";
-    document.getElementById("resEmail").value = "";
-    document.getElementById("cancelAddProfileWrap").style.display = apartmentProfiles.length > 0 ? "block" : "none";
-    resident.apt = apt;
-    showScreen("profileStep");
-  };
-}
- 
-function selectProfile(p) {
-  resident = { name: p.full_name, phone: p.phone || "", email: p.email || "", apt: p.apartment_number, profileId: p.id };
-  localStorage.setItem("ccr_last_profile_" + p.apartment_number, p.id);
-  showScreen("menuStep");
-  loadHomeCard();
-  loadNotifications();
-}
- 
-document.getElementById("cancelAddProfileLink").onclick = (e) => {
-  e.preventDefault();
-  renderProfileTiles(resident.apt);
-  showScreen("profilePickerStep");
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const errBox = document.getElementById("loginError");
+  errBox.style.display = "none";
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { errBox.textContent = "Login failed: " + error.message; errBox.style.display = "block"; return; }
+  showPortal();
 };
+// A resumed Supabase session means this is a returning, already-authenticated staff
+// member — skip the access gate entirely rather than making them re-enter the code.
+sb.auth.getSession().then(({ data }) => { if (data.session) { passGate(); showPortal(); } });
  
-document.getElementById("sidebarSwitchProfile").onclick = () => {
-  // Always reopen the picker itself, even if there's only one profile on file —
-  // this is the one path that shouldn't auto-skip straight back into that profile.
-  renderProfileTiles(resident.apt);
-  showScreen("profilePickerStep");
+function showPortal() {
+  document.getElementById("accessGateScreen").style.display = "none";
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("portal").style.display = "block";
+  goToCalendar();
+}
+ 
+document.getElementById("logoutBtn").onclick = async () => {
+  await sb.auth.signOut();
+  document.getElementById("portal").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
 };
- 
-// ---------- NAVIGATION ----------
-function showScreen(id) {
-  const requiresIdentity = (id === "step2" || id === "myResStep" || id === "menuStep");
-  const hasIdentity = resident.name && resident.apt;
-  if (requiresIdentity && !hasIdentity) {
-    id = "authStep";
-  }
-  ALL_SCREENS.forEach(s => document.getElementById(s).classList.remove("active"));
-  document.getElementById(id).classList.add("active");
- 
-  // Only the PIN entry screen (page 1) gets the hero/onboarding treatment.
-  // Everything past it — profile picker, first-time profile setup, menu, etc. —
-  // is a normal in-app page with the persistent header, top bar, and sidebar.
-  const isOnboarding = (id === "authStep");
-  document.body.classList.toggle("onboarding-bg", isOnboarding);
- 
-  // Past the PIN screen means resident.apt has been set, even before a name is chosen
-  // (e.g. mid-way through the profile picker or first-time profile setup).
-  const pastAuth = !!resident.apt;
-  document.getElementById("topBar").classList.toggle("visible", pastAuth && !isOnboarding);
- 
-  const SIDEBAR_SCREEN_MAP = { step2: "sidebarNewRes", myResStep: "sidebarMyRes" };
-  const activeBtnId = (id === "profileStep" && editingProfile) ? "sidebarEditInfo" : SIDEBAR_SCREEN_MAP[id];
-  ["sidebarNewRes", "sidebarMyRes", "sidebarEditInfo"].forEach(btnId => {
-    document.getElementById(btnId).classList.toggle("active", btnId === activeBtnId);
-  });
- 
-  // Switch Profile only makes sense once a resident has actually landed on a profile
-  // (menu/new-res/my-res/editing) — not while still mid-picker or first-time setup.
-  const showSwitchProfile = (pastAuth && hasIdentity && ["menuStep", "step2", "myResStep"].includes(id)) || (id === "profileStep" && editingProfile);
-  document.getElementById("sidebarSwitchProfile").style.display = showSwitchProfile ? "flex" : "none";
- 
-  updateProfileChip();
-  closeSidebar();
-}
- 
-function updateProfileChip() {
-  const chip = document.getElementById("profileChip");
-  if (resident.name) {
-    const initials = resident.name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
-    chip.textContent = initials;
-    chip.classList.add("visible");
-  } else {
-    chip.classList.remove("visible");
-  }
-}
- 
-// ---------- NOTIFICATION CENTER ----------
-const NOTIF_TYPE_LABELS = {
-  waitlist_promoted: "You're in!",
-  booking_rejected: "Reservation Rejected",
-  booking_cancelled: "Reservation Cancelled",
-  keys_ready: "Keys Ready",
-  approval: "Request Approved",
-  general: "Notice"
-};
- 
-async function loadNotifications() {
-  if (!resident.apt) return;
-  const { data } = await sb.from("notifications").select("*").eq("apartment_number", resident.apt).order("created_at", { ascending: false }).limit(30);
-  renderNotifications(data || []);
-}
- 
-function renderNotifications(list) {
-  const badge = document.getElementById("notifBadge");
-  const unreadCount = list.filter(n => !n.read).length;
-  if (unreadCount > 0) {
-    badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
-    badge.style.display = "flex";
-  } else {
-    badge.style.display = "none";
-  }
- 
-  const box = document.getElementById("notifList");
-  if (list.length === 0) {
-    box.innerHTML = '<div class="notif-empty">Nothing yet. Waitlist updates, cancellations, and key-ready alerts will show up here.</div>';
-    return;
-  }
-  box.innerHTML = list.map(n => `
-    <div class="notif-item ${n.read ? "" : "unread"}">
-      <div class="notif-type">${NOTIF_TYPE_LABELS[n.type] || "Notice"}</div>
-      <div>${n.message}</div>
-      <div class="notif-time">${new Date(n.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</div>
-    </div>`).join("");
-}
- 
-async function openNotifPanel() {
-  document.getElementById("notifPanel").classList.add("visible");
-  document.getElementById("notifBackdrop").classList.add("visible");
-  await sb.from("notifications").update({ read: true }).eq("apartment_number", resident.apt).eq("read", false);
-  await loadNotifications();
-}
-function closeNotifPanel() {
-  document.getElementById("notifPanel").classList.remove("visible");
-  document.getElementById("notifBackdrop").classList.remove("visible");
-}
-document.getElementById("notifBellBtn").onclick = openNotifPanel;
-document.getElementById("notifCloseBtn").onclick = closeNotifPanel;
-document.getElementById("notifBackdrop").onclick = closeNotifPanel;
- 
-function openSidebar() {
+document.getElementById("homeBtn").onclick = () => { calendarMode = "month"; goToCalendar(); };
+document.getElementById("mobileMenuBtn").onclick = () => {
   document.getElementById("sidebar").classList.add("visible");
   document.getElementById("sidebarBackdrop").classList.add("visible");
-}
-function closeSidebar() {
+};
+document.getElementById("sidebarBackdrop").onclick = closeMobileSidebar;
+function closeMobileSidebar() {
   document.getElementById("sidebar").classList.remove("visible");
   document.getElementById("sidebarBackdrop").classList.remove("visible");
 }
+document.getElementById("sidebarCalendarBtn").onclick = () => { goToCalendar(); closeMobileSidebar(); };
+document.getElementById("sidebarRequestsBtn").onclick = () => { goToRequests(); closeMobileSidebar(); };
+document.getElementById("sidebarApartmentsBtn").onclick = () => { goToApartments(); closeMobileSidebar(); };
+document.getElementById("sidebarCommsBtn").onclick = () => { goToComms(); closeMobileSidebar(); };
  
-document.getElementById("hamburgerBtn").onclick = openSidebar;
-document.getElementById("sidebarBackdrop").onclick = closeSidebar;
-document.getElementById("homeBtn").onclick = () => { showScreen("menuStep"); loadHomeCard(); };
- 
-function goToNewReservation() { showScreen("step2"); }
-function goToMyReservations() { showScreen("myResStep"); loadMyReservations(); }
-function goToEditInfo() {
-  editingProfile = true;
-  addingNewProfile = false;
-  document.getElementById("profileEyebrow").textContent = "Edit My Info";
-  document.getElementById("profileHeading").textContent = "Update your profile";
-  document.getElementById("resName").value = resident.name;
-  document.getElementById("resPhone").value = resident.phone || "";
-  document.getElementById("resEmail").value = resident.email || "";
-  document.getElementById("cancelAddProfileWrap").style.display = "none";
-  showScreen("profileStep");
-}
-async function logout() {
-  // "logging out" just forgets this device's link locally; the underlying device
-  // identity stays valid (cached creds), so re-entering the same PIN on this device signs right back in.
-  await sb.auth.signOut();
-  resident = { name: "", phone: "", email: "", apt: "", profileId: null };
-  apartmentProfiles = [];
-  document.getElementById("authApt").value = "";
-  document.getElementById("authPin").value = "";
-  await ensureDeviceIdentity();
-  showScreen("authStep");
+const ALL_SIDEBAR_BTNS = ["sidebarCalendarBtn", "sidebarRequestsBtn", "sidebarApartmentsBtn", "sidebarCommsBtn"];
+const ALL_MAIN_VIEWS = ["calendarView", "requestsView", "apartmentsView", "commsView"];
+function setActiveNav(btnId, viewId, title) {
+  ALL_SIDEBAR_BTNS.forEach(b => document.getElementById(b).classList.toggle("active", b === btnId));
+  ALL_MAIN_VIEWS.forEach(v => document.getElementById(v).style.display = (v === viewId ? "block" : "none"));
+  document.getElementById("topBarTitle").textContent = title;
 }
  
-document.getElementById("newResBtn").onclick = goToNewReservation;
-document.getElementById("myResBtn").onclick = goToMyReservations;
-document.getElementById("sidebarNewRes").onclick = goToNewReservation;
-document.getElementById("sidebarMyRes").onclick = goToMyReservations;
-document.getElementById("sidebarEditInfo").onclick = goToEditInfo;
-document.getElementById("sidebarLogout").onclick = logout;
-document.getElementById("logoutBtn").onclick = logout;
+function goToCalendar() {
+  setActiveNav("sidebarCalendarBtn", "calendarView", "Calendar");
+  document.getElementById("calMonthBtn").classList.toggle("active", calendarMode === "month");
+  document.getElementById("calWeekBtn").classList.toggle("active", calendarMode === "week");
+  renderCalendar();
+}
+function goToRequests() {
+  setActiveNav("sidebarRequestsBtn", "requestsView", "Requests");
+  loadStats(); loadBookings();
+}
+function goToApartments() {
+  setActiveNav("sidebarApartmentsBtn", "apartmentsView", "Apartments");
+  loadApartmentList();
+}
+function goToComms() {
+  setActiveNav("sidebarCommsBtn", "commsView", "Communications");
+  loadCommsHistory();
+}
  
-// ---------- AUTH STEP: verify apartment number + PIN ----------
-document.getElementById("sendCodeBtn").onclick = async () => {
-  const apt = document.getElementById("authApt").value.trim();
-  const pin = document.getElementById("authPin").value.trim();
-  const errBox = document.getElementById("authError");
-  errBox.style.display = "none";
- 
-  if (!apt || !pin) {
-    errBox.textContent = "Please enter both your apartment number and PIN.";
-    errBox.style.display = "block";
-    return;
-  }
- 
-  const btn = document.getElementById("sendCodeBtn");
-  btn.disabled = true; btn.textContent = "Checking...";
- 
-  // make sure we have a device identity before verifying
-  const session = await ensureDeviceIdentity();
-  if (!session) {
-    btn.disabled = false; btn.textContent = "Continue";
-    errBox.textContent = "Couldn't establish a session on this device. Please try again.";
-    errBox.style.display = "block";
-    return;
-  }
- 
-  const { data: ok, error } = await sb.rpc("verify_apartment_pin", { p_apartment: apt, p_pin: pin });
-  btn.disabled = false; btn.textContent = "Continue";
- 
-  if (error) {
-    errBox.textContent = error.message && error.message.includes("too many attempts")
-      ? "Too many attempts. Please wait 15 minutes or contact the leasing office."
-      : "Something went wrong. Please try again.";
-    errBox.style.display = "block";
-    return;
-  }
-  if (!ok) {
-    errBox.textContent = "That apartment number or PIN doesn't match our records.";
-    errBox.style.display = "block";
-    return;
-  }
- 
-  await loadResidentProfile(session);
-};
- 
-// ---------- PROFILE STEP: first-time setup, or editing later ----------
-document.getElementById("saveProfileBtn").onclick = async () => {
-  const name = document.getElementById("resName").value.trim();
-  const phone = document.getElementById("resPhone").value.trim();
-  const email = document.getElementById("resEmail").value.trim();
-  const errBox = document.getElementById("profileError");
-  errBox.style.display = "none";
- 
-  if (!name || !phone || !email) {
-    errBox.textContent = "Please fill in your name, phone number, and email.";
-    errBox.style.display = "block";
-    return;
-  }
-  if (!email.includes("@")) {
-    errBox.textContent = "Please enter a valid email address.";
-    errBox.style.display = "block";
-    return;
-  }
- 
-  const btn = document.getElementById("saveProfileBtn");
-  btn.disabled = true; btn.textContent = "Saving...";
- 
-  let dbError;
-  if (editingProfile && resident.profileId) {
-    ({ error: dbError } = await sb.from("profiles")
-      .update({ full_name: name, phone, email })
-      .eq("id", resident.profileId));
-  } else {
-    let inserted;
-    ({ data: inserted, error: dbError } = await sb.from("profiles")
-      .insert({ apartment_number: resident.apt, full_name: name, phone, email })
-      .select().single());
-    if (!dbError) resident.profileId = inserted.id;
-  }
- 
-  btn.disabled = false; btn.textContent = "Save & Continue";
- 
-  if (dbError) {
-    errBox.textContent = "Something went wrong saving your profile. Please try again.";
-    errBox.style.display = "block";
-    return;
-  }
- 
-  resident = { ...resident, name, phone, email };
-  editingProfile = false;
-  addingNewProfile = false;
-  localStorage.setItem("ccr_last_profile_" + resident.apt, resident.profileId);
-  showScreen("menuStep");
-  loadHomeCard();
-  loadNotifications();
-};
- 
-// ---------- LOAD AMENITIES + SETTINGS ----------
-async function loadData() {
-  const { data: settingsRow } = await sb.from("app_settings").select("*").eq("id", 1).single();
-  if (settingsRow) settings = settingsRow;
- 
-  const { data: amenityRows } = await sb.from("amenities").select("*").eq("active", true).order("name");
-  amenities = amenityRows || [];
- 
-  const { data: hourRows } = await sb.from("amenity_hours").select("*");
-  amenityHours = hourRows || [];
- 
-  const { data: officeRows } = await sb.from("office_hours").select("*");
-  officeHours = officeRows || [];
- 
-  const list = document.getElementById("amenityList");
-  list.innerHTML = "";
-  const accentCycle = ["var(--sage)", "var(--dusty)", "var(--clay)", "var(--gold)"];
-  amenities.forEach((a, i) => {
-    const div = document.createElement("div");
-    div.className = "amenity-option";
-    div.style.borderLeftColor = accentCycle[i % accentCycle.length];
-    div.innerHTML = `
-      <input type="radio" name="amenity" value="${a.id}" id="amenity_${i}" />
-      <label for="amenity_${i}" style="margin:0; font-weight:normal;">${a.name}
-        <div class="amenity-note">Up to ${a.max_guests} guests${a.requires_deposit ? " &middot; $" + a.deposit_amount + " refundable deposit required at leasing office" : ""}</div>
-      </label>`;
-    div.querySelector("input").onchange = () => {
-      selectedAmenity = a;
-      document.getElementById("guestCapHint").textContent = "Maximum " + a.max_guests + " guests for this space.";
-      const depoBox = document.getElementById("amenityDeposit");
-      if (a.requires_deposit) {
-        depoBox.style.display = "block";
-        depoBox.textContent = "Note: this space requires a $" + a.deposit_amount + " refundable deposit, payable at the leasing office.";
-      } else {
-        depoBox.style.display = "none";
-      }
-      updateDurationOptions();
-      renderAvailability();
- 
-      const bulkSection = document.getElementById("bulkBookingSection");
-      if (a.name.startsWith("Private Office")) {
-        bulkSection.style.display = "block";
-      } else {
-        bulkSection.style.display = "none";
-        document.getElementById("resBulk").checked = false;
-      }
-    };
-    list.appendChild(div);
+document.getElementById("tabBookingsBtn").onclick = () => switchReqTab("bookings");
+document.getElementById("tabApprovalsBtn").onclick = () => switchReqTab("approvals");
+document.getElementById("tabWaitlistBtn").onclick = () => switchReqTab("waitlist");
+function switchReqTab(tab) {
+  ["Bookings", "Approvals", "Waitlist"].forEach(t => {
+    document.getElementById(`tab${t}Btn`).classList.toggle("active", t.toLowerCase() === tab);
+    document.getElementById(`${t.toLowerCase()}View`).style.display = t.toLowerCase() === tab ? "block" : "none";
   });
- 
-  // set date limits
-  const dateInput = document.getElementById("resDate");
-  const today = new Date();
-  const maxDate = new Date();
-  maxDate.setDate(today.getDate() + settings.max_advance_booking_days);
-  dateInput.min = today.toISOString().split("T")[0];
-  dateInput.max = maxDate.toISOString().split("T")[0];
-}
-loadData();
- 
-// ---------- DYNAMIC DURATION OPTIONS ----------
-// Shrinks the duration dropdown so a booking can never run past that amenity's closing time
-// (this is what naturally produces "8pm -> max 3 hours, 9pm -> max 2 hours" for a space that closes at 11pm)
-function updateDurationOptions() {
-  const durationSelect = document.getElementById("resDuration");
-  const hint = document.getElementById("durationHint");
-  const closingNote = document.getElementById("closingNote");
-  const date = document.getElementById("resDate").value;
-  const startStr = document.getElementById("resStart").value;
- 
-  if (!selectedAmenity || !date || !startStr) return; // not enough info yet, leave defaults
- 
-  const startTime = new Date(`${date}T${startStr}:00`);
-  const dow = startTime.getDay();
-  const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
- 
-  durationSelect.innerHTML = "";
-  closingNote.style.display = "none";
- 
-  if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
-    durationSelect.innerHTML = '<option value="">Closed this day</option>';
-    hint.textContent = "This amenity is closed on the selected day.";
-    return;
-  }
- 
-  const openTime = new Date(`${date}T${hoursRow.open_time}`);
-  const closeTime = new Date(`${date}T${hoursRow.close_time}`);
- 
-  if (startTime < openTime || startTime >= closeTime) {
-    durationSelect.innerHTML = '<option value="">Outside business hours</option>';
-    hint.textContent = `Open ${hoursRow.open_time.slice(0,5)} - ${hoursRow.close_time.slice(0,5)} on this day.`;
-    return;
-  }
- 
-  const maxMinutes = Math.floor((closeTime - startTime) / 60000);
-  const allOptions = [60, 120, 180, 240];
-  const validOptions = allOptions.filter(m => m <= maxMinutes);
- 
-  if (validOptions.length === 0) {
-    durationSelect.innerHTML = '<option value="">No duration fits before closing</option>';
-    hint.textContent = `Closes at ${hoursRow.close_time.slice(0,5)} — pick an earlier start time.`;
-    return;
-  }
- 
-  validOptions.forEach(m => {
-    const opt = document.createElement("option");
-    opt.value = m;
-    opt.textContent = (m / 60) + (m === 60 ? " hour" : " hours");
-    durationSelect.appendChild(opt);
-  });
-  hint.textContent = `Closes at ${hoursRow.close_time.slice(0,5)} on this day.`;
- 
-  // late-evening warning: only relevant for spaces open into the evening (close at/after 9pm)
-  if (closeTime.getHours() >= 21 && startTime.getHours() >= 20) {
-    closingNote.style.display = "block";
-    closingNote.textContent = `Please plan accordingly — ${selectedAmenity.name} closes at ${hoursRow.close_time.slice(0,5)}. You must exit by then.`;
-  }
-}
-document.getElementById("resDate").addEventListener("change", () => { updateDurationOptions(); renderAvailability(); });
-document.getElementById("resDuration").addEventListener("change", () => { renderTimeScroller(); });
- 
-// ---------- AVAILABILITY LIST + AM/PM TIME SCROLLER (booking page) ----------
-let dayOpenMin = null, dayCloseMin = null, dayBookingsCache = [], selectedStartMin = null, ampmMode = "AM";
- 
-function minToLabel(min) {
-  const h24 = Math.floor(min / 60) % 24, m = min % 60;
-  const ref = new Date(2000, 0, 1, h24, m);
-  return ref.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  if (tab === "bookings") loadBookings();
+  if (tab === "approvals") loadApprovals();
+  if (tab === "waitlist") loadWaitlist();
+  loadStats();
 }
  
-function minuteStatus(min) {
-  if (dayOpenMin === null || min < dayOpenMin || min >= dayCloseMin) return "disabled";
-  const slotEnd = min + 15;
-  const overlap = dayBookingsCache.find(b => b.startMin < slotEnd && b.endMin > min);
-  if (overlap) return overlap.key_picked_up ? "booked" : "booked-keys-out";
-  return "open";
-}
- 
-async function renderAvailability() {
-  const section = document.getElementById("availabilitySection");
-  const date = document.getElementById("resDate").value;
-  selectedStartMin = null;
-  document.getElementById("resStart").value = "";
- 
-  if (!selectedAmenity || !date) { section.style.display = "none"; return; }
- 
-  const dow = new Date(`${date}T00:00:00`).getDay();
-  const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
-  section.style.display = "block";
- 
-  if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
-    dayOpenMin = dayCloseMin = null;
-    document.getElementById("bookedRangesList").innerHTML = '<div class="booked-range-empty">Closed this day.</div>';
-    document.getElementById("timeScroller").innerHTML = "";
-    return;
-  }
- 
-  const [oh, om] = hoursRow.open_time.split(":").map(Number);
-  const [ch, cm] = hoursRow.close_time.split(":").map(Number);
-  dayOpenMin = oh * 60 + om;
-  dayCloseMin = ch * 60 + cm;
-  if (dayCloseMin <= dayOpenMin) dayCloseMin += 24 * 60;
- 
-  const dayStart = new Date(`${date}T00:00:00`).toISOString();
-  const dayEnd = new Date(`${date}T23:59:59`).toISOString();
-  const { data: dayBookings } = await sb
-    .from("bookings")
-    .select("start_time, end_time, key_picked_up")
-    .eq("amenity_id", selectedAmenity.id)
-    .eq("status", "confirmed")
-    .lt("start_time", dayEnd)
-    .gt("end_time", dayStart);
- 
-  const dayBase = new Date(`${date}T00:00:00`);
-  dayBookingsCache = (dayBookings || []).map(b => {
-    const s = new Date(b.start_time), e = new Date(b.end_time);
-    return { startMin: Math.round((s - dayBase) / 60000), endMin: Math.round((e - dayBase) / 60000), key_picked_up: b.key_picked_up };
-  }).sort((a, b) => a.startMin - b.startMin);
- 
-  renderBookedRangesList();
-  // default to whichever half of the day the amenity opens in
-  ampmMode = dayOpenMin < 720 ? "AM" : "PM";
-  syncAmPmTabs();
-  renderTimeScroller();
-}
- 
-function renderBookedRangesList() {
-  const box = document.getElementById("bookedRangesList");
-  if (dayBookingsCache.length === 0) {
-    box.innerHTML = '<div class="booked-range-empty">Nothing booked yet this day &mdash; fully open.</div>';
-    return;
-  }
-  box.innerHTML = dayBookingsCache.map(b => `
-    <div class="booked-range-row${b.key_picked_up ? "" : " keys-out"}">
-      <span class="range-time">${minToLabel(b.startMin)} \u2013 ${minToLabel(b.endMin)}</span>
-      <span>${b.key_picked_up ? "Booked" : "Booked \u00b7 keys still out"}</span>
-    </div>`).join("");
-}
- 
-function syncAmPmTabs() {
-  document.getElementById("amTabBtn").classList.toggle("active", ampmMode === "AM");
-  document.getElementById("pmTabBtn").classList.toggle("active", ampmMode === "PM");
-}
-document.getElementById("amTabBtn").onclick = () => { ampmMode = "AM"; syncAmPmTabs(); renderTimeScroller(); };
-document.getElementById("pmTabBtn").onclick = () => { ampmMode = "PM"; syncAmPmTabs(); renderTimeScroller(); };
- 
-function renderTimeScroller() {
-  const scroller = document.getElementById("timeScroller");
-  if (dayOpenMin === null) { scroller.innerHTML = ""; return; }
- 
-  const base = ampmMode === "AM" ? 0 : 720;
-  const rows = [];
-  for (let i = 0; i < 48; i++) {
-    const min = base + i * 15;
-    const status = minuteStatus(min);
-    if (status === "disabled") continue; // outside open hours -- just hide, nothing useful to show
-    rows.push({ min, status });
-  }
- 
-  if (rows.length === 0) {
-    scroller.innerHTML = `<div class="booked-range-empty" style="padding:14px;">Closed during ${ampmMode === "AM" ? "the morning" : "the afternoon/evening"} on this day.</div>`;
-    return;
-  }
- 
-  scroller.innerHTML = rows.map(r => `
-    <div class="time-slot-row ${r.status === "open" ? "" : "booked"} ${selectedStartMin === r.min ? "selected" : ""}" data-min="${r.min}">
-      <span>${minToLabel(r.min)}</span>
-      ${r.status !== "open" ? `<span class="slot-tag">${r.status === "booked-keys-out" ? "Keys Out" : "Booked"}</span>` : ""}
-    </div>`).join("");
- 
-  scroller.querySelectorAll(".time-slot-row").forEach(row => {
-    row.onclick = () => selectStart(parseInt(row.dataset.min, 10));
-  });
-}
- 
-function selectStart(min) {
-  selectedStartMin = min;
-  const h = String(Math.floor(min / 60) % 24).padStart(2, "0");
-  const m = String(min % 60).padStart(2, "0");
-  document.getElementById("resStart").value = `${h}:${m}`;
-  updateDurationOptions();
-  renderTimeScroller();
-}
- 
-// ---------- SUBMIT ----------
-document.getElementById("submitBtn").onclick = async () => {
-  const resultBox = document.getElementById("resultMsg");
-  resultBox.innerHTML = "";
- 
-  if (!resident.name || !resident.apt) {
-    showScreen("authStep");
-    return;
-  }
-  if (!selectedAmenity) return showMsg("err", "Please select an amenity.");
-  const date = document.getElementById("resDate").value;
-  const startStr = document.getElementById("resStart").value;
-  const duration = parseInt(document.getElementById("resDuration").value, 10);
-  const guests = parseInt(document.getElementById("resGuests").value || "0", 10);
-  const comments = document.getElementById("resComments").value.trim();
-  const agreed = document.getElementById("resAgree").checked;
-  const isBulk = document.getElementById("resBulk").checked;
- 
-  if (!date || !startStr) return showMsg("err", "Please choose a date and start time.");
-  if (!agreed) return showMsg("err", "You must agree to the reservation agreement to continue.");
-  if (guests > selectedAmenity.max_guests) return showMsg("err", `This space allows a maximum of ${selectedAmenity.max_guests} guests.`);
- 
-  if (isBulk) {
-    return submitBulkBooking(date, startStr, duration, guests, comments);
-  }
- 
-  const startTime = new Date(`${date}T${startStr}:00`);
-  const endTime = new Date(startTime.getTime() + duration * 60000);
- 
-  // ---- check business hours ----
-  const dow = startTime.getDay();
-  const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
-  if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
-    return showMsg("err", "This amenity is closed on the selected day.");
-  }
-  const openTime = new Date(`${date}T${hoursRow.open_time}`);
-  const closeTime = new Date(`${date}T${hoursRow.close_time}`);
-  if (startTime < openTime || endTime > closeTime) {
-    return showMsg("err", `Reservations must fit within business hours: ${hoursRow.open_time.slice(0,5)} - ${hoursRow.close_time.slice(0,5)} on this day.`);
-  }
- 
-  // ---- check for overlap with existing confirmed bookings ----
-  const { data: overlaps, error: overlapErr } = await sb
-    .from("bookings")
-    .select("id")
-    .eq("amenity_id", selectedAmenity.id)
-    .eq("status", "confirmed")
-    .lt("start_time", endTime.toISOString())
-    .gt("end_time", startTime.toISOString());
- 
-  if (overlapErr) return showMsg("err", "Something went wrong checking availability. Please try again.");
- 
-  if (overlaps && overlaps.length > 0) {
-    // slot taken -> join waitlist
-    const { data: waitRow, error: waitErr } = await sb.from("waitlist").insert({
-      amenity_id: selectedAmenity.id,
-      resident_name: resident.name,
-      apartment_number: resident.apt,
-      profile_id: resident.profileId,
-      start_time: startTime.toISOString(),
-      end_time: endTime.toISOString(),
-      guests, comments
-    }).select().single();
- 
-    if (waitErr) return showMsg("err", "Something went wrong joining the waitlist. Please try again.");
- 
-    const { count } = await sb
-      .from("waitlist")
-      .select("id", { count: "exact", head: true })
-      .eq("amenity_id", selectedAmenity.id)
-      .eq("status", "waiting")
-      .lt("start_time", endTime.toISOString())
-      .gt("end_time", startTime.toISOString());
- 
-    showConfirmationModal(`That time is already booked for ${selectedAmenity.name}. You've been added to the waitlist \u2014 you are position #${count}. ${count === 1 ? "You're first in line: if the current holder does not pick up their keys, this room may become available to you. " : ""}We'll notify you if it opens up.`, "wait");
-    resetBookingForm();
-    return;
-  }
- 
-  // ---- no overlap -> confirm booking ----
-  const { error: insertErr } = await sb.from("bookings").insert({
-    amenity_id: selectedAmenity.id,
-    resident_name: resident.name,
-    apartment_number: resident.apt,
-    profile_id: resident.profileId,
-    start_time: startTime.toISOString(),
-    end_time: endTime.toISOString(),
-    guests, comments
-  });
- 
-  if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
- 
-  const pickupInstructions = getPickupInstructions(selectedAmenity, startTime, date);
-  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${formatDateTime(startTime.toISOString())}. ${pickupInstructions} If keys aren't picked up within 45 minutes of your reservation's start time, this space will be released and offered to the next person on the waitlist.`);
-  resetBookingForm();
-};
- 
-// ---------- BULK BOOKING (private offices only, plan the week) ----------
-async function submitBulkBooking(date, startStr, duration, guests, comments) {
-  const groupId = crypto.randomUUID();
-  const results = []; // { date, outcome: 'confirmed'|'pending'|'skipped-closed'|'skipped-booked' }
- 
-  for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
-    const d = new Date(`${date}T00:00:00`);
-    d.setDate(d.getDate() + dayOffset);
-    const dStr = d.toISOString().split("T")[0];
- 
-    const startTime = new Date(`${dStr}T${startStr}:00`);
-    const endTime = new Date(startTime.getTime() + duration * 60000);
-    const dow = startTime.getDay();
-    const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
- 
-    if (!hoursRow || !hoursRow.open_time || !hoursRow.close_time) {
-      results.push({ date: dStr, outcome: "skipped-closed" });
-      continue;
-    }
-    const openTime = new Date(`${dStr}T${hoursRow.open_time}`);
-    const closeTime = new Date(`${dStr}T${hoursRow.close_time}`);
-    if (startTime < openTime || endTime > closeTime) {
-      results.push({ date: dStr, outcome: "skipped-closed" });
-      continue;
-    }
- 
-    const { data: overlaps } = await sb
-      .from("bookings").select("id")
-      .eq("amenity_id", selectedAmenity.id).eq("status", "confirmed")
-      .lt("start_time", endTime.toISOString()).gt("end_time", startTime.toISOString());
- 
-    if (overlaps && overlaps.length > 0) {
-      results.push({ date: dStr, outcome: "skipped-booked" });
-      continue;
-    }
- 
-    const status = dayOffset === 0 ? "confirmed" : "pending";
-    const { error } = await sb.from("bookings").insert({
-      amenity_id: selectedAmenity.id,
-      resident_name: resident.name, apartment_number: resident.apt, profile_id: resident.profileId,
-      start_time: startTime.toISOString(), end_time: endTime.toISOString(),
-      guests, comments, status, bulk_group_id: groupId
-    });
- 
-    results.push({ date: dStr, outcome: error ? "skipped-error" : status });
-  }
- 
-  const fmt = (iso) => new Date(iso + "T00:00:00").toLocaleDateString([], { weekday: "short", month: "numeric", day: "numeric" });
-  const lines = results.map(r => {
-    if (r.outcome === "confirmed") return `${fmt(r.date)}: Confirmed`;
-    if (r.outcome === "pending") return `${fmt(r.date)}: Pending admin approval`;
-    if (r.outcome === "skipped-closed") return `${fmt(r.date)}: Skipped (closed or outside hours)`;
-    if (r.outcome === "skipped-booked") return `${fmt(r.date)}: Skipped (already booked \u2014 book manually if needed)`;
-    return `${fmt(r.date)}: Something went wrong, please try that day again`;
-  });
- 
-  showConfirmationModal(`Your 6-day plan for ${selectedAmenity.name}:<br/>` + lines.join("<br/>"));
-  resetBookingForm();
-}
- 
-function showConfirmationModal(text, type = "ok") {
-  document.getElementById("confirmModalText").innerHTML = text;
-  const icon = document.getElementById("confirmModalIcon");
-  const title = document.getElementById("confirmModalTitle");
-  if (type === "wait") {
-    icon.style.stroke = "#8A5A00";
-    icon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
-    title.textContent = "Added to Waitlist";
-  } else {
-    icon.style.stroke = "#2C5C36";
-    icon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/>';
-    title.textContent = "Reservation Confirmed";
-  }
-  document.getElementById("confirmModalBackdrop").classList.add("visible");
-}
- 
-function resetBookingForm() {
-  document.querySelectorAll('input[name="amenity"]').forEach(r => r.checked = false);
-  selectedAmenity = null;
-  document.getElementById("resDate").value = "";
-  document.getElementById("resStart").value = "";
-  document.getElementById("resGuests").value = "0";
-  document.getElementById("resComments").value = "";
-  document.getElementById("resAgree").checked = false;
-  document.getElementById("resBulk").checked = false;
-  document.getElementById("bulkBookingSection").style.display = "none";
-  document.getElementById("availabilitySection").style.display = "none";
-  document.getElementById("resultMsg").innerHTML = "";
-}
- 
-// Cinema bookings can start after the leasing office itself has closed for the day (extended hours to 11pm).
-// In that case, fob pickup has to happen before the office closes -- not "at reservation start time".
-function getPickupInstructions(amenity, startTime, dateStr) {
-  const standard = "Please pick up your fob from the leasing office at your reservation start time.";
-  if (amenity.name !== "Cinema Theater") return standard;
- 
-  const dow = startTime.getDay();
-  const officeRow = officeHours.find(h => h.day_of_week === dow);
-  if (!officeRow || !officeRow.close_time) return standard;
- 
-  const officeClose = new Date(`${dateStr}T${officeRow.close_time}`);
-  if (startTime >= officeClose) {
-    const closeStr = officeClose.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    return `Since this is after the leasing office's normal hours, please pick up your fob from the leasing office 15 minutes before office closing time (by around ${closeStr}) rather than at your reservation start time.`;
-  }
-  return standard;
-}
- 
-function showMsg(type, text) {
-  document.getElementById("resultMsg").innerHTML = `<div class="msg ${type}">${text}</div>`;
-}
- 
-document.getElementById("confirmModalDoneBtn").onclick = () => {
-  document.getElementById("confirmModalBackdrop").classList.remove("visible");
-  showScreen("menuStep");
-  loadHomeCard();
-};
- 
-// ---------- HOME CARD (shows next upcoming booking right on the home screen) ----------
-async function loadHomeCard() {
-  const box = document.getElementById("homeUpcomingCard");
-  if (!resident.apt) { box.innerHTML = ""; return; }
+// ---------- STATS ----------
+async function loadStats() {
   const nowIso = new Date().toISOString();
- 
-  const { data } = await sb
-    .from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)")
-    .eq("status", "confirmed").gt("end_time", nowIso)
-    .order("start_time").limit(1);
- 
-  if (!data || data.length === 0) { box.innerHTML = ""; return; }
-  const b = data[0];
-  const showCountdown = !b.key_picked_up && new Date(b.start_time) <= new Date() && await hasOverlappingWaitlist(b);
-  const div = document.createElement("div");
-  div.className = "res-item";
-  div.style.marginTop = "16px";
-  div.innerHTML = `
-    <div class="res-title">Your Next Reservation</div>
-    <div class="res-title">${b.amenities.name}</div>
-    <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
-    <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
-    <div class="res-time">${keyStatusText(b)}</div>
-    ${showCountdown ? keyCountdownPlaceholder(b) : ""}
-    ${depositReminderHtml(b)}
-    <button data-id="${b.id}" data-type="booking">Give Up / Cancel This Reservation</button>`;
-  div.querySelector("button").onclick = (e) => { cancelReservation(b.id, "booking", e.target); };
-  box.innerHTML = "";
-  box.appendChild(div);
-  tickAllCountdowns();
+  const [{ count: pendingBookings }, { count: pendingExt }, { count: activeFobs }, { count: upcoming }] = await Promise.all([
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "pending").gt("end_time", nowIso),
+    sb.from("extension_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").eq("key_picked_up", true).eq("key_returned", false),
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").gt("end_time", nowIso)
+  ]);
+  const stats = [
+    { label: "Awaiting Approval", value: (pendingBookings || 0) + (pendingExt || 0) },
+    { label: "Active Fobs", value: activeFobs || 0 },
+    { label: "Upcoming Bookings", value: upcoming || 0 }
+  ];
+  document.getElementById("statRow").innerHTML = stats.map(s => `
+    <div class="stat-tile"><div class="stat-label">${s.label}</div><div class="stat-num">${s.value}</div></div>`).join("");
 }
  
-// ---------- MY RESERVATIONS ----------
-async function loadMyReservations() {
-  const listBox = document.getElementById("myResList");
-  const pastBox = document.getElementById("pastResList");
-  const pastHeading = document.getElementById("pastHeading");
-  listBox.innerHTML = "Loading...";
-  pastBox.innerHTML = "";
+// ---------- NOTIFICATIONS (staff-triggered) ----------
+async function sendNotification(apartmentNumber, type, message) {
+  if (!apartmentNumber || apartmentNumber === "N/A") return;
+  const { error } = await sb.from("notifications").insert({ apartment_number: apartmentNumber, type, message });
+  if (error) console.error("Notification insert failed:", error.message);
+}
+function fmtRange(start, end) {
+  return `${new Date(start).toLocaleDateString([], { month: "short", day: "numeric" })}, ${new Date(start).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}\u2013${new Date(end).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+}
  
+// ---------- BOOKINGS ----------
+async function loadBookings() {
+  const view = document.getElementById("bookingsView");
+  view.innerHTML = "Loading...";
   const nowIso = new Date().toISOString();
-  const amenitySelect = "*, amenities(name, requires_deposit, deposit_amount)";
+  const { data, error } = await sb.from("bookings")
+    .select("*, amenities(name, requires_deposit, deposit_amount)")
+    .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
  
-  const { data: myBookings } = await sb
-    .from("bookings").select(amenitySelect)
-    .eq("status", "confirmed").eq("key_returned", false).gt("end_time", nowIso).order("start_time");
+  if (error) { view.innerHTML = `<div class="msg err">Error loading bookings: ${error.message}</div>`; return; }
+  if (!data || data.length === 0) { view.innerHTML = "<p>No upcoming bookings.</p>"; return; }
  
-  const { data: myPending } = await sb
-    .from("bookings").select(amenitySelect)
-    .eq("status", "pending").gt("end_time", nowIso).order("start_time");
- 
-  const { data: myWaitlist } = await sb
-    .from("waitlist").select(amenitySelect)
-    .eq("status", "waiting").gt("end_time", nowIso).order("start_time");
- 
-  // "Completed" means either the scheduled end_time has passed, OR the resident
-  // already returned their key early -- either way it's no longer "upcoming"
-  const { data: pastBookings } = await sb
-    .from("bookings").select(amenitySelect)
-    .in("status", ["confirmed", "cancelled"])
-    .or(`end_time.lte.${nowIso},key_returned.eq.true`)
-    .order("start_time", { ascending: false }).limit(10);
- 
-  listBox.innerHTML = "";
- 
-  if ((!myBookings || myBookings.length === 0) && (!myPending || myPending.length === 0) && (!myWaitlist || myWaitlist.length === 0)) {
-    listBox.innerHTML = "<p>You have no upcoming reservations or waitlist entries.</p>";
-  }
- 
-  for (const b of (myPending || [])) {
-    const div = document.createElement("div");
-    div.className = "res-item";
-    div.innerHTML = `
-      <div class="res-title">${b.amenities.name}</div>
-      <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
-      <span class="res-status waiting">Pending Admin Approval</span>
-      <div class="hint">Part of a 6-day office plan &mdash; the leasing office needs to approve this day.</div>
-      <button data-id="${b.id}" data-type="pending">Cancel This Request</button>`;
-    div.querySelector("button").onclick = (e) => cancelReservation(b.id, "pending", e.target);
-    listBox.appendChild(div);
-  }
- 
-  for (const b of (myBookings || [])) {
-    const showCountdown = !b.key_picked_up && new Date(b.start_time) <= new Date() && await hasOverlappingWaitlist(b);
-    const div = document.createElement("div");
-    div.className = "res-item";
-    div.innerHTML = `
-      <div class="res-title">${b.amenities.name}</div>
-      <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
-      <span class="res-status confirmed">Confirmed</span>
-      <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
-      <div class="res-time">${keyStatusText(b)}</div>
-      ${showCountdown ? keyCountdownPlaceholder(b) : ""}
-      ${depositReminderHtml(b)}
-      <div id="ext-${b.id}"></div>
-      <button data-id="${b.id}" data-type="booking">Give Up / Cancel This Reservation</button>`;
-    div.querySelector("button").onclick = (e) => cancelReservation(b.id, "booking", e.target);
-    listBox.appendChild(div);
-    renderExtensionControls(b);
-  }
-  tickAllCountdowns();
- 
-  for (const w of (myWaitlist || [])) {
-    const position = await waitlistPosition(w);
-    const div = document.createElement("div");
-    div.className = "res-item";
-    div.innerHTML = `
-      <div class="res-title">${w.amenities.name}</div>
-      <div class="res-time">${formatDateTimeRange(w.start_time, w.end_time)}</div>
-      <span class="res-status waiting">Waiting &mdash; position #${position}</span>
-      <button data-id="${w.id}" data-type="waitlist">Leave Waitlist</button>`;
-    div.querySelector("button").onclick = (e) => cancelReservation(w.id, "waitlist", e.target);
-    listBox.appendChild(div);
-  }
- 
-  // Past reservations (collapsed by default)
-  pastBox.innerHTML = "";
-  if (pastBookings && pastBookings.length > 0) {
-    pastHeading.style.display = "block";
-    pastBookings.forEach(b => {
-      const div = document.createElement("div");
-      div.className = "res-item";
-      const statusLabel = b.status === "cancelled" ? "Cancelled" : "Completed";
-      div.innerHTML = `
-        <div class="res-title">${b.amenities.name}</div>
-        <div class="res-time">${formatDateTime(b.start_time)}</div>
-        <span class="res-status confirmed">${statusLabel}</span>`;
-      pastBox.appendChild(div);
-    });
-  } else {
-    pastHeading.style.display = "none";
-  }
-}
- 
-function timeRemainingText(startIso, endIso) {
-  const now = new Date();
-  const start = new Date(startIso);
-  const end = new Date(endIso);
-  if (now < start) {
-    const mins = Math.round((start - now) / 60000);
-    if (mins < 60) return `Starts in ${mins} minute${mins === 1 ? "" : "s"}`;
-    const hrs = Math.round(mins / 60);
-    return `Starts in about ${hrs} hour${hrs === 1 ? "" : "s"}`;
-  }
-  if (now >= start && now < end) {
-    const mins = Math.round((end - now) / 60000);
-    return `In progress &mdash; ends in ${mins} minute${mins === 1 ? "" : "s"}`;
-  }
-  return "";
-}
- 
-function keyStatusText(b) {
-  if (b.key_returned) return "Key: picked up and returned.";
-  if (b.key_picked_up) return "Key: picked up, not yet returned.";
-  return "Key: not yet picked up from the leasing office.";
-}
- 
-// ---------- EXTENSION REQUESTS (always require staff approval) ----------
-async function renderExtensionControls(booking) {
-  const box = document.getElementById(`ext-${booking.id}`);
-  if (!box) return;
- 
-  const { data: existing } = await sb
-    .from("extension_requests").select("*")
-    .eq("booking_id", booking.id).order("created_at", { ascending: false }).limit(1);
- 
-  const latest = existing && existing[0];
-  if (latest && latest.status === "pending") {
-    box.innerHTML = `<div class="msg wait">Extension request pending: +${latest.requested_hours} hr(s), awaiting leasing office approval.</div>`;
-    return;
-  }
- 
-  const dow = new Date(booking.start_time).getDay();
-  const dateStr = booking.start_time.split("T")[0];
-  const hoursRow = amenityHours.find(h => h.amenity_id === booking.amenity_id && h.day_of_week === dow);
-  if (!hoursRow || !hoursRow.close_time) { box.innerHTML = ""; return; }
- 
-  const closeTime = new Date(`${dateStr}T${hoursRow.close_time}`);
-  const currentEnd = new Date(booking.end_time);
-  const maxExtendMinutes = Math.floor((closeTime - currentEnd) / 60000);
-  const maxHours = Math.min(4, Math.floor(maxExtendMinutes / 30) * 0.5); // in 30-min increments, capped at 4hrs
- 
-  if (maxHours <= 0) { box.innerHTML = ""; return; } // no room left before closing
- 
-  const options = [];
-  for (let h = 0.5; h <= maxHours; h += 0.5) options.push(h);
- 
-  box.innerHTML = `
-    <button type="button" style="background:transparent; border:1.5px solid var(--amber-dark); color:var(--amber-dark); margin-top:10px;" id="extToggle-${booking.id}">Request Extension</button>
-    <div id="extForm-${booking.id}" style="display:none; margin-top:8px;">
-      <select id="extHours-${booking.id}">
-        ${options.map(h => `<option value="${h}">${h} hour${h === 1 ? "" : "s"}</option>`).join("")}
-      </select>
-      <div class="hint">Closes at ${hoursRow.close_time.slice(0,5)} \u2014 max extension shown accordingly. Requires leasing office approval.</div>
-      <button type="button" id="extSubmit-${booking.id}">Submit Extension Request</button>
-    </div>`;
- 
-  document.getElementById(`extToggle-${booking.id}`).onclick = () => {
-    document.getElementById(`extForm-${booking.id}`).style.display = "block";
-    document.getElementById(`extToggle-${booking.id}`).style.display = "none";
-  };
-  document.getElementById(`extSubmit-${booking.id}`).onclick = async () => {
-    const hrs = parseFloat(document.getElementById(`extHours-${booking.id}`).value);
-    const newEnd = new Date(currentEnd.getTime() + hrs * 3600000);
-    const btn = document.getElementById(`extSubmit-${booking.id}`);
-    btn.disabled = true; btn.textContent = "Submitting...";
-    await sb.from("extension_requests").insert({
-      booking_id: booking.id, requested_hours: hrs,
-      current_end_time: currentEnd.toISOString(), new_end_time: newEnd.toISOString()
-    });
-    loadMyReservations();
-  };
-}
- 
-// Per our rule: the pickup countdown only exists at all if someone else is actually waiting.
-async function hasOverlappingWaitlist(booking) {
-  const { count } = await sb
-    .from("waitlist").select("id", { count: "exact", head: true })
-    .eq("amenity_id", booking.amenity_id).eq("status", "waiting")
-    .lt("start_time", booking.end_time).gt("end_time", booking.start_time);
-  return (count || 0) > 0;
-}
- 
-// Renders a placeholder div with data attributes; tickAllCountdowns() fills in the live text.
-function keyCountdownPlaceholder(booking) {
-  return `<div class="key-countdown" data-start="${booking.start_time}"></div>`;
-}
- 
-function tickAllCountdowns() {
-  document.querySelectorAll(".key-countdown[data-start]").forEach(el => {
-    const start = new Date(el.getAttribute("data-start"));
-    const elapsedMin = (new Date() - start) / 60000;
-    const remaining = Math.ceil(45 - elapsedMin);
- 
-    if (remaining <= 0) {
-      el.className = "key-countdown urgent";
-      el.textContent = "Key pickup window has passed \u2014 this room may be reassigned to the next person on the waitlist shortly.";
-    } else if (remaining <= 10) {
-      el.className = "key-countdown urgent";
-      el.textContent = `\u23F1 ${remaining} minute${remaining === 1 ? "" : "s"} remaining to pick up your keys \u2014 someone is waiting.`;
-    } else if (remaining <= 20) {
-      el.className = "key-countdown warn";
-      el.textContent = `\u23F1 ${remaining} minutes remaining to pick up your keys.`;
-    } else {
-      el.className = "key-countdown ok";
-      el.textContent = `\u23F1 ${remaining} minutes remaining to pick up your keys before it may be released to the waitlist.`;
+  let html = `<div class="section-title">Upcoming Bookings</div><div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Guests</th><th>Key</th><th>Deposit</th><th>Actions</th></tr>`;
+  data.forEach(b => {
+    if (b.is_maintenance_hold) {
+      html += `<tr><td>${b.amenities.name}</td><td><em>Maintenance Hold</em></td>
+        <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>
+        <td><button class="neutral" onclick="clearMaintenanceHold('${b.id}')">Clear Hold</button></td></tr>`;
+      return;
     }
+    html += `<tr>
+      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}</td>
+      <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
+      <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      <td>${b.guests}</td>
+      <td>${!b.key_picked_up ? '<span class="badge no">Not picked up</span>' : `<span class="badge yes">Picked up</span> <span class="badge ${b.key_returned ? 'yes' : 'no'}">${b.key_returned ? 'Returned' : 'Not returned'}</span>`}</td>
+      <td>${b.amenities.requires_deposit ? `<span class="badge ${b.deposit_paid ? 'yes' : 'no'}">${b.deposit_paid ? 'Paid' : 'Unpaid ($' + b.amenities.deposit_amount + ')'}</span>` : '&mdash;'}</td>
+      <td><div class="btn-row">
+        ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up')">Mark Key Picked Up</button>` : ''}
+        ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned')">Mark Key Returned</button>` : ''}
+        ${b.key_picked_up ? `<button class="outline" onclick="undoKeyStatus('${b.id}', ${b.key_returned ? "'key_returned'" : "'key_picked_up'"})">Undo ${b.key_returned ? 'Return' : 'Pickup'}</button>` : ''}
+        ${!b.key_picked_up ? `<button class="outline" onclick="notifyKeyStatus('${b.id}', true)">Notify: Key Ready</button>
+        <button class="outline" onclick="notifyKeyStatus('${b.id}', false)">Notify: Key Not Ready</button>` : ''}
+        ${b.amenities.requires_deposit && !b.deposit_paid ? `<button class="warn" onclick="markDeposit('${b.id}')">Mark Deposit Paid</button>` : ''}
+        <button class="danger" onclick="staffCancel('${b.id}', false)">Cancel &amp; Release to Waitlist</button>
+        <button class="neutral" onclick="staffCancel('${b.id}', true)">Cancel for Maintenance</button>
+      </div></td></tr>`;
   });
-}
-setInterval(tickAllCountdowns, 15000);
- 
-function depositReminderHtml(b) {
-  if (!b.amenities.requires_deposit || b.deposit_paid) return "";
-  return `<div class="msg wait" style="margin-top:8px;">Reminder: a $${b.amenities.deposit_amount} refundable deposit is required for this space. Please pay it at the leasing office if you haven't already.</div>`;
+  html += `</table></div>`;
+  view.innerHTML = html;
 }
  
-async function waitlistPosition(w) {
-  const { count } = await sb
-    .from("waitlist").select("id", { count: "exact", head: true })
-    .eq("amenity_id", w.amenity_id).eq("status", "waiting")
-    .lt("start_time", w.end_time).gt("end_time", w.start_time)
-    .lte("created_at", w.created_at);
-  return count || 1;
+async function markKey(id, field) {
+  const update = { [field]: true }; update[field + "_at"] = new Date().toISOString();
+  await sb.from("bookings").update(update).eq("id", id);
+  loadBookings(); loadStats();
 }
- 
-// Reusable "are you sure?" dialog. Call with a message and a function to run if they confirm.
-let pendingConfirmAction = null;
-function askToConfirm(message, onConfirm) {
-  document.getElementById("confirmDialogText").textContent = message;
-  pendingConfirmAction = onConfirm;
-  document.getElementById("confirmDialogBackdrop").classList.add("visible");
+async function undoKeyStatus(id, field) {
+  const label = field === "key_returned" ? "returned" : "picked up";
+  if (!confirm(`Undo "${label}"? Use this if it was marked by mistake.`)) return;
+  const update = { [field]: false }; update[field + "_at"] = null;
+  await sb.from("bookings").update(update).eq("id", id);
+  loadBookings(); loadStats();
 }
-document.getElementById("confirmDialogCancelBtn").onclick = () => {
-  document.getElementById("confirmDialogBackdrop").classList.remove("visible");
-  pendingConfirmAction = null;
-};
-document.getElementById("confirmDialogYesBtn").onclick = () => {
-  document.getElementById("confirmDialogBackdrop").classList.remove("visible");
-  if (pendingConfirmAction) pendingConfirmAction();
-  pendingConfirmAction = null;
-};
- 
-function cancelReservation(id, type, btn) {
-  const message = type === "waitlist"
-    ? "Are you sure you want to leave the waitlist for this reservation?"
-    : type === "pending"
-    ? "Are you sure you want to cancel this pending request?"
-    : "Are you sure you want to give up / cancel this reservation?";
-  askToConfirm(message, () => performCancel(id, type, btn));
-}
- 
-async function performCancel(id, type, btn) {
-  btn.disabled = true;
-  btn.textContent = "Cancelling...";
- 
-  if (type === "waitlist") {
-    await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
-  } else if (type === "pending") {
-    // A bulk-booking day still awaiting approval -- never occupied a confirmed slot, so no waitlist to promote.
-    await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+async function notifyKeyStatus(id, isReady) {
+  const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
+  if (!booking) return;
+  if (isReady) {
+    await sendNotification(booking.apartment_number, "keys_ready",
+      `Your key for ${booking.amenities.name} (${fmtRange(booking.start_time, booking.end_time)}) is ready for pickup at the leasing office.`);
   } else {
-    // type === "booking": fetch it first so we know amenity/time to promote the right waitlist entry
-    const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
-    if (booking) {
-      await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
-      await promoteNextWaitlisted(booking);
-    }
+    await sendNotification(booking.apartment_number, "keys_not_ready",
+      `Your key for ${booking.amenities.name} (${fmtRange(booking.start_time, booking.end_time)}) isn't ready yet \u2014 the leasing office will notify you when it is.`);
   }
- 
-  // Refresh every view that could be showing this reservation -- whichever one is
-  // actually visible is the one that matters, but both are safe/cheap to refresh.
-  loadMyReservations();
-  loadHomeCard();
+  alert(`Resident notified: key ${isReady ? "ready" : "not ready"}.`);
 }
- 
-// Finds the earliest-joined ("waiting") waitlist entry that overlapped this now-cancelled booking,
-// and confirms it -- matches our FIFO rule, and fires immediately on cancellation (not the 45-min timeout).
-// Runs server-side (SECURITY DEFINER) since the promoted booking belongs to a different
-// resident than whoever triggered this by cancelling -- RLS would otherwise block it.
+async function markDeposit(id) {
+  await sb.from("bookings").update({ deposit_paid: true }).eq("id", id);
+  loadBookings();
+}
+async function clearMaintenanceHold(id) {
+  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+  loadBookings();
+}
+async function staffCancel(id, isMaintenance) {
+  const label = isMaintenance ? "cancel this for maintenance (waitlist will NOT be notified)" : "cancel this and release it to the waitlist";
+  if (!confirm(`Are you sure you want to ${label}?`)) return;
+  const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
+  if (!booking) return;
+  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+  if (isMaintenance) {
+    await sb.from("bookings").insert({
+      amenity_id: booking.amenity_id, resident_name: "Maintenance Hold", resident_email: "n/a",
+      apartment_number: "N/A", start_time: booking.start_time, end_time: booking.end_time,
+      guests: 0, is_maintenance_hold: true
+    });
+    await sendNotification(booking.apartment_number, "booking_cancelled",
+      `Your ${booking.amenities.name} reservation for ${fmtRange(booking.start_time, booking.end_time)} was cancelled by the leasing office for maintenance.`);
+  } else {
+    await sendNotification(booking.apartment_number, "booking_cancelled",
+      `Your ${booking.amenities.name} reservation for ${fmtRange(booking.start_time, booking.end_time)} was cancelled by the leasing office. Anyone waitlisted for that window has been notified.`);
+    await promoteNextWaitlisted(booking);
+  }
+  loadBookings(); loadStats(); renderCalendar();
+}
 async function promoteNextWaitlisted(cancelledBooking) {
-  await sb.rpc("promote_next_waitlisted", { p_cancelled_booking_id: cancelledBooking.id });
-  // Note: the promoted resident finding out is via the notification center (bell icon).
+  const { data: candidates } = await sb.from("waitlist").select("*")
+    .eq("amenity_id", cancelledBooking.amenity_id).eq("status", "waiting")
+    .lt("start_time", cancelledBooking.end_time).gt("end_time", cancelledBooking.start_time)
+    .order("created_at", { ascending: true }).limit(1);
+  if (!candidates || candidates.length === 0) return;
+  const next = candidates[0];
+  await sb.from("bookings").insert({
+    amenity_id: next.amenity_id, resident_name: next.resident_name, resident_email: next.resident_email,
+    apartment_number: next.apartment_number, start_time: next.start_time, end_time: next.end_time,
+    guests: next.guests, comments: next.comments, profile_id: next.profile_id
+  });
+  await sb.from("waitlist").update({ status: "promoted" }).eq("id", next.id);
+  const { data: amenity } = await sb.from("amenities").select("name").eq("id", next.amenity_id).single();
+  await sendNotification(next.apartment_number, "waitlist_promoted",
+    `${amenity ? amenity.name : "The amenity"} you were waitlisted for opened up for ${fmtRange(next.start_time, next.end_time)} \u2014 you're booked in.`);
 }
  
-// keep the unread badge reasonably fresh while the app is open
-setInterval(() => { if (resident.apt) loadNotifications(); }, 45000);
+// ---------- APPROVALS ----------
+async function loadApprovals() {
+  const view = document.getElementById("approvalsView");
+  view.innerHTML = "Loading...";
+  const nowIso = new Date().toISOString();
+  const { data: pendingBookings } = await sb.from("bookings").select("*, amenities(name)")
+    .eq("status", "pending").gt("end_time", nowIso).order("start_time");
+  const { data: pendingExt } = await sb.from("extension_requests")
+    .select("*, bookings(resident_name, resident_email, apartment_number, start_time, end_time, amenities(name))")
+    .eq("status", "pending").order("created_at");
+ 
+  let html = `<div class="section-title">Pending Bookings (6-day office plans)</div>`;
+  if (!pendingBookings || pendingBookings.length === 0) { html += "<p>Nothing awaiting approval.</p>"; }
+  else {
+    html += `<div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Actions</th></tr>`;
+    pendingBookings.forEach(b => {
+      html += `<tr><td>${b.amenities.name}</td>
+        <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
+        <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td><div class="btn-row"><button onclick="approveBooking('${b.id}')">Approve</button>
+        <button class="danger" onclick="denyBooking('${b.id}')">Deny</button></div></td></tr>`;
+    });
+    html += `</table></div>`;
+  }
+  html += `<div class="section-title" style="margin-top:24px;">Pending Extension Requests</div>`;
+  if (!pendingExt || pendingExt.length === 0) { html += "<p>Nothing awaiting approval.</p>"; }
+  else {
+    html += `<div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Current End</th><th>Requested</th><th>New End</th><th>Actions</th></tr>`;
+    pendingExt.forEach(e => {
+      html += `<tr><td>${e.bookings.amenities.name}</td>
+        <td>${e.bookings.resident_name}<br/><small>${e.bookings.resident_email}<br/>Apt ${e.bookings.apartment_number}</small></td>
+        <td class="mono">${new Date(e.current_end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td>+${e.requested_hours} hr</td>
+        <td class="mono">${new Date(e.new_end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+        <td><div class="btn-row"><button onclick="approveExtension('${e.id}','${e.booking_id}','${e.new_end_time}')">Approve</button>
+        <button class="danger" onclick="denyExtension('${e.id}')">Deny</button></div></td></tr>`;
+    });
+    html += `</table></div>`;
+  }
+  view.innerHTML = html;
+}
+async function approveBooking(id) {
+  const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
+  await sb.from("bookings").update({ status: "confirmed" }).eq("id", id);
+  if (booking) {
+    await sendNotification(booking.apartment_number, "approval",
+      `Your ${booking.amenities.name} reservation for ${fmtRange(booking.start_time, booking.end_time)} was approved.`);
+  }
+  loadApprovals(); loadStats(); renderCalendar();
+}
+async function denyBooking(id) {
+  const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
+  await sb.from("bookings").update({ status: "rejected" }).eq("id", id);
+  if (booking) {
+    await sendNotification(booking.apartment_number, "booking_rejected",
+      `Your ${booking.amenities.name} request for ${fmtRange(booking.start_time, booking.end_time)} was not approved by the leasing office.`);
+  }
+  loadApprovals(); loadStats(); renderCalendar();
+}
+async function approveExtension(reqId, bookingId, newEndTime) {
+  await sb.from("bookings").update({ end_time: newEndTime }).eq("id", bookingId);
+  await sb.from("extension_requests").update({ status: "approved" }).eq("id", reqId);
+  const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", bookingId).single();
+  if (booking) {
+    await sendNotification(booking.apartment_number, "extension_approved",
+      `Your ${booking.amenities.name} extension was approved \u2014 new end time ${new Date(newEndTime).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}.`);
+  }
+  loadApprovals(); loadStats(); renderCalendar();
+}
+async function denyExtension(reqId) {
+  const { data: req } = await sb.from("extension_requests")
+    .select("*, bookings(apartment_number, amenities(name))").eq("id", reqId).single();
+  await sb.from("extension_requests").update({ status: "denied" }).eq("id", reqId);
+  if (req && req.bookings) {
+    await sendNotification(req.bookings.apartment_number, "extension_denied",
+      `Your request to extend your ${req.bookings.amenities.name} reservation was denied.`);
+  }
+  loadApprovals(); loadStats();
+}
+ 
+// ---------- WAITLIST ----------
+async function loadWaitlist() {
+  const view = document.getElementById("waitlistView");
+  view.innerHTML = "Loading...";
+  const nowIso = new Date().toISOString();
+  const { data, error } = await sb.from("waitlist").select("*, amenities(name)")
+    .eq("status", "waiting").gt("end_time", nowIso).order("amenity_id").order("created_at");
+  if (error) { view.innerHTML = `<div class="msg err">Error: ${error.message}</div>`; return; }
+  if (!data || data.length === 0) { view.innerHTML = "<p>No one is currently waitlisted.</p>"; return; }
+  let html = `<div class="section-title">Waitlist</div><div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Requested Time</th><th>Joined Waitlist</th><th>Actions</th></tr>`;
+  data.forEach(w => {
+    html += `<tr><td>${w.amenities.name}</td>
+      <td>${w.resident_name}<br/><small>${w.resident_email}<br/>Apt ${w.apartment_number}</small></td>
+      <td class="mono">${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
+      <td class="mono">${new Date(w.created_at).toLocaleString()}</td>
+      <td><button class="neutral" onclick="removeFromWaitlist('${w.id}')">Remove from Waitlist</button></td></tr>`;
+  });
+  html += `</table></div>`;
+  view.innerHTML = html;
+}
+async function removeFromWaitlist(id) {
+  if (!confirm("Remove this person from the waitlist?")) return;
+  await sb.from("waitlist").update({ status: "cancelled" }).eq("id", id);
+  loadWaitlist();
+}
+ 
+// ---------- CALENDAR ----------
+let calendarMode = "month";
+let calendarAnchor = new Date();
+const ACCENTS = ["var(--sage)", "var(--dusty)", "var(--clay)", "var(--gold)"];
+let amenityColorMap = {};
+ 
+document.getElementById("calWeekBtn").onclick = () => { calendarMode = "week"; document.getElementById("calWeekBtn").classList.add("active"); document.getElementById("calMonthBtn").classList.remove("active"); renderCalendar(); };
+document.getElementById("calMonthBtn").onclick = () => { calendarMode = "month"; document.getElementById("calMonthBtn").classList.add("active"); document.getElementById("calWeekBtn").classList.remove("active"); renderCalendar(); };
+document.getElementById("calTodayBtn").onclick = () => { calendarAnchor = new Date(); renderCalendar(); };
+document.getElementById("calPrevBtn").onclick = () => { shiftCalendar(-1); };
+document.getElementById("calNextBtn").onclick = () => { shiftCalendar(1); };
+function shiftCalendar(dir) {
+  if (calendarMode === "month") calendarAnchor.setMonth(calendarAnchor.getMonth() + dir);
+  else calendarAnchor.setDate(calendarAnchor.getDate() + dir * 7);
+  calendarAnchor = new Date(calendarAnchor);
+  renderCalendar();
+}
+ 
+function getGridDates() {
+  if (calendarMode === "week") {
+    const start = new Date(calendarAnchor);
+    start.setDate(start.getDate() - start.getDay());
+    return Array.from({ length: 7 }, (_, i) => { const d = new Date(start); d.setDate(start.getDate() + i); return d; });
+  }
+  const firstOfMonth = new Date(calendarAnchor.getFullYear(), calendarAnchor.getMonth(), 1);
+  const gridStart = new Date(firstOfMonth);
+  gridStart.setDate(gridStart.getDate() - firstOfMonth.getDay());
+  const weeks = Math.ceil((firstOfMonth.getDay() + new Date(calendarAnchor.getFullYear(), calendarAnchor.getMonth() + 1, 0).getDate()) / 7);
+  return Array.from({ length: weeks * 7 }, (_, i) => { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); return d; });
+}
+ 
+async function renderCalendar() {
+  const grid = document.getElementById("calGrid");
+  const dates = getGridDates();
+  grid.className = "cal-grid" + (calendarMode === "week" ? " week-mode" : "");
+ 
+  const label = calendarMode === "week"
+    ? `${dates[0].toLocaleDateString([], { month: "short", day: "numeric" })} \u2013 ${dates[6].toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}`
+    : calendarAnchor.toLocaleDateString([], { month: "long", year: "numeric" });
+  document.getElementById("calLabel").textContent = label;
+ 
+  const rangeStart = new Date(dates[0]); rangeStart.setHours(0,0,0,0);
+  const rangeEnd = new Date(dates[dates.length - 1]); rangeEnd.setHours(23,59,59,999);
+ 
+  const { data: bookings } = await sb.from("bookings")
+    .select("*, amenities(name)")
+    .in("status", ["confirmed", "pending"])
+    .lt("start_time", rangeEnd.toISOString()).gt("end_time", rangeStart.toISOString())
+    .order("start_time");
+ 
+  (bookings || []).forEach(b => {
+    if (!(b.amenities.name in amenityColorMap)) {
+      amenityColorMap[b.amenities.name] = ACCENTS[Object.keys(amenityColorMap).length % ACCENTS.length];
+    }
+  });
+ 
+  const byDate = {};
+  (bookings || []).forEach(b => {
+    const key = new Date(b.start_time).toDateString();
+    (byDate[key] = byDate[key] || []).push(b);
+  });
+ 
+  const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  let html = dayNames.map(d => `<div class="cal-day-header">${d}</div>`).join("");
+ 
+  const today = new Date().toDateString();
+  const maxChips = calendarMode === "week" ? 8 : 3;
+ 
+  dates.forEach(d => {
+    const key = d.toDateString();
+    const outside = calendarMode === "month" && d.getMonth() !== calendarAnchor.getMonth();
+    const dayBookings = (byDate[key] || []);
+    const visible = dayBookings.slice(0, maxChips);
+    const overflow = dayBookings.length - visible.length;
+ 
+    html += `<div class="cal-cell ${outside ? 'outside' : ''}">
+      <div class="cal-date-num" style="${key === today ? 'color:var(--amber-dark);' : ''}">${d.getDate()}</div>
+      ${visible.map(b => {
+        const timeStr = new Date(b.start_time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+        const color = amenityColorMap[b.amenities.name];
+        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''}" style="border-left-color:${color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
+      }).join("")}
+      ${overflow > 0 ? `<div class="cal-more" onclick="openDayDetail('${key}')">+${overflow} more</div>` : ""}
+    </div>`;
+  });
+ 
+  grid.innerHTML = html;
+  window._calBookingsCache = bookings || [];
+}
+ 
+function openBookingDetail(id) {
+  const b = (window._calBookingsCache || []).find(x => x.id === id);
+  if (!b) return;
+  const body = document.getElementById("detailModalBody");
+  const timeRange = `${new Date(b.start_time).toLocaleString()} \u2013 ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`;
+  let actions = "";
+  if (b.status === "pending") {
+    actions = `<div class="btn-row">
+      <button onclick="approveBooking('${b.id}'); closeDetail();">Approve</button>
+      <button class="danger" onclick="denyBooking('${b.id}'); closeDetail();">Deny</button>
+    </div>`;
+  } else {
+    actions = `<div class="btn-row">
+      ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up'); closeDetail();">Mark Key Picked Up</button>` : ''}
+      ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned'); closeDetail();">Mark Key Returned</button>` : ''}
+      ${b.key_picked_up ? `<button class="outline" onclick="undoKeyStatus('${b.id}', ${b.key_returned ? "'key_returned'" : "'key_picked_up'"}); closeDetail();">Undo ${b.key_returned ? 'Return' : 'Pickup'}</button>` : ''}
+      ${!b.key_picked_up ? `<button class="outline" onclick="notifyKeyStatus('${b.id}', true)">Notify: Key Ready</button>
+      <button class="outline" onclick="notifyKeyStatus('${b.id}', false)">Notify: Key Not Ready</button>` : ''}
+      <button class="danger" onclick="staffCancel('${b.id}', false); closeDetail();">Cancel &amp; Release to Waitlist</button>
+      <button class="neutral" onclick="staffCancel('${b.id}', true); closeDetail();">Cancel for Maintenance</button>
+    </div>`;
+  }
+  body.innerHTML = `
+    <h3>${b.amenities.name}</h3>
+    <p><strong>${b.resident_name}</strong><br/>${b.resident_email}<br/>Apt ${b.apartment_number}</p>
+    <p class="mono">${timeRange}</p>
+    <p>Guests: ${b.guests}${b.status === "pending" ? '<br/><span class="badge wait">Pending Approval</span>' : ''}
+      ${b.key_picked_up ? `<br/><span class="badge yes">Key Picked Up</span>` : ''}</p>
+    ${actions}`;
+  document.getElementById("detailBackdrop").classList.add("visible");
+}
+ 
+function openDayDetail(dateKey) {
+  const dayBookings = (window._calBookingsCache || []).filter(b => new Date(b.start_time).toDateString() === dateKey);
+  const body = document.getElementById("detailModalBody");
+  body.innerHTML = `<h3>${new Date(dateKey).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}</h3>` +
+    dayBookings.map(b => `<p style="cursor:pointer; border-bottom:1px solid var(--line); padding:8px 0;" onclick="openBookingDetail('${b.id}')">
+      <strong>${new Date(b.start_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</strong> &mdash; ${b.amenities.name}<br/>
+      <small>${b.resident_name}, Apt ${b.apartment_number}</small></p>`).join("");
+  document.getElementById("detailBackdrop").classList.add("visible");
+}
+ 
+function closeDetail() { document.getElementById("detailBackdrop").classList.remove("visible"); }
+document.getElementById("detailCloseBtn").onclick = closeDetail;
+document.getElementById("detailBackdrop").onclick = (e) => { if (e.target.id === "detailBackdrop") closeDetail(); };
+ 
+// =====================================================================
+// APARTMENTS TAB: add units, view/renew PINs, activate/deactivate
+// =====================================================================
+let apartmentCache = [];
+ 
+async function loadApartmentList() {
+  const body = document.getElementById("aptListBody");
+  body.innerHTML = "Loading...";
+  const { data, error } = await sb.from("apartments").select("*").order("unit_number");
+  if (error) { body.innerHTML = "Couldn't load apartments."; return; }
+  apartmentCache = data || [];
+  renderApartmentList();
+}
+ 
+function renderApartmentList() {
+  const body = document.getElementById("aptListBody");
+  const q = (document.getElementById("aptSearchInput").value || "").trim();
+  const rows = apartmentCache.filter(a => !q || a.unit_number.includes(q));
+ 
+  if (rows.length === 0) { body.innerHTML = "<p>No apartments match.</p>"; return; }
+ 
+  body.innerHTML = `
+    <div class="table-wrap">
+    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+      <thead><tr style="text-align:left; border-bottom:1px solid var(--line);">
+        <th style="padding:8px 6px;">Unit</th>
+        <th style="padding:8px 6px;">PIN</th>
+        <th style="padding:8px 6px;">Issued</th>
+        <th style="padding:8px 6px;">Status</th>
+        <th style="padding:8px 6px;"></th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(a => `
+          <tr style="border-bottom:1px solid var(--line);">
+            <td style="padding:8px 6px; font-weight:600;">${a.unit_number}</td>
+            <td style="padding:8px 6px; font-family:var(--font-mono,monospace); letter-spacing:2px;">${a.pin || "\u2014"}</td>
+            <td style="padding:8px 6px; font-size:12px; color:var(--ink-soft,#666);">${a.pin_issued_at ? new Date(a.pin_issued_at).toLocaleDateString() : "\u2014"}</td>
+            <td style="padding:8px 6px;">${a.active ? '<span class="badge yes">Active</span>' : '<span class="badge no">Inactive</span>'}</td>
+            <td style="padding:8px 6px; white-space:nowrap;">
+              <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="renewLease('${a.unit_number}')">Renew Lease</button>
+              <button class="${a.active ? 'neutral' : ''}" style="font-size:12px; padding:5px 10px;" onclick="toggleAptActive('${a.unit_number}', ${!a.active})">${a.active ? "Deactivate" : "Activate"}</button>
+            </td>
+          </tr>`).join("")}
+      </tbody>
+    </table>
+    </div>`;
+}
+document.getElementById("aptSearchInput").addEventListener("input", renderApartmentList);
+ 
+document.getElementById("addAptBtn").onclick = async () => {
+  const raw = document.getElementById("addAptInput").value;
+  const errBox = document.getElementById("addAptError");
+  errBox.style.display = "none";
+  const units = raw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  if (units.length === 0) {
+    errBox.textContent = "Enter at least one apartment number.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  const btn = document.getElementById("addAptBtn");
+  btn.disabled = true; btn.textContent = "Adding...";
+ 
+  const results = [];
+  for (const unit of units) {
+    const { data: pin, error } = await sb.rpc("add_apartment", { p_unit: unit });
+    results.push({ unit, pin, error });
+  }
+ 
+  btn.disabled = false; btn.textContent = "Add Apartment(s)";
+  document.getElementById("addAptInput").value = "";
+  await loadApartmentList();
+ 
+  const failed = results.filter(r => r.error);
+  if (failed.length > 0) {
+    errBox.textContent = `Some units failed to add: ${failed.map(f => f.unit).join(", ")}`;
+    errBox.style.display = "block";
+  }
+ 
+  const succeeded = results.filter(r => !r.error);
+  if (succeeded.length === 1) {
+    showPinReveal(succeeded[0].unit, succeeded[0].pin);
+  } else if (succeeded.length > 1) {
+    alert(`Added ${succeeded.length} apartments with fresh PINs. See the table below, or export CSV to hand them out.`);
+  }
+};
+ 
+async function renewLease(unit) {
+  if (!confirm(`Renew the lease PIN for apartment ${unit}? This immediately signs out whoever is currently using that unit's PIN \u2014 only do this at move-out/move-in.`)) return;
+  const { data: newPin, error } = await sb.rpc("rotate_apartment_pin", { p_apartment: unit });
+  if (error) { alert("Couldn't renew this PIN: " + error.message); return; }
+  await loadApartmentList();
+  showPinReveal(unit, newPin);
+}
+ 
+async function toggleAptActive(unit, makeActive) {
+  const { error } = await sb.from("apartments").update({ active: makeActive }).eq("unit_number", unit);
+  if (error) { alert("Couldn't update this apartment."); return; }
+  await loadApartmentList();
+}
+ 
+function showPinReveal(unit, pin) {
+  document.getElementById("pinRevealUnit").textContent = `Apartment ${unit}`;
+  document.getElementById("pinRevealCode").textContent = pin;
+  document.getElementById("pinRevealBackdrop").style.display = "flex";
+}
+document.getElementById("pinRevealCloseBtn").onclick = () => { document.getElementById("pinRevealBackdrop").style.display = "none"; };
+document.getElementById("pinRevealCopyBtn").onclick = () => {
+  navigator.clipboard.writeText(document.getElementById("pinRevealCode").textContent);
+  const b = document.getElementById("pinRevealCopyBtn");
+  const old = b.textContent; b.textContent = "Copied!";
+  setTimeout(() => { b.textContent = old; }, 1200);
+};
+ 
+document.getElementById("exportPinsBtn").onclick = () => {
+  const rows = [["Unit Number", "PIN", "Issued", "Active"]].concat(
+    apartmentCache.map(a => [a.unit_number, a.pin || "", a.pin_issued_at ? new Date(a.pin_issued_at).toISOString() : "", a.active ? "yes" : "no"])
+  );
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "cendana-apartment-pins.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+ 
+// =====================================================================
+// COMMUNICATIONS TAB: one-way announcements to all active residents
+// =====================================================================
+document.getElementById("commsSendBtn").onclick = async () => {
+  const message = document.getElementById("commsMessageInput").value.trim();
+  const errBox = document.getElementById("commsError");
+  const okBox = document.getElementById("commsSuccess");
+  errBox.style.display = "none"; okBox.style.display = "none";
+ 
+  if (!message) {
+    errBox.textContent = "Write a message before sending.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  const { data: activeApts, error: aptErr } = await sb.from("apartments").select("unit_number").eq("active", true);
+  if (aptErr || !activeApts || activeApts.length === 0) {
+    errBox.textContent = "Couldn't find any active apartments to notify.";
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  if (!confirm(`Send this announcement to all ${activeApts.length} active apartments? This can't be recalled once sent.`)) return;
+ 
+  const btn = document.getElementById("commsSendBtn");
+  btn.disabled = true; btn.textContent = "Sending...";
+ 
+  const rows = activeApts.map(a => ({ apartment_number: a.unit_number, type: "announcement", message }));
+  const { error: sendErr } = await sb.from("notifications").insert(rows);
+ 
+  btn.disabled = false; btn.textContent = "Send to All Residents";
+ 
+  if (sendErr) {
+    errBox.textContent = "Send failed: " + sendErr.message;
+    errBox.style.display = "block";
+    return;
+  }
+ 
+  await sb.from("announcements").insert({ message, recipient_count: activeApts.length });
+  document.getElementById("commsMessageInput").value = "";
+  okBox.textContent = `Sent to ${activeApts.length} apartments.`;
+  okBox.style.display = "block";
+  loadCommsHistory();
+};
+ 
+async function loadCommsHistory() {
+  const body = document.getElementById("commsHistoryBody");
+  body.innerHTML = "Loading...";
+  const { data, error } = await sb.from("announcements").select("*").order("created_at", { ascending: false }).limit(50);
+  if (error) { body.innerHTML = `<div class="msg err">Couldn't load history: ${error.message}</div>`; return; }
+  if (!data || data.length === 0) { body.innerHTML = "<p>No announcements sent yet.</p>"; return; }
+  body.innerHTML = data.map(a => `
+    <div style="border-bottom:1px solid var(--line); padding:12px 0;">
+      <div style="font-size:14px; margin-bottom:4px;">${a.message.replace(/</g, "&lt;")}</div>
+      <div style="font-size:12px; color:var(--ink-soft,#666);">${new Date(a.created_at).toLocaleString()} &middot; sent to ${a.recipient_count} apartment${a.recipient_count === 1 ? "" : "s"}</div>
+    </div>`).join("");
+}
 </script>
 </body>
 </html>
