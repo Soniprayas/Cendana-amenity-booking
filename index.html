@@ -36,12 +36,21 @@
   .onboarding-brand .onboarding-address{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
  
   .profile-tile-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
-  .profile-tile{border:1.5px solid var(--line); border-radius:10px; padding:16px 10px; text-align:center; cursor:pointer; background:#fff; transition:border-color .15s ease, background .15s ease;}
+  .profile-tile{border:1.5px solid var(--line); border-radius:10px; padding:16px 10px; text-align:center; cursor:pointer; background:#fff; transition:border-color .15s ease, background .15s ease; position:relative;}
   .profile-tile:hover{border-color:var(--amber-dark); background:#FBF6EA;}
   .profile-tile .tile-avatar{width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, var(--amber), var(--clay)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:600; font-size:16px; margin:0 auto 8px;}
   .profile-tile .tile-name{font-family:var(--font-display); font-weight:600; font-size:13.5px; color:var(--ink); word-break:break-word;}
   .profile-tile.add-tile{border-style:dashed; color:var(--ink-soft);}
   .profile-tile.add-tile .tile-avatar{background:var(--sand); color:var(--amber-dark); border:1.5px dashed var(--amber-dark);}
+  .tile-kebab{position:absolute; top:4px; right:4px; width:26px; height:26px; border-radius:50%; background:transparent; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);}
+  .tile-kebab:hover{background:rgba(0,0,0,.06);}
+  .tile-kebab svg{width:16px; height:16px; pointer-events:none;}
+  .tile-menu{position:absolute; top:32px; right:6px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.15); z-index:5; min-width:110px; overflow:hidden; display:none;}
+  .tile-menu.open{display:block;}
+  .tile-menu button{display:block; width:100%; text-align:left; padding:9px 12px; font-size:13px; font-family:var(--font-body); font-weight:500; background:#fff; color:var(--ink); border:none; cursor:pointer;}
+  .tile-menu button:hover{background:var(--sand);}
+  .tile-menu button.delete{color:#B04A3E;}
+  .tile-menu button.delete:hover{background:#FBEBE9;}
  
   /* ---- Notification center ---- */
   #notifBackdrop{display:none; position:fixed; inset:0; background:rgba(20,20,20,.35); z-index:250;}
@@ -51,8 +60,9 @@
   .notif-panel-header{display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid var(--line);}
   .notif-panel-header h3{margin:0; font-family:var(--font-display); font-size:16px;}
   #notifList{overflow-y:auto; flex:1; padding:8px;}
-  .notif-item{padding:12px 10px; border-radius:8px; margin-bottom:4px; font-size:13.5px; line-height:1.5;}
-  .notif-item.unread{background:#FBF6EA;}
+  .notif-item{padding:12px 10px; border-radius:8px; margin-bottom:4px; font-size:13.5px; line-height:1.5; position:relative;}
+  .notif-item.unread{background:#FBF6EA; padding-left:22px;}
+  .notif-item .notif-dot{position:absolute; top:16px; left:9px; width:7px; height:7px; border-radius:50%; background:var(--clay);}
   .notif-item .notif-type{font-family:var(--font-display); font-weight:600; font-size:12px; color:var(--amber-dark); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px;}
   .notif-item .notif-time{font-size:11px; color:var(--ink-soft); margin-top:4px;}
   .notif-empty{padding:30px 16px; text-align:center; color:var(--ink-soft); font-size:13px;}
@@ -163,7 +173,7 @@
   .sidebar-link svg{width:18px; height:18px; stroke:var(--amber); flex-shrink:0;}
   .sidebar-link.active{background:rgba(217,164,65,.22); color:#fff;}
   .sidebar-link.active svg{stroke:#fff;}
-  .sidebar-link.logout{margin-top:20px; border-top:1px solid rgba(255,255,255,.12); padding-top:16px; border-radius:0;}
+  .sidebar-link.logout{margin-top:20px;}
   .sidebar-link.logout:hover{background:rgba(176,74,62,.18); color:#F2B3AA;}
   .sidebar-link.logout:hover svg{stroke:#F2B3AA;}
  
@@ -192,12 +202,29 @@
   #confirmDialogYesBtn{background:#B04A3E;}
   #confirmDialogYesBtn:hover{background:#96392f;}
  
+  /* ---- View My PIN modal ---- */
+  #pinModalBackdrop{display:none; position:fixed; inset:0; background:rgba(35,43,54,.55); z-index:60; align-items:center; justify-content:center; padding:20px;}
+  #pinModalBackdrop.visible{display:flex;}
+  #pinModal{background:#fff; border-radius:14px; padding:28px; max-width:360px; width:100%; text-align:center;}
+  #pinModal h3{margin:0 0 4px; font-family:var(--font-display);}
+  #pinModal p.pin-sub{font-size:13px; color:var(--ink-soft); margin:0 0 20px;}
+  .pin-display{display:flex; align-items:center; justify-content:center; gap:16px; background:var(--sand); border-radius:12px; padding:18px; margin-bottom:16px;}
+  .pin-display .pin-block{text-align:left;}
+  .pin-display .pin-label{font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); font-weight:600; margin-bottom:2px;}
+  .pin-display .pin-value{font-family:var(--font-mono, monospace); font-size:22px; font-weight:700; letter-spacing:2px; color:var(--ink);}
+  #pinCopyBtn{background:transparent; border:1.5px solid var(--line); color:var(--ink); margin-top:0;}
+  #pinCopyBtn:hover{background:var(--sand);}
+  #pinModalCloseBtn{margin-top:10px; background:transparent; border:1.5px solid var(--line); color:var(--ink);}
+  #pinModalCloseBtn:hover{background:var(--sand);}
+ 
   /* ==== DESKTOP / WIDE-SCREEN LAYOUT ====
      Below this width: the compact mobile app (drawer sidebar, single centered column).
      Above it: a real dashboard layout -- sidebar pinned open, content spread across the width. */
   @media (min-width: 860px){
     body{padding-left:240px;}
+    body.onboarding-bg{padding-left:0;}
     #sidebar{left:0 !important; width:240px; box-shadow:none; border-right:1px solid rgba(255,255,255,.08);}
+    body.onboarding-bg #sidebar{left:-280px !important; display:none !important;}
     #sidebarBackdrop{display:none !important;}
     #hamburgerBtn{display:none;}
     header{text-align:left; padding:22px 40px;}
@@ -208,9 +235,13 @@
     .amenity-option{margin-top:0;}
     .menu-grid{max-width:520px;}
   }
+  #appLoadingScreen{position:fixed; inset:0; z-index:200; background:linear-gradient(160deg, #232B36 0%, #2E3A47 45%, #3B4A56 100%); display:flex; align-items:center; justify-content:center;}
+  .loading-spinner{width:34px; height:34px; border:3px solid rgba(255,255,255,.25); border-top-color:var(--amber); border-radius:50%; animation:ccrspin .8s linear infinite;}
+  @keyframes ccrspin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
+<div id="appLoadingScreen"><div class="loading-spinner"></div></div>
 <header>
   <h1>Cendana Craig Ranch</h1>
   <p>Amenity Reservations</p>
@@ -247,6 +278,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
+  <button id="markAllReadBtn" style="display:none; margin:8px 12px 0; width:calc(100% - 24px); background:transparent; border:1px solid var(--line); color:var(--ink-soft); font-size:12.5px; font-weight:600; padding:8px; border-radius:8px;">Mark all as read</button>
   <div id="notifList"></div>
 </div>
  
@@ -262,18 +294,38 @@
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     My Reservations
   </button>
-  <button class="sidebar-link" id="sidebarEditInfo">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    Edit My Info
-  </button>
-  <button class="sidebar-link" id="sidebarSwitchProfile" style="display:none;">
+  <button class="sidebar-link" id="sidebarSwitchProfile">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
     Switch Profile
+  </button>
+  <button class="sidebar-link" id="sidebarViewPin">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    View My Apartment PIN
   </button>
   <button class="sidebar-link logout" id="sidebarLogout">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     Log Out
   </button>
+</div>
+ 
+<!-- View My PIN modal -->
+<div id="pinModalBackdrop">
+  <div id="pinModal">
+    <h3>Your Apartment Login</h3>
+    <p class="pin-sub">Use this on any device to sign in as your household.</p>
+    <div class="pin-display">
+      <div class="pin-block">
+        <div class="pin-label">Apartment</div>
+        <div class="pin-value" id="pinModalApt">&mdash;</div>
+      </div>
+      <div class="pin-block">
+        <div class="pin-label">PIN</div>
+        <div class="pin-value" id="pinModalPin">&mdash;</div>
+      </div>
+    </div>
+    <button id="pinCopyBtn">Copy Apartment + PIN</button>
+    <button id="pinModalCloseBtn">Close</button>
+  </div>
 </div>
  
 <!-- Confirmation modal -->
@@ -478,8 +530,26 @@ if ("serviceWorker" in navigator) {
  
 const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
+ 
+// Same class of fix as the admin portal: on a PWA, backgrounded tabs get throttled
+// by the OS and can miss a scheduled token refresh. Retry once after refreshing the
+// session on a 401 instead of surfacing a random failed query.
+async function resilientFetch(url, options) {
+  let res = await fetch(url, options);
+  if (res.status === 401) {
+    const { data, error } = await sb.auth.refreshSession();
+    if (!error && data.session) {
+      const headers = new Headers(options && options.headers);
+      headers.set("Authorization", `Bearer ${data.session.access_token}`);
+      res = await fetch(url, { ...options, headers });
+    }
+  }
+  return res;
+}
+ 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  global: { fetch: resilientFetch }
 });
  
 // ---------- MODERN DATE/TIME FORMATTING ----------
@@ -554,9 +624,37 @@ async function ensureDeviceIdentity() {
 }
  
 // ---------- ESTABLISH A DEVICE IDENTITY, THEN RESTORE APARTMENT LINK IF ALREADY VERIFIED ----------
+setTimeout(() => {
+  // Safety net: if restore hangs (e.g. dropped connection) longer than this, don't
+  // leave the person staring at a spinner forever — fall back to the login screen.
+  if (!appBooted) showScreen("authStep");
+}, 8000);
+ 
+// ---------- RESIDENT SESSION: stays signed in indefinitely for normal use ----------
+// Unlike staff, residents keep the low-friction "basically never asked again"
+// experience — this is a household amenity app, not something holding payment info,
+// and the real access-revocation path is already the apartment's active/inactive flag.
+// The one exception is pure hygiene: a device that hasn't been opened in ~6 months
+// is treated as abandoned and asked to re-enter the PIN once, rather than letting
+// stale device credentials accumulate forever.
+const RESIDENT_MAX_IDLE_MS = 180 * 24 * 60 * 60 * 1000;
+const RESIDENT_LAST_ACTIVE_KEY = "ccr_resident_last_active";
+function touchResidentActivity() { localStorage.setItem(RESIDENT_LAST_ACTIVE_KEY, Date.now().toString()); }
+function residentSessionIdleExpired() {
+  const last = parseInt(localStorage.getItem(RESIDENT_LAST_ACTIVE_KEY) || "0", 10);
+  return !!last && (Date.now() - last) > RESIDENT_MAX_IDLE_MS;
+}
+ 
 (async function init() {
   const session = await ensureDeviceIdentity();
   if (!session) { showScreen("authStep"); return; }
+  if (residentSessionIdleExpired()) {
+    await sb.auth.signOut();
+    localStorage.removeItem(RESIDENT_LAST_ACTIVE_KEY);
+    showScreen("authStep");
+    return;
+  }
+  touchResidentActivity();
   await loadResidentProfile(session);
 })();
  
@@ -597,6 +695,13 @@ function renderProfileTiles(apt) {
   const grid = document.getElementById("profileTileGrid");
   grid.innerHTML = apartmentProfiles.map(p => `
     <div class="profile-tile" data-id="${p.id}">
+      <button class="tile-kebab" data-kebab-id="${p.id}" aria-label="Profile options">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+      </button>
+      <div class="tile-menu" data-menu-id="${p.id}">
+        <button class="edit" data-edit-id="${p.id}">Edit</button>
+        <button class="delete" data-delete-id="${p.id}">Delete</button>
+      </div>
       <div class="tile-avatar">${(p.full_name || "?").trim().charAt(0).toUpperCase()}</div>
       <div class="tile-name">${p.full_name}</div>
     </div>`).join("") + `
@@ -606,11 +711,39 @@ function renderProfileTiles(apt) {
     </div>`;
  
   grid.querySelectorAll(".profile-tile[data-id]").forEach(tile => {
-    tile.onclick = () => {
+    tile.onclick = (e) => {
+      if (e.target.closest(".tile-kebab") || e.target.closest(".tile-menu")) return;
       const p = apartmentProfiles.find(x => x.id === tile.dataset.id);
       if (p) selectProfile(p);
     };
   });
+  grid.querySelectorAll(".tile-kebab").forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const menu = grid.querySelector(`.tile-menu[data-menu-id="${btn.dataset.kebabId}"]`);
+      const wasOpen = menu.classList.contains("open");
+      grid.querySelectorAll(".tile-menu.open").forEach(m => m.classList.remove("open"));
+      if (!wasOpen) menu.classList.add("open");
+    };
+  });
+  grid.querySelectorAll("[data-edit-id]").forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const p = apartmentProfiles.find(x => x.id === btn.dataset.editId);
+      if (p) openEditProfile(p);
+    };
+  });
+  grid.querySelectorAll("[data-delete-id]").forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const p = apartmentProfiles.find(x => x.id === btn.dataset.deleteId);
+      if (p) deleteProfile(p);
+    };
+  });
+  document.addEventListener("click", () => {
+    grid.querySelectorAll(".tile-menu.open").forEach(m => m.classList.remove("open"));
+  }, { once: true });
+ 
   document.getElementById("addProfileTile").onclick = () => {
     addingNewProfile = true;
     editingProfile = false;
@@ -635,6 +768,9 @@ function selectProfile(p) {
  
 document.getElementById("cancelAddProfileLink").onclick = (e) => {
   e.preventDefault();
+  editingProfile = false;
+  addingNewProfile = false;
+  editTargetProfileId = null;
   renderProfileTiles(resident.apt);
   showScreen("profilePickerStep");
 };
@@ -646,8 +782,45 @@ document.getElementById("sidebarSwitchProfile").onclick = () => {
   showScreen("profilePickerStep");
 };
  
+document.getElementById("sidebarViewPin").onclick = async () => {
+  const aptEl = document.getElementById("pinModalApt");
+  const pinEl = document.getElementById("pinModalPin");
+  aptEl.textContent = resident.apt || "\u2014";
+  pinEl.textContent = "...";
+  document.getElementById("pinModalBackdrop").classList.add("visible");
+  // Always fetched live, never cached locally — this is intentionally the only
+  // place the PIN is ever shown, and only reachable once already signed in.
+  const { data, error } = await sb.from("apartments").select("pin").eq("unit_number", resident.apt).single();
+  pinEl.textContent = (!error && data && data.pin) ? data.pin : "Unavailable";
+};
+document.getElementById("pinModalCloseBtn").onclick = () => {
+  document.getElementById("pinModalBackdrop").classList.remove("visible");
+};
+document.getElementById("pinModalBackdrop").onclick = (e) => {
+  if (e.target.id === "pinModalBackdrop") document.getElementById("pinModalBackdrop").classList.remove("visible");
+};
+document.getElementById("pinCopyBtn").onclick = async () => {
+  const apt = document.getElementById("pinModalApt").textContent;
+  const pin = document.getElementById("pinModalPin").textContent;
+  const btn = document.getElementById("pinCopyBtn");
+  try {
+    await navigator.clipboard.writeText(`Apartment ${apt}, PIN ${pin}`);
+    const original = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  } catch (e) {
+    alert(`Apartment ${apt}, PIN ${pin}`);
+  }
+};
+ 
 // ---------- NAVIGATION ----------
+let appBooted = false;
 function showScreen(id) {
+  if (!appBooted) {
+    appBooted = true;
+    const overlay = document.getElementById("appLoadingScreen");
+    if (overlay) overlay.style.display = "none";
+  }
   const requiresIdentity = (id === "step2" || id === "myResStep" || id === "menuStep");
   const hasIdentity = resident.name && resident.apt;
   if (requiresIdentity && !hasIdentity) {
@@ -668,15 +841,10 @@ function showScreen(id) {
   document.getElementById("topBar").classList.toggle("visible", pastAuth && !isOnboarding);
  
   const SIDEBAR_SCREEN_MAP = { step2: "sidebarNewRes", myResStep: "sidebarMyRes" };
-  const activeBtnId = (id === "profileStep" && editingProfile) ? "sidebarEditInfo" : SIDEBAR_SCREEN_MAP[id];
-  ["sidebarNewRes", "sidebarMyRes", "sidebarEditInfo"].forEach(btnId => {
+  const activeBtnId = SIDEBAR_SCREEN_MAP[id];
+  ["sidebarNewRes", "sidebarMyRes"].forEach(btnId => {
     document.getElementById(btnId).classList.toggle("active", btnId === activeBtnId);
   });
- 
-  // Switch Profile only makes sense once a resident has actually landed on a profile
-  // (menu/new-res/my-res/editing) — not while still mid-picker or first-time setup.
-  const showSwitchProfile = (pastAuth && hasIdentity && ["menuStep", "step2", "myResStep"].includes(id)) || (id === "profileStep" && editingProfile);
-  document.getElementById("sidebarSwitchProfile").style.display = showSwitchProfile ? "flex" : "none";
  
   updateProfileChip();
   closeSidebar();
@@ -699,6 +867,10 @@ const NOTIF_TYPE_LABELS = {
   booking_rejected: "Reservation Rejected",
   booking_cancelled: "Reservation Cancelled",
   keys_ready: "Keys Ready",
+  keys_not_ready: "Key Pickup Delayed",
+  extension_approved: "Extension Approved",
+  extension_denied: "Extension Request Denied",
+  announcement: "Community Update",
   approval: "Request Approved",
   general: "Notice"
 };
@@ -718,6 +890,7 @@ function renderNotifications(list) {
   } else {
     badge.style.display = "none";
   }
+  document.getElementById("markAllReadBtn").style.display = unreadCount > 0 ? "block" : "none";
  
   const box = document.getElementById("notifList");
   if (list.length === 0) {
@@ -726,6 +899,7 @@ function renderNotifications(list) {
   }
   box.innerHTML = list.map(n => `
     <div class="notif-item ${n.read ? "" : "unread"}">
+      ${n.read ? "" : '<span class="notif-dot" aria-hidden="true"></span>'}
       <div class="notif-type">${NOTIF_TYPE_LABELS[n.type] || "Notice"}</div>
       <div>${n.message}</div>
       <div class="notif-time">${new Date(n.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</div>
@@ -735,9 +909,16 @@ function renderNotifications(list) {
 async function openNotifPanel() {
   document.getElementById("notifPanel").classList.add("visible");
   document.getElementById("notifBackdrop").classList.add("visible");
-  await sb.from("notifications").update({ read: true }).eq("apartment_number", resident.apt).eq("read", false);
+  // Note: opening the panel no longer marks everything read automatically —
+  // that used to erase the unread highlighting before you'd even seen it.
+  // Notifications now stay marked unread until "Mark all as read" is used.
   await loadNotifications();
 }
+document.getElementById("markAllReadBtn").onclick = async () => {
+  if (!resident.apt) return;
+  await sb.from("notifications").update({ read: true }).eq("apartment_number", resident.apt).eq("read", false);
+  await loadNotifications();
+};
 function closeNotifPanel() {
   document.getElementById("notifPanel").classList.remove("visible");
   document.getElementById("notifBackdrop").classList.remove("visible");
@@ -761,21 +942,42 @@ document.getElementById("homeBtn").onclick = () => { showScreen("menuStep"); loa
  
 function goToNewReservation() { showScreen("step2"); }
 function goToMyReservations() { showScreen("myResStep"); loadMyReservations(); }
-function goToEditInfo() {
+let editTargetProfileId = null;
+function openEditProfile(p) {
   editingProfile = true;
   addingNewProfile = false;
-  document.getElementById("profileEyebrow").textContent = "Edit My Info";
-  document.getElementById("profileHeading").textContent = "Update your profile";
-  document.getElementById("resName").value = resident.name;
-  document.getElementById("resPhone").value = resident.phone || "";
-  document.getElementById("resEmail").value = resident.email || "";
-  document.getElementById("cancelAddProfileWrap").style.display = "none";
+  editTargetProfileId = p.id;
+  document.getElementById("profileEyebrow").textContent = "Edit Profile";
+  document.getElementById("profileHeading").textContent = "Update this profile";
+  document.getElementById("resName").value = p.full_name || "";
+  document.getElementById("resPhone").value = p.phone || "";
+  document.getElementById("resEmail").value = p.email || "";
+  document.getElementById("cancelAddProfileWrap").style.display = "block";
+  resident.apt = p.apartment_number;
   showScreen("profileStep");
+}
+async function deleteProfile(p) {
+  if (!confirm(`Delete the profile for "${p.full_name}"? This can't be undone, and any of their upcoming reservations will stay on the calendar but will no longer be linked to a profile.`)) return;
+  const { error } = await sb.from("profiles").delete().eq("id", p.id);
+  if (error) { alert("Couldn't delete that profile: " + error.message); return; }
+  if (resident.profileId === p.id) {
+    resident = { name: "", phone: "", email: "", apt: p.apartment_number, profileId: null };
+  }
+  const { data: profiles } = await sb.from("profiles").select("*").eq("apartment_number", p.apartment_number).order("created_at");
+  apartmentProfiles = profiles || [];
+  if (apartmentProfiles.length === 0) {
+    await loadApartmentProfilesAndRoute(p.apartment_number);
+  } else {
+    resident.apt = p.apartment_number;
+    renderProfileTiles(p.apartment_number);
+    showScreen("profilePickerStep");
+  }
 }
 async function logout() {
   // "logging out" just forgets this device's link locally; the underlying device
   // identity stays valid (cached creds), so re-entering the same PIN on this device signs right back in.
   await sb.auth.signOut();
+  localStorage.removeItem(RESIDENT_LAST_ACTIVE_KEY);
   resident = { name: "", phone: "", email: "", apt: "", profileId: null };
   apartmentProfiles = [];
   document.getElementById("authApt").value = "";
@@ -788,7 +990,6 @@ document.getElementById("newResBtn").onclick = goToNewReservation;
 document.getElementById("myResBtn").onclick = goToMyReservations;
 document.getElementById("sidebarNewRes").onclick = goToNewReservation;
 document.getElementById("sidebarMyRes").onclick = goToMyReservations;
-document.getElementById("sidebarEditInfo").onclick = goToEditInfo;
 document.getElementById("sidebarLogout").onclick = logout;
 document.getElementById("logoutBtn").onclick = logout;
  
@@ -833,6 +1034,7 @@ document.getElementById("sendCodeBtn").onclick = async () => {
     return;
   }
  
+  touchResidentActivity();
   await loadResidentProfile(session);
 };
  
@@ -859,10 +1061,10 @@ document.getElementById("saveProfileBtn").onclick = async () => {
   btn.disabled = true; btn.textContent = "Saving...";
  
   let dbError;
-  if (editingProfile && resident.profileId) {
+  if (editingProfile && editTargetProfileId) {
     ({ error: dbError } = await sb.from("profiles")
       .update({ full_name: name, phone, email })
-      .eq("id", resident.profileId));
+      .eq("id", editTargetProfileId));
   } else {
     let inserted;
     ({ data: inserted, error: dbError } = await sb.from("profiles")
@@ -879,9 +1081,24 @@ document.getElementById("saveProfileBtn").onclick = async () => {
     return;
   }
  
-  resident = { ...resident, name, phone, email };
+  const wasEditingOwnActiveProfile = editingProfile && editTargetProfileId === resident.profileId;
+  const wasEditingOtherProfile = editingProfile && editTargetProfileId && editTargetProfileId !== resident.profileId;
+ 
+  if (wasEditingOwnActiveProfile) resident = { ...resident, name, phone, email };
   editingProfile = false;
   addingNewProfile = false;
+  editTargetProfileId = null;
+ 
+  if (wasEditingOtherProfile) {
+    // Editing a household roommate's profile (not the one you're currently in) —
+    // go back to the picker instead of dropping you into their account.
+    const { data: profiles } = await sb.from("profiles").select("*").eq("apartment_number", resident.apt).order("created_at");
+    apartmentProfiles = profiles || [];
+    renderProfileTiles(resident.apt);
+    showScreen("profilePickerStep");
+    return;
+  }
+ 
   localStorage.setItem("ccr_last_profile_" + resident.apt, resident.profileId);
   showScreen("menuStep");
   loadHomeCard();
