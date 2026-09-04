@@ -330,9 +330,42 @@ if (sessionStorage.getItem(GATE_SESSION_KEY) === "true") passGate();
  
 const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
+ 
+// PWAs on mobile get their background tabs throttled by the OS, which can pause the
+// auto-refresh timer and leave a stale access token in place. Rather than every query
+// in this file silently failing when that happens (Bug 8 — "apartment list sometimes
+// doesn't show up, have to log out and back in"), this wraps every request: on a 401,
+// refresh the session once and retry with the fresh token before giving up.
+async function resilientFetch(url, options) {
+  let res = await fetch(url, options);
+  if (res.status === 401) {
+    const { data, error } = await sb.auth.refreshSession();
+    if (!error && data.session) {
+      const headers = new Headers(options && options.headers);
+      headers.set("Authorization", `Bearer ${data.session.access_token}`);
+      res = await fetch(url, { ...options, headers });
+    }
+  }
+  return res;
+}
+ 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+  global: { fetch: resilientFetch }
 });
+ 
+// ---------- STAFF SESSION IDLE EXPIRY ----------
+// Staff accounts hold elevated access (every resident's PII, ability to cancel
+// bookings, blast announcements) and are more likely used on a shared office
+// computer than a resident's own phone — so unlike the resident side, this gets
+// a real timeout: signed out after 7 days with no activity in the portal.
+const STAFF_MAX_IDLE_MS = 7 * 24 * 60 * 60 * 1000;
+const STAFF_LAST_ACTIVE_KEY = "ccr_staff_last_active";
+function touchStaffActivity() { localStorage.setItem(STAFF_LAST_ACTIVE_KEY, Date.now().toString()); }
+function staffSessionIdleExpired() {
+  const last = parseInt(localStorage.getItem(STAFF_LAST_ACTIVE_KEY) || "0", 10);
+  return !!last && (Date.now() - last) > STAFF_MAX_IDLE_MS;
+}
  
 document.getElementById("loginBtn").onclick = async () => {
   const email = document.getElementById("loginEmail").value.trim();
@@ -341,21 +374,38 @@ document.getElementById("loginBtn").onclick = async () => {
   errBox.style.display = "none";
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) { errBox.textContent = "Login failed: " + error.message; errBox.style.display = "block"; return; }
+  touchStaffActivity();
   showPortal();
 };
 // A resumed Supabase session means this is a returning, already-authenticated staff
 // member — skip the access gate entirely rather than making them re-enter the code.
-sb.auth.getSession().then(({ data }) => { if (data.session) { passGate(); showPortal(); } });
+// Unless they've been idle past the timeout, in which case sign them out for real.
+sb.auth.getSession().then(async ({ data }) => {
+  if (!data.session) return;
+  if (staffSessionIdleExpired()) {
+    await sb.auth.signOut();
+    localStorage.removeItem(STAFF_LAST_ACTIVE_KEY);
+    return;
+  }
+  touchStaffActivity();
+  passGate();
+  showPortal();
+});
  
 function showPortal() {
   document.getElementById("accessGateScreen").style.display = "none";
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("portal").style.display = "block";
+  document.addEventListener("click", touchStaffActivity);
+  document.addEventListener("keydown", touchStaffActivity);
   goToCalendar();
 }
  
 document.getElementById("logoutBtn").onclick = async () => {
   await sb.auth.signOut();
+  localStorage.removeItem(STAFF_LAST_ACTIVE_KEY);
+  document.removeEventListener("click", touchStaffActivity);
+  document.removeEventListener("keydown", touchStaffActivity);
   document.getElementById("portal").style.display = "none";
   document.getElementById("loginScreen").style.display = "flex";
 };
