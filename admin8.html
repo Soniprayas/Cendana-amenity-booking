@@ -96,6 +96,7 @@
   .cal-cell.outside .cal-date-num{color:#B0AA98;}
   .cal-cell .cal-date-num{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-bottom:4px;}
   .cal-chip{font-size:10.5px; font-family:var(--font-body); font-weight:500; padding:2px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; border-left:3px solid; color:var(--ink); background:var(--sand);}
+  .cal-chip.past{color:#B04A3E; background:#FBEBE9;}
   .cal-chip.pending{border-style:dashed; opacity:.85;}
   .cal-more{font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-weight:600; margin-top:2px;}
  
@@ -350,7 +351,10 @@ async function resilientFetch(url, options) {
 }
  
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+  // Distinct storageKey so this staff session never collides with a resident
+  // session in index.html — same origin means shared localStorage by default,
+  // and without this, whichever app signs in last silently overwrites the other's session.
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "cendana-staff-auth" },
   global: { fetch: resilientFetch }
 });
  
@@ -793,7 +797,8 @@ async function renderCalendar() {
       ${visible.map(b => {
         const timeStr = new Date(b.start_time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
         const color = amenityColorMap[b.amenities.name];
-        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''}" style="border-left-color:${color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
+        const isPast = new Date(b.end_time) < new Date();
+        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''} ${isPast ? 'past' : ''}" style="border-left-color:${isPast ? '#B04A3E' : color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
       }).join("")}
       ${overflow > 0 ? `<div class="cal-more" onclick="openDayDetail('${key}')">+${overflow} more</div>` : ""}
     </div>`;
