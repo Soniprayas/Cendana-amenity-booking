@@ -42,10 +42,10 @@
   .profile-tile .tile-name{font-family:var(--font-display); font-weight:600; font-size:13.5px; color:var(--ink); word-break:break-word;}
   .profile-tile.add-tile{border-style:dashed; color:var(--ink-soft);}
   .profile-tile.add-tile .tile-avatar{background:var(--sand); color:var(--amber-dark); border:1.5px dashed var(--amber-dark);}
-  .tile-kebab{position:absolute; top:4px; right:4px; width:26px; height:26px; border-radius:50%; background:transparent; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);}
+  .tile-kebab{position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:50%; background:rgba(35,43,54,.08); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);}
   .tile-kebab:hover{background:rgba(0,0,0,.06);}
   .tile-kebab svg{width:16px; height:16px; pointer-events:none;}
-  .tile-menu{position:absolute; top:32px; right:6px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.15); z-index:5; min-width:110px; overflow:hidden; display:none;}
+  .tile-menu{position:absolute; top:36px; right:6px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.15); z-index:5; min-width:110px; overflow:hidden; display:none;}
   .tile-menu.open{display:block;}
   .tile-menu button{display:block; width:100%; text-align:left; padding:9px 12px; font-size:13px; font-family:var(--font-body); font-weight:500; background:#fff; color:var(--ink); border:none; cursor:pointer;}
   .tile-menu button:hover{background:var(--sand);}
@@ -699,7 +699,7 @@ function renderProfileTiles(apt) {
   grid.innerHTML = apartmentProfiles.map(p => `
     <div class="profile-tile" data-id="${p.id}">
       <button class="tile-kebab" data-kebab-id="${p.id}" aria-label="Profile options">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>
       </button>
       <div class="tile-menu" data-menu-id="${p.id}">
         <button class="edit" data-edit-id="${p.id}">Edit</button>
