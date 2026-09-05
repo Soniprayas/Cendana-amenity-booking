@@ -42,7 +42,7 @@
   .profile-tile .tile-name{font-family:var(--font-display); font-weight:600; font-size:13.5px; color:var(--ink); word-break:break-word;}
   .profile-tile.add-tile{border-style:dashed; color:var(--ink-soft);}
   .profile-tile.add-tile .tile-avatar{background:var(--sand); color:var(--amber-dark); border:1.5px dashed var(--amber-dark);}
-  .tile-kebab{position:absolute; top:4px; right:4px; width:26px; height:26px; border-radius:50%; background:transparent; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);}
+  .tile-kebab{position:absolute; top:4px; right:4px; width:26px; height:26px; border-radius:50%; background:transparent; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);}
   .tile-kebab:hover{background:rgba(0,0,0,.06);}
   .tile-kebab svg{width:16px; height:16px; pointer-events:none;}
   .tile-menu{position:absolute; top:32px; right:6px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.15); z-index:5; min-width:110px; overflow:hidden; display:none;}
@@ -548,7 +548,10 @@ async function resilientFetch(url, options) {
 }
  
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  // Distinct storageKey so this resident session never collides with the staff
+  // session in admin.html — same origin means shared localStorage by default,
+  // and without this, whichever app signs in last silently overwrites the other's session.
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: "cendana-resident-auth" },
   global: { fetch: resilientFetch }
 });
  
@@ -822,9 +825,17 @@ function showScreen(id) {
     if (overlay) overlay.style.display = "none";
   }
   const requiresIdentity = (id === "step2" || id === "myResStep" || id === "menuStep");
-  const hasIdentity = resident.name && resident.apt;
-  if (requiresIdentity && !hasIdentity) {
+  // These are two different failure states and need two different destinations:
+  // no apartment link at all means genuinely not signed in -> login screen.
+  // Apartment link present but no profile picked yet (e.g. still on "Tell us about
+  // yourself") means the device IS signed in, it just needs a profile first -> send
+  // it there instead of falsely booting the person back to the PIN screen.
+  const hasApartmentLink = !!resident.apt;
+  const hasProfile = !!(resident.name && resident.profileId);
+  if (requiresIdentity && !hasApartmentLink) {
     id = "authStep";
+  } else if (requiresIdentity && !hasProfile) {
+    id = (apartmentProfiles && apartmentProfiles.length > 0) ? "profilePickerStep" : "profileStep";
   }
   ALL_SCREENS.forEach(s => document.getElementById(s).classList.remove("active"));
   document.getElementById(id).classList.add("active");
