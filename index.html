@@ -555,8 +555,35 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   global: { fetch: resilientFetch }
 });
  
+// ---------- XSS PROTECTION ----------
+// Centralized escaping for any user-controlled text (profile names, notification/
+// announcement messages) interpolated into innerHTML. Without this, a malicious
+// profile name executes in the browser of anyone who shares the apartment (now
+// normal, multiple devices/roommates per apartment) or in staff's session via admin.html.
+function escapeHtml(value) {
+  if (value === null || value === undefined) return "";
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+ 
 // ---------- MODERN DATE/TIME FORMATTING ----------
 // "Today \u00b7 9:00 \u2013 11:00 PM" instead of "8/14/2026, 9:00:00 PM"
+ 
+// toISOString() converts to UTC before you can read the date back out. McKinney, TX is
+// Central Time (behind UTC), so anywhere past ~6-7pm local, toISOString() has already
+// rolled into UTC's next calendar day -- silently breaking "today" for evening bookings.
+// This reads the date straight from the Date object's own local fields instead.
+function localDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+ 
 function formatDateTimeRange(startIso, endIso) {
   const start = new Date(startIso), end = new Date(endIso), now = new Date();
   const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
@@ -705,8 +732,8 @@ function renderProfileTiles(apt) {
         <button class="edit" data-edit-id="${p.id}">Edit</button>
         <button class="delete" data-delete-id="${p.id}">Delete</button>
       </div>
-      <div class="tile-avatar">${(p.full_name || "?").trim().charAt(0).toUpperCase()}</div>
-      <div class="tile-name">${p.full_name}</div>
+      <div class="tile-avatar">${escapeHtml((p.full_name || "?").trim().charAt(0).toUpperCase())}</div>
+      <div class="tile-name">${escapeHtml(p.full_name)}</div>
     </div>`).join("") + `
     <div class="profile-tile add-tile" id="addProfileTile">
       <div class="tile-avatar">+</div>
@@ -912,7 +939,7 @@ function renderNotifications(list) {
     <div class="notif-item ${n.read ? "" : "unread"}">
       ${n.read ? "" : '<span class="notif-dot" aria-hidden="true"></span>'}
       <div class="notif-type">${NOTIF_TYPE_LABELS[n.type] || "Notice"}</div>
-      <div>${n.message}</div>
+      <div>${escapeHtml(n.message)}</div>
       <div class="notif-time">${new Date(n.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</div>
     </div>`).join("");
 }
@@ -1167,12 +1194,16 @@ async function loadData() {
   });
  
   // set date limits
+  // toISOString() converts to UTC before reading the date back out. McKinney, TX is
+  // Central Time (behind UTC), so anywhere past ~6-7pm local, toISOString() has already
+  // rolled into UTC's next calendar day -- silently breaking "today" for evening bookings.
+  // Read the date straight from the Date object's own local fields instead.
   const dateInput = document.getElementById("resDate");
   const today = new Date();
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + settings.max_advance_booking_days);
-  dateInput.min = today.toISOString().split("T")[0];
-  dateInput.max = maxDate.toISOString().split("T")[0];
+  dateInput.min = localDateStr(today);
+  dateInput.max = localDateStr(maxDate);
 }
 loadData();
  
@@ -1465,7 +1496,7 @@ async function submitBulkBooking(date, startStr, duration, guests, comments) {
   for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
     const d = new Date(`${date}T00:00:00`);
     d.setDate(d.getDate() + dayOffset);
-    const dStr = d.toISOString().split("T")[0];
+    const dStr = localDateStr(d);
  
     const startTime = new Date(`${dStr}T${startStr}:00`);
     const endTime = new Date(startTime.getTime() + duration * 60000);
@@ -1522,13 +1553,15 @@ function showConfirmationModal(text, type = "ok") {
   const icon = document.getElementById("confirmModalIcon");
   const title = document.getElementById("confirmModalTitle");
   if (type === "wait") {
-    icon.style.stroke = "#8A5A00";
+    icon.style.stroke = "#B04A3E";
     icon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
     title.textContent = "Added to Waitlist";
+    title.style.color = "#B04A3E";
   } else {
     icon.style.stroke = "#2C5C36";
     icon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/>';
     title.textContent = "Reservation Confirmed";
+    title.style.color = "#2C5C36";
   }
   document.getElementById("confirmModalBackdrop").classList.add("visible");
 }
