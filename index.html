@@ -770,9 +770,18 @@ function renderProfileTiles(apt) {
       if (p) deleteProfile(p);
     };
   });
-  document.addEventListener("click", () => {
-    grid.querySelectorAll(".tile-menu.open").forEach(m => m.classList.remove("open"));
-  }, { once: true });
+  // The outside-click-closes-menu listener must be set up exactly ONCE, persistently --
+  // not per-render, and not { once: true }. Previously it was { once: true } inside this
+  // function, so it fired and removed itself after the very first outside click ever,
+  // leaving every menu after that with nothing to close it except explicitly opening
+  // another kebab or triggering a full re-render (edit/delete).
+  if (!window._tileMenuOutsideClickBound) {
+    window._tileMenuOutsideClickBound = true;
+    document.addEventListener("click", (e) => {
+      if (e.target.closest(".tile-kebab") || e.target.closest(".tile-menu")) return;
+      document.querySelectorAll(".tile-menu.open").forEach(m => m.classList.remove("open"));
+    });
+  }
  
   document.getElementById("addProfileTile").onclick = () => {
     addingNewProfile = true;
