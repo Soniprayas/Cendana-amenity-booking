@@ -782,6 +782,14 @@ async function renderCalendar() {
     .lt("start_time", rangeEnd.toISOString()).gt("end_time", rangeStart.toISOString())
     .order("start_time");
  
+  // Staff need to see who's waiting on a given day without leaving the calendar --
+  // waitlist entries render as a distinct dashed chip alongside real bookings.
+  const { data: waitlistEntries } = await sb.from("waitlist")
+    .select("*, amenities(name)")
+    .eq("status", "waiting")
+    .lt("start_time", rangeEnd.toISOString()).gt("end_time", rangeStart.toISOString())
+    .order("start_time");
+ 
   (bookings || []).forEach(b => {
     if (!(b.amenities.name in amenityColorMap)) {
       amenityColorMap[b.amenities.name] = ACCENTS[Object.keys(amenityColorMap).length % ACCENTS.length];
@@ -792,6 +800,12 @@ async function renderCalendar() {
   (bookings || []).forEach(b => {
     const key = new Date(b.start_time).toDateString();
     (byDate[key] = byDate[key] || []).push(b);
+  });
+ 
+  const waitByDate = {};
+  (waitlistEntries || []).forEach(w => {
+    const key = new Date(w.start_time).toDateString();
+    (waitByDate[key] = waitByDate[key] || []).push(w);
   });
  
   const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -806,6 +820,7 @@ async function renderCalendar() {
     const dayBookings = (byDate[key] || []);
     const visible = dayBookings.slice(0, maxChips);
     const overflow = dayBookings.length - visible.length;
+    const dayWaitlist = (waitByDate[key] || []);
  
     html += `<div class="cal-cell ${outside ? 'outside' : ''}">
       <div class="cal-date-num" style="${key === today ? 'color:var(--amber-dark);' : ''}">${d.getDate()}</div>
@@ -816,6 +831,10 @@ async function renderCalendar() {
         return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''} ${isPast ? 'past' : ''}" style="border-left-color:${isPast ? '#B04A3E' : color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
       }).join("")}
       ${overflow > 0 ? `<div class="cal-more" onclick="openDayDetail('${key}')">+${overflow} more</div>` : ""}
+      ${dayWaitlist.map(w => {
+        const timeStr = new Date(w.start_time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+        return `<div class="cal-chip" style="border-left-style:dashed; border-left-color:#8A5A00; background:#FFF6E5; color:#8A5A00;" onclick="goToRequests(); switchReqTab('waitlist');" title="${escapeHtml(w.resident_name)} is waiting for ${escapeHtml(w.amenities.name)}">\u23f3 ${timeStr} ${escapeHtml(w.amenities.name)} (waiting)</div>`;
+      }).join("")}
     </div>`;
   });
  
