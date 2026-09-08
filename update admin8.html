@@ -358,6 +358,21 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   global: { fetch: resilientFetch }
 });
  
+// ---------- XSS PROTECTION ----------
+// Centralized escaping for any user-controlled text (resident names, emails, booking
+// comments, profile names) interpolated into innerHTML anywhere in this file. Without
+// this, a malicious profile name/comment executes in staff's authenticated browser
+// session the next time they open Bookings/Approvals/Waitlist.
+function escapeHtml(value) {
+  if (value === null || value === undefined) return "";
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+ 
 // ---------- STAFF SESSION IDLE EXPIRY ----------
 // Staff accounts hold elevated access (every resident's PII, ability to cancel
 // bookings, blast announcements) and are more likely used on a shared office
@@ -519,8 +534,8 @@ async function loadBookings() {
       return;
     }
     html += `<tr>
-      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}</td>
-      <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
+      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}${b.cancellation_reason === "no_show_auto_release" ? ' <span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released</span>' : ''}</td>
+      <td>${escapeHtml(b.resident_name)}<br/><small>${escapeHtml(b.resident_email)}<br/>Apt ${escapeHtml(b.apartment_number)}</small></td>
       <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
       <td>${b.guests}</td>
       <td>${!b.key_picked_up ? '<span class="badge no">Not picked up</span>' : `<span class="badge yes">Picked up</span> <span class="badge ${b.key_returned ? 'yes' : 'no'}">${b.key_returned ? 'Returned' : 'Not returned'}</span>`}</td>
@@ -628,7 +643,7 @@ async function loadApprovals() {
     html += `<div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Actions</th></tr>`;
     pendingBookings.forEach(b => {
       html += `<tr><td>${b.amenities.name}</td>
-        <td>${b.resident_name}<br/><small>${b.resident_email}<br/>Apt ${b.apartment_number}</small></td>
+        <td>${escapeHtml(b.resident_name)}<br/><small>${escapeHtml(b.resident_email)}<br/>Apt ${escapeHtml(b.apartment_number)}</small></td>
         <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
         <td><div class="btn-row"><button onclick="approveBooking('${b.id}')">Approve</button>
         <button class="danger" onclick="denyBooking('${b.id}')">Deny</button></div></td></tr>`;
@@ -703,7 +718,7 @@ async function loadWaitlist() {
   let html = `<div class="section-title">Waitlist</div><div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Requested Time</th><th>Joined Waitlist</th><th>Actions</th></tr>`;
   data.forEach(w => {
     html += `<tr><td>${w.amenities.name}</td>
-      <td>${w.resident_name}<br/><small>${w.resident_email}<br/>Apt ${w.apartment_number}</small></td>
+      <td>${escapeHtml(w.resident_name)}<br/><small>${escapeHtml(w.resident_email)}<br/>Apt ${escapeHtml(w.apartment_number)}</small></td>
       <td class="mono">${new Date(w.start_time).toLocaleString()} &ndash; ${new Date(w.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
       <td class="mono">${new Date(w.created_at).toLocaleString()}</td>
       <td><button class="neutral" onclick="removeFromWaitlist('${w.id}')">Remove from Waitlist</button></td></tr>`;
@@ -832,10 +847,11 @@ function openBookingDetail(id) {
   }
   body.innerHTML = `
     <h3>${b.amenities.name}</h3>
-    <p><strong>${b.resident_name}</strong><br/>${b.resident_email}<br/>Apt ${b.apartment_number}</p>
+    <p><strong>${escapeHtml(b.resident_name)}</strong><br/>${escapeHtml(b.resident_email)}<br/>Apt ${escapeHtml(b.apartment_number)}</p>
     <p class="mono">${timeRange}</p>
     <p>Guests: ${b.guests}${b.status === "pending" ? '<br/><span class="badge wait">Pending Approval</span>' : ''}
-      ${b.key_picked_up ? `<br/><span class="badge yes">Key Picked Up</span>` : ''}</p>
+      ${b.key_picked_up ? `<br/><span class="badge yes">Key Picked Up</span>` : ''}
+      ${b.cancellation_reason === "no_show_auto_release" ? '<br/><span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released \u2014 no-show</span>' : ''}</p>
     ${actions}`;
   document.getElementById("detailBackdrop").classList.add("visible");
 }
@@ -888,13 +904,14 @@ function renderApartmentList() {
       <tbody>
         ${rows.map(a => `
           <tr style="border-bottom:1px solid var(--line);">
-            <td style="padding:8px 6px; font-weight:600;">${a.unit_number}</td>
+            <td style="padding:8px 6px; font-weight:600;">${escapeHtml(a.unit_number)}</td>
             <td style="padding:8px 6px; font-family:var(--font-mono,monospace); letter-spacing:2px;">${a.pin || "\u2014"}</td>
             <td style="padding:8px 6px; font-size:12px; color:var(--ink-soft,#666);">${a.pin_issued_at ? new Date(a.pin_issued_at).toLocaleDateString() : "\u2014"}</td>
             <td style="padding:8px 6px;">${a.active ? '<span class="badge yes">Active</span>' : '<span class="badge no">Inactive</span>'}</td>
             <td style="padding:8px 6px; white-space:nowrap;">
-              <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="renewLease('${a.unit_number}')">Renew Lease</button>
-              <button class="${a.active ? 'neutral' : ''}" style="font-size:12px; padding:5px 10px;" onclick="toggleAptActive('${a.unit_number}', ${!a.active})">${a.active ? "Deactivate" : "Activate"}</button>
+              <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="renewLease('${escapeHtml(a.unit_number)}')">Renew Lease</button>
+              <button class="outline" style="font-size:12px; padding:5px 10px;" onclick="refreshPin('${escapeHtml(a.unit_number)}')">Refresh PIN</button>
+              <button class="${a.active ? 'neutral' : ''}" style="font-size:12px; padding:5px 10px;" onclick="toggleAptActive('${escapeHtml(a.unit_number)}', ${!a.active})">${a.active ? "Deactivate" : "Activate"}</button>
             </td>
           </tr>`).join("")}
       </tbody>
@@ -949,6 +966,18 @@ async function renewLease(unit) {
   showPinReveal(unit, newPin);
 }
  
+// Unlike Renew Lease (which also signs out every currently linked device -- for actual
+// move-out/move-in), this just issues a fresh PIN without evicting anyone already using
+// the unit -- e.g. a resident suspects their PIN leaked, or wants a clean PIN to hand a
+// new roommate, without kicking their own household off the app.
+async function refreshPin(unit) {
+  if (!confirm(`Generate a new PIN for apartment ${unit}? Anyone already signed in on this unit stays signed in -- only the PIN itself changes.`)) return;
+  const { data: newPin, error } = await sb.rpc("refresh_apartment_pin", { p_apartment: unit });
+  if (error) { alert("Couldn't refresh this PIN: " + error.message); return; }
+  await loadApartmentList();
+  showPinReveal(unit, newPin);
+}
+ 
 async function toggleAptActive(unit, makeActive) {
   const { error } = await sb.from("apartments").update({ active: makeActive }).eq("unit_number", unit);
   if (error) { alert("Couldn't update this apartment."); return; }
@@ -969,14 +998,17 @@ document.getElementById("pinRevealCopyBtn").onclick = () => {
 };
  
 document.getElementById("exportPinsBtn").onclick = () => {
-  const rows = [["Unit Number", "PIN", "Issued", "Active"]].concat(
-    apartmentCache.map(a => [a.unit_number, a.pin || "", a.pin_issued_at ? new Date(a.pin_issued_at).toISOString() : "", a.active ? "yes" : "no"])
+  // Deliberately excludes the pin column -- a bulk CSV export of every apartment's PIN
+  // is a much bigger blast radius than any individual lookup. Staff can already see/reveal
+  // one apartment's PIN at a time via the (masked) list view or "Renew Lease".
+  const rows = [["Unit Number", "Issued", "Active"]].concat(
+    apartmentCache.map(a => [a.unit_number, a.pin_issued_at ? new Date(a.pin_issued_at).toISOString() : "", a.active ? "yes" : "no"])
   );
   const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "cendana-apartment-pins.csv";
+  a.href = url; a.download = "cendana-apartment-list.csv";
   a.click();
   URL.revokeObjectURL(url);
 };
