@@ -8,6 +8,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+<!-- OneSignal Web SDK -- registers this device for push and lets us set its
+     external_id (apartment number) so send_push_notification() (Postgres/pg_net)
+     can target it. App ID is public/non-secret, safe to ship client-side. -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function (OneSignal) {
+    await OneSignal.init({
+      appId: "02f5be07-c734-43b6-bb85-4a11657048de",
+      // We show our own opt-in banner first, so skip OneSignal's default prompts.
+      autoResubscribe: true,
+    });
+  });
+</script>
 <style>
   :root{
     --ink:#232B36; --ink-soft:#4B5563; --sand:#F6F3EC; --line:#E4DFD2;
@@ -75,6 +89,18 @@
   .btn-outline:hover{background:#FBF0DD;}
   .profile-chip{width:32px; height:32px; border-radius:50%; background:var(--amber-dark); color:#fff; font-family:var(--font-display); font-weight:600; font-size:12px; display:none; align-items:center; justify-content:center; flex-shrink:0;}
   .profile-chip.visible{display:flex;}
+ 
+  /* ---- Push notification opt-in banner ---- */
+  .push-prompt-banner{display:none; align-items:flex-start; gap:12px; background:#FBF6EA; border:1px solid var(--amber); border-radius:10px; padding:14px 16px; margin-bottom:16px;}
+  .push-prompt-banner.visible{display:flex;}
+  .push-prompt-banner .push-prompt-icon{width:34px; height:34px; border-radius:50%; background:var(--amber); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .push-prompt-banner .push-prompt-icon svg{width:18px; height:18px; stroke:#fff;}
+  .push-prompt-banner .push-prompt-body{flex:1; min-width:0;}
+  .push-prompt-banner .push-prompt-body h4{margin:0 0 3px; font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--ink);}
+  .push-prompt-banner .push-prompt-body p{margin:0 0 10px; font-size:12.5px; color:var(--ink-soft); line-height:1.4;}
+  .push-prompt-banner .push-prompt-actions{display:flex; gap:8px;}
+  .push-prompt-banner button{width:auto; margin-top:0; padding:8px 14px; font-size:13px; border-radius:7px;}
+  .push-prompt-banner .push-prompt-dismiss{background:transparent; color:var(--ink-soft); border:1px solid var(--line);}
   @keyframes fadeSlideIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
   #authStep.active, #profileStep.active, #step2.active, #menuStep.active, #myResStep.active{animation:fadeSlideIn .25s ease;}
   #confirmModalBackdrop.visible #confirmModal, #confirmDialogBackdrop.visible #confirmDialog{animation:fadeSlideIn .2s ease;}
@@ -420,6 +446,19 @@
       <div class="eyebrow">Resident Booking</div>
       <h2>What would you like to do?</h2>
       <p>Reserve a shared space, or check on your existing bookings.</p>
+    </div>
+    <div class="push-prompt-banner" id="pushPromptBanner">
+      <div class="push-prompt-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="push-prompt-body">
+        <h4>Get notified instantly</h4>
+        <p>Turn on notifications so you don't miss approvals, waitlist openings, or key-ready alerts.</p>
+        <div class="push-prompt-actions">
+          <button type="button" id="pushEnableBtn">Enable Notifications</button>
+          <button type="button" class="push-prompt-dismiss" id="pushDismissBtn">Not Now</button>
+        </div>
+      </div>
     </div>
     <div class="menu-grid">
       <div class="menu-box" id="newResBtn">
@@ -803,7 +842,49 @@ function selectProfile(p) {
   showScreen("menuStep");
   loadHomeCard();
   loadNotifications();
+  initPushForResident();
 }
+ 
+// ---------- PUSH NOTIFICATIONS (OneSignal) ----------
+// Ties this device to the resident's apartment (external_id) so the server-side
+// send_push_notification() function can target it, and -- once permission is
+// granted -- surfaces the actual browser push prompt via our own banner instead
+// of OneSignal's default slidedown, so the "why" is explained first.
+function initPushForResident() {
+  if (!resident.apt || !window.OneSignalDeferred) return;
+  OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      // Safe to call even if already logged in as this apartment; OneSignal no-ops.
+      await OneSignal.login(String(resident.apt));
+    } catch (e) { /* non-fatal -- device just won't be individually targetable yet */ }
+    maybeShowPushPrompt();
+  });
+}
+ 
+function maybeShowPushPrompt() {
+  const banner = document.getElementById("pushPromptBanner");
+  if (!banner) return;
+  if (typeof Notification === "undefined") return; // unsupported browser/context
+  if (Notification.permission !== "default") { banner.classList.remove("visible"); return; }
+  if (localStorage.getItem("ccr_push_dismissed_" + resident.apt)) return;
+  banner.classList.add("visible");
+}
+ 
+document.getElementById("pushEnableBtn").onclick = () => {
+  document.getElementById("pushPromptBanner").classList.remove("visible");
+  if (!window.OneSignalDeferred) return;
+  OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      await OneSignal.Notifications.requestPermission();
+      await OneSignal.login(String(resident.apt));
+    } catch (e) { /* user likely blocked the native prompt -- nothing more to do */ }
+  });
+};
+ 
+document.getElementById("pushDismissBtn").onclick = () => {
+  document.getElementById("pushPromptBanner").classList.remove("visible");
+  localStorage.setItem("ccr_push_dismissed_" + resident.apt, "1");
+};
  
 document.getElementById("cancelAddProfileLink").onclick = (e) => {
   e.preventDefault();
@@ -1148,6 +1229,7 @@ document.getElementById("saveProfileBtn").onclick = async () => {
  
   localStorage.setItem("ccr_last_profile_" + resident.apt, resident.profileId);
   showScreen("menuStep");
+  initPushForResident();
   loadHomeCard();
   loadNotifications();
 };
