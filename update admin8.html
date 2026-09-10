@@ -95,9 +95,9 @@
   .cal-cell.outside{background:#FAFAF7;}
   .cal-cell.outside .cal-date-num{color:#B0AA98;}
   .cal-cell .cal-date-num{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-bottom:4px;}
-  .cal-chip{font-size:10.5px; font-family:var(--font-body); font-weight:500; padding:2px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; border-left:5px solid; color:var(--ink); background:var(--sand);}
-  .cal-chip.past{color:#B04A3E; background:#FBEBE9;}
-  .cal-chip.pending{border-style:dashed; opacity:.85;}
+  .cal-chip{font-size:10.5px; font-weight:600; font-family:var(--font-body); padding:3px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; color:#fff; border-left:none;}
+  .cal-chip.past{background:#B04A3E; opacity:.65;}
+  .cal-chip.pending{border:1.5px dashed rgba(255,255,255,.8); opacity:.9;}
   .cal-more{font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-weight:600; margin-top:2px;}
  
   /* ---- Detail modal ---- */
@@ -518,11 +518,29 @@ async function loadBookings() {
   view.innerHTML = "Loading...";
   const nowIso = new Date().toISOString();
   const { data, error } = await sb.from("bookings")
-    .select("*, amenities(name, requires_deposit, deposit_amount)")
+    .select("*, amenities(name, requires_deposit, deposit_amount, allow_overlapping_bookings)")
     .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
  
   if (error) { view.innerHTML = `<div class="msg err">Error loading bookings: ${error.message}</div>`; return; }
   if (!data || data.length === 0) { view.innerHTML = "<p>No upcoming bookings.</p>"; return; }
+ 
+  // Group overlapping bookings for amenities that allow it (currently just the
+  // theater) so staff can see stacked requests and pick a winner manually --
+  // this is deliberately NOT auto-promoted, per the staff-manual design.
+  window._theaterConflictGroups = {};
+  const overlapCandidates = data.filter(b => b.amenities.allow_overlapping_bookings && !b.is_maintenance_hold);
+  const visited = new Set();
+  overlapCandidates.forEach(b => {
+    if (visited.has(b.id)) return;
+    const group = overlapCandidates.filter(o =>
+      o.amenity_id === b.amenity_id &&
+      new Date(o.start_time) < new Date(b.end_time) && new Date(o.end_time) > new Date(b.start_time));
+    if (group.length > 1) {
+      const groupId = b.id; // use first member's id as the group key
+      group.forEach(g => { window._theaterConflictGroups[g.id] = groupId; visited.add(g.id); });
+    }
+  });
+  window._calBookingsForConflicts = data;
  
   let html = `<div class="section-title">Upcoming Bookings</div><div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Guests</th><th>Key</th><th>Deposit</th><th>Actions</th></tr>`;
   data.forEach(b => {
@@ -533,8 +551,13 @@ async function loadBookings() {
         <td><button class="neutral" onclick="clearMaintenanceHold('${b.id}')">Clear Hold</button></td></tr>`;
       return;
     }
+    const groupId = window._theaterConflictGroups[b.id];
+    const groupSize = groupId ? Object.values(window._theaterConflictGroups).filter(g => g === groupId).length : 0;
+    const conflictBadge = groupId
+      ? ` <span class="badge wait" style="cursor:pointer;" onclick="openTheaterConflict('${groupId}')">${groupSize} stacked requests \u2014 Resolve</span>`
+      : '';
     html += `<tr>
-      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}${b.cancellation_reason === "no_show_auto_release" ? ' <span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released</span>' : ''}</td>
+      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}${b.cancellation_reason === "no_show_auto_release" ? ' <span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released</span>' : ''}${conflictBadge}</td>
       <td>${escapeHtml(b.resident_name)}<br/><small>${escapeHtml(b.resident_email)}<br/>Apt ${escapeHtml(b.apartment_number)}</small></td>
       <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
       <td>${b.guests}</td>
@@ -553,6 +576,44 @@ async function loadBookings() {
   });
   html += `</table></div>`;
   view.innerHTML = html;
+}
+ 
+// ---------- THEATER OVERLAP RESOLUTION ----------
+// Theater bookings can stack (multiple confirmed requests for the same
+// overlapping window) -- deliberately not auto-promoted. Staff pick the
+// winner here; everyone else in the group gets cancelled and notified.
+function openTheaterConflict(groupId) {
+  const memberIds = Object.entries(window._theaterConflictGroups || {})
+    .filter(([, g]) => g === groupId).map(([id]) => id);
+  const members = (window._calBookingsForConflicts || []).filter(b => memberIds.includes(b.id));
+  if (members.length < 2) return;
+  const body = document.getElementById("detailModalBody");
+  body.innerHTML = `
+    <h3>Resolve Stacked Requests</h3>
+    <p>${members.length} residents have requests for overlapping times on <strong>${escapeHtml(members[0].amenities.name)}</strong>. Pick who gets it &mdash; everyone else will be cancelled and notified.</p>
+    ${members.map(m => `
+      <div style="border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:8px;">
+        <strong>${escapeHtml(m.resident_name)}</strong> &mdash; Apt ${escapeHtml(m.apartment_number)}<br/>
+        <span class="mono">${fmtRange(m.start_time, m.end_time)}</span><br/>
+        <span class="badge ${m.deposit_paid ? 'yes' : 'no'}">${m.deposit_paid ? 'Deposit Paid' : 'Deposit Unpaid'}</span>
+        <div class="btn-row" style="margin-top:8px;">
+          <button onclick="resolveTheaterConflict('${m.id}', ${JSON.stringify(memberIds.filter(id => id !== m.id)).replace(/"/g, "'")}); closeDetail();">Give it to ${escapeHtml(m.resident_name)}</button>
+        </div>
+      </div>`).join("")}
+  `;
+  document.getElementById("detailBackdrop").classList.add("visible");
+}
+ 
+async function resolveTheaterConflict(winnerId, loserIds) {
+  if (!confirm(`Confirm: keep this reservation and cancel the other ${loserIds.length}?`)) return;
+  for (const loserId of loserIds) {
+    const { data: loser } = await sb.from("bookings").select("*, amenities(name)").eq("id", loserId).single();
+    if (!loser) continue;
+    await sb.from("bookings").update({ status: "cancelled", cancellation_reason: "staff_resolved_theater_conflict" }).eq("id", loserId);
+    await sendNotification(loser.apartment_number, "booking_cancelled",
+      `Your ${loser.amenities.name} request for ${fmtRange(loser.start_time, loser.end_time)} wasn't selected \u2014 the leasing office picked another resident for that time.`);
+  }
+  loadBookings(); loadStats(); renderCalendar();
 }
  
 async function markKey(id, field) {
@@ -828,7 +889,7 @@ async function renderCalendar() {
         const timeStr = new Date(b.start_time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
         const color = amenityColorMap[b.amenities.name];
         const isPast = new Date(b.end_time) < new Date();
-        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''} ${isPast ? 'past' : ''}" style="border-left-color:${isPast ? '#B04A3E' : color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
+        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''} ${isPast ? 'past' : ''}" style="background-color:${isPast ? '#B04A3E' : color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
       }).join("")}
       ${overflow > 0 ? `<div class="cal-more" onclick="openDayDetail('${key}')">+${overflow} more</div>` : ""}
       ${dayWaitlist.map(w => {
@@ -870,7 +931,8 @@ function openBookingDetail(id) {
     <p class="mono">${timeRange}</p>
     <p>Guests: ${b.guests}${b.status === "pending" ? '<br/><span class="badge wait">Pending Approval</span>' : ''}
       ${b.key_picked_up ? `<br/><span class="badge yes">Key Picked Up</span>` : ''}
-      ${b.cancellation_reason === "no_show_auto_release" ? '<br/><span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released \u2014 no-show</span>' : ''}</p>
+      ${b.cancellation_reason === "no_show_auto_release" ? '<br/><span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released \u2014 no-show</span>' : ''}
+      ${b.cancellation_reason === "staff_resolved_theater_conflict" ? '<br/><span class="badge" style="background:#FBEBE9; color:#B04A3E;">Not selected \u2014 stacked request</span>' : ''}</p>
     ${actions}`;
   document.getElementById("detailBackdrop").classList.add("visible");
 }
