@@ -5,10 +5,19 @@
 // network -- it is never cached -- so a new deploy is visible immediately on next
 // load, with no stale-UI risk and no manual cache-version bump needed per release.
 // Only genuinely static, rarely-changing assets (icons, manifest) are cached.
-
+//
+// IMPORTANT: only one service worker can control a given scope ("/" here).
+// OneSignal's Web SDK looks for its own OneSignalSDKWorker.js at the site root
+// by default and will fight this file for that scope if both try to register
+// separately -- which is exactly why push silently failed before this line was
+// added. Per OneSignal's own "existing service worker" integration guide, we
+// import their worker code into ours instead of running two workers, and tell
+// OneSignal.init() (in index.html) to register *this* file, not a second one.
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+ 
 const STATIC_CACHE = "ccr-static-v1";
 const STATIC_ASSETS = ["icon-192.png", "icon-512.png", "manifest.json"];
-
+ 
 self.addEventListener("install", (event) => {
   // Activate this worker immediately instead of waiting for old tabs to close.
   self.skipWaiting();
@@ -18,7 +27,7 @@ self.addEventListener("install", (event) => {
       .catch(() => { /* non-critical if a static asset fails to precache */ })
   );
 });
-
+ 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
@@ -28,17 +37,17 @@ self.addEventListener("activate", (event) => {
       .then(() => self.clients.claim())
   );
 });
-
+ 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return; // never intercept writes
-
+ 
   const url = new URL(req.url);
-
+ 
   // Cross-origin requests (Supabase API calls, etc.) -- always pass straight through,
   // never cached, never intercepted.
   if (url.origin !== self.location.origin) return;
-
+ 
   // HTML documents / navigations -- ALWAYS network-first. This is the part that
   // guarantees a deploy is never masked by a stale cached page. Cache is only a
   // fallback for genuinely offline use, not a substitute for a fresh fetch.
@@ -49,7 +58,7 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
-
+ 
   // Known static assets -- cache-first, since these essentially never change.
   const isStaticAsset = STATIC_ASSETS.some((asset) => url.pathname.endsWith(asset));
   if (isStaticAsset) {
@@ -58,6 +67,7 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
-
+ 
   // Anything else on this origin -- just let it pass through normally.
 });
+ 
