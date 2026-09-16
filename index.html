@@ -10,7 +10,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
 <!-- OneSignal Web SDK -- registers this device for push and lets us set its
      external_id (apartment number) so send_push_notification() (Postgres/pg_net)
-     can target it. App ID is public/non-secret, safe to ship client-side. -->
+     can target it. App ID is public/non-secret, safe to ship client-side.
+ 
+     IMPORTANT: this app already registers its own service worker at sw.js
+     (for PWA installability). Only one service worker can control a given
+     scope, so instead of letting OneSignal register a separate
+     OneSignalSDKWorker.js at the root (which silently loses that fight and
+     was why push never actually worked), sw.js now imports OneSignal's
+     worker code directly and we tell OneSignal to use that same file. -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -19,6 +26,10 @@
       appId: "02f5be07-c734-43b6-bb85-4a11657048de",
       // We show our own opt-in banner first, so skip OneSignal's default prompts.
       autoResubscribe: true,
+      // Use the site's existing sw.js (which now imports OneSignal's worker
+      // code) instead of registering a second, separate service worker.
+      serviceWorkerParam: { scope: "/" },
+      serviceWorkerPath: "sw.js",
     });
   });
 </script>
@@ -856,7 +867,7 @@ function initPushForResident() {
     try {
       // Safe to call even if already logged in as this apartment; OneSignal no-ops.
       await OneSignal.login(String(resident.apt));
-    } catch (e) { /* non-fatal -- device just won't be individually targetable yet */ }
+    } catch (e) { console.error("[push] OneSignal.login failed:", e); }
     maybeShowPushPrompt();
   });
 }
@@ -877,7 +888,7 @@ document.getElementById("pushEnableBtn").onclick = () => {
     try {
       await OneSignal.Notifications.requestPermission();
       await OneSignal.login(String(resident.apt));
-    } catch (e) { /* user likely blocked the native prompt -- nothing more to do */ }
+    } catch (e) { console.error("[push] enable flow failed:", e); }
   });
 };
  
@@ -2029,3 +2040,4 @@ setInterval(() => { if (resident.apt) loadNotifications(); }, 45000);
 </script>
 </body>
 </html>
+ 
