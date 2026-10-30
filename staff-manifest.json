@@ -1,0 +1,25 @@
+{
+  "id": "/admin.html",
+  "name": "Cendana Staff",
+  "short_name": "Cendana Staff",
+  "description": "Cendana Studio amenity reservations",
+  "start_url": "/admin.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F6F3EC",
+  "theme_color": "#232B36",
+  "icons": [
+    {
+      "src": "/staff-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/staff-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
