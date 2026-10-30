@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Cendana Craig Ranch - Staff Admin Portal</title>
+<link rel="manifest" href="/staff-manifest.json" />
+<link rel="icon" type="image/png" href="/staff-icon-192.png" />
+<link rel="apple-touch-icon" href="/staff-icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
@@ -96,7 +99,9 @@
   .cal-cell.outside .cal-date-num{color:#B0AA98;}
   .cal-cell .cal-date-num{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-bottom:4px;}
   .cal-chip{font-size:10.5px; font-weight:600; font-family:var(--font-body); padding:3px 6px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; color:#fff; border-left:none;}
-  .cal-chip.past{background:#B04A3E; opacity:.65;}
+  .cal-chip.past:not(.completed){background:#B04A3E; opacity:.65;}
+  .cal-chip.completed{opacity:1; background-image:repeating-linear-gradient(135deg,transparent 0px,transparent 6px,rgba(255,255,255,.32) 6px,rgba(255,255,255,.32) 9px); border:1px solid rgba(255,255,255,.45); font-size:10px; line-height:1.3; padding:3px 5px;}
+  .cal-chip.completed .cal-completed-note{display:block;font-size:9px;font-weight:600;white-space:nowrap;}
   .cal-chip.pending{border:1.5px dashed rgba(255,255,255,.8); opacity:.9;}
   .cal-more{font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-weight:600; margin-top:2px;}
  
@@ -130,29 +135,121 @@
     .cal-cell{min-height:80px;}
     .cal-grid.week-mode .cal-cell{min-height:220px;}
   }
+
+/* CENDANA STUDIO V4 — STAFF EXPERIENCE (presentation only) */
+:root{--ink:#233451;--ink-soft:#64748b;--sand:#f5f7fc;--line:#e2e8f3;--amber:#4c5fd7;--amber-dark:#3f53c8;--sage:#12a78f;--dusty:#5c8ce6;--clay:#ed7980;--gold:#e7a546}
+body{background:#f5f7fc;color:#253650}
+#sidebar{width:244px;background:linear-gradient(170deg,#101f3a 0%,#182b51 100%);padding:29px 17px;box-shadow:10px 0 40px rgba(20,35,75,.07);border-right:1px solid #293a5d}
+#sidebar .brand{font-size:17px;letter-spacing:-.55px;line-height:1.5;padding:0 12px;margin-bottom:35px}
+#sidebar .brand:before{content:'C';display:grid;place-items:center;width:46px;height:46px;background:linear-gradient(135deg,#5f70e5,#20bda7);color:#fff;border-radius:15px;font-size:24px;font-weight:700;margin-bottom:16px;box-shadow:0 9px 22px rgba(35,62,165,.28)}
+#sidebar .brand small{font-size:10px;color:#94a9cb;margin-top:5px;line-height:1.5}
+.sidebar-link{padding:14px 13px;margin-top:8px;border-radius:13px;color:#b9c9e2;font-size:13px;transition:background .18s,transform .18s}
+.sidebar-link:hover{background:#293e64;transform:translateX(2px)}
+.sidebar-link.active{background:#4359ce;color:#fff;box-shadow:0 8px 20px rgba(29,49,125,.25)}
+.sidebar-link svg{stroke:#8da2fa}
+.sidebar-link.active svg{stroke:#fff}
+#topBar{margin-left:244px;padding:20px 35px;background:rgba(255,255,255,.94);border-bottom:1px solid #e7ebf4;position:sticky;top:0;z-index:12;backdrop-filter:blur(14px)}
+#topBar h2{font-size:21px;letter-spacing:-.65px;color:#1f3150}
+#topBar .icon-btn{background:#eef2fc;width:40px;height:40px;border-radius:12px}
+#topBar .icon-btn svg{stroke:#42557c;width:19px;height:19px}
+#portalBody{margin-left:244px;padding:31px 35px 65px;max-width:1700px}
+#overviewView>.studio-staff-intro{background:linear-gradient(112deg,#364fca 0%,#5b6fdb 62%,#21aaac 140%);padding:29px 33px;border-radius:24px;color:white;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 18px 38px rgba(61,78,170,.16)}
+.studio-staff-intro:after{content:'';position:absolute;width:240px;height:240px;border:45px solid rgba(255,255,255,.09);border-radius:50%;right:-85px;top:-130px;pointer-events:none}
+.studio-staff-intro .eyebrow{font-size:10px;letter-spacing:2.5px;font-weight:700;color:#d6e4ff;margin-bottom:8px}
+.studio-staff-intro h1{font-family:var(--font-display);font-size:26px;letter-spacing:-1px;margin:0 0 8px}
+.studio-staff-intro p{font-size:13px;opacity:.9;margin:0;max-width:590px;line-height:1.65}
+.card{border:1px solid #e8edf6;border-radius:20px;padding:24px;box-shadow:0 7px 30px rgba(27,44,78,.045);margin-bottom:20px}
+button{background:#4359ce;border-radius:10px;padding:10px 15px;transition:filter .15s,transform .15s}
+button:hover{background:#3549b4}button:active{transform:translateY(1px)}
+button.outline{border-color:#d7dfef;color:#41577e;background:#fff}button.outline:hover{background:#f1f5ff}
+button.danger{background:#d85d6c}button.warn{background:#b7802e}
+.tabs{gap:9px}.tabs button{background:#eaf0fb;color:#4c6082;border-radius:11px;padding:12px 17px}.tabs button.active{background:#4359ce;color:#fff}
+.cal-toolbar{background:#fff;border:1px solid #e6ecf6;padding:18px 20px;border-radius:19px;margin-bottom:16px;gap:12px}
+.cal-nav button{background:#eef1fb;color:#4054a5;border-radius:10px}
+.cal-mode-toggle button{border-radius:9px}
+.cal-cell{border-color:#e9edf5!important}.cal-grid{border-radius:17px;overflow:hidden;border:1px solid #e9edf5;background:#fff}
+.stat-row>div,.stat-card{border-radius:16px}
+input,select,textarea{border-color:#dce3f0!important;border-radius:10px!important}
+input:focus,select:focus,textarea:focus{outline:2px solid #bac7ff;outline-offset:1px}
+.table-wrap{border:1px solid #e9edf5;border-radius:14px}th{background:#f2f5fc;color:#526786}th,td{padding:13px 12px}
+.badge.yes{background:#dff8f0;color:#087d62}.badge.no{background:#fee9eb;color:#b44756}.badge.wait{background:#fff2d9;color:#9c6818}
+#loginScreen,#accessGateScreen{background:linear-gradient(135deg,#122b63,#515ed4 75%,#1e9fa8)}
+#loginCard,#accessGateCard{border-radius:26px;box-shadow:0 25px 70px rgba(8,25,68,.25)}
+#loginCard .login-brand .login-mark,#accessGateCard .login-brand .login-mark{background:linear-gradient(135deg,#5869e4,#1fb5a4);border-radius:16px}
+#loginCard .login-eyebrow,#accessGateCard .login-eyebrow{color:#4359ce}
+#sidebarBackdrop{backdrop-filter:blur(3px)}
+@media(max-width:900px){#sidebar{left:-280px;width:244px;z-index:30}#sidebar.visible{left:0}#topBar,#portalBody{margin-left:0}#portalBody{padding:18px 15px 45px}#topBar{padding:13px 16px}.studio-staff-intro{padding:23px!important}.studio-staff-intro h1{font-size:21px}#mobileMenuBtn{display:flex}}
+@media(max-width:500px){.card{padding:17px}.cal-toolbar{padding:13px}.studio-staff-intro{border-radius:18px!important}}
+
+/* CENDANA STUDIO V5 — operational workspace */
+.v5-section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 20px}.v5-section-heading h2{font-size:24px;letter-spacing:-.8px;margin:0 0 4px}.v5-section-heading p{color:#697b99;font-size:13px;margin:0}.v5-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:22px}.v5-metric{background:white;border:1px solid #e7ecf7;border-radius:18px;padding:20px;box-shadow:0 6px 25px #213a6808}.v5-metric:before{content:'';display:block;width:32px;height:4px;border-radius:9px;background:var(--metric);margin-bottom:14px}.v5-metric strong{font-size:32px;display:block;letter-spacing:-1px}.v5-metric span{color:#6a7c98;font-size:12px}.v5-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}.v5-two-col .card h3{font-size:16px;margin:0 0 18px}.v5-task{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid #edf0f7}.v5-task:last-child{border:0}.v5-task-dot{width:10px;height:10px;flex-shrink:0;background:#e7a546;border-radius:50%}.v5-task strong{font-size:13px;display:block}.v5-task small{display:block;color:#71809a;font-size:11px;margin-top:4px}.v5-muted{color:#71809a;font-size:13px}.v5-search-row{display:flex;gap:10px;margin:0 0 15px}.v5-search-row input{flex:1;min-width:0;background:white}.v5-search-row select{max-width:230px;background:white}.v5-list-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.v5-list-heading h3{margin:0;font-size:17px}.v5-list-heading span{font-size:12px;color:#7787a0}.v5-reservation{background:white;border:1px solid #e7ecf6;border-radius:17px;padding:18px;margin-bottom:12px;box-shadow:0 4px 18px #243d6a09}.v5-reservation-main{display:flex;align-items:flex-start;gap:13px}.v5-amenity-icon{background:var(--amenity-soft);color:var(--amenity-accent);width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;flex-shrink:0}.v5-reservation-copy{flex:1;min-width:0}.v5-reservation-title{font-size:15px;font-weight:750;color:#223555;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.v5-reservation-time{font-size:13px;color:#4b5f80;margin-top:5px}.v5-meta{font-size:12px;color:#75839a;margin-top:7px}.v5-status{margin-left:auto}.v5-pill{display:inline-block;font-size:11px;font-weight:700;background:#eef1f9;color:#576785;padding:6px 10px;border-radius:30px;white-space:nowrap}.v5-pending{background:#fff0d9;color:#94600f}.v5-out{background:#fff0d9;color:#9a5700}.v5-reservation:has(.v5-out){border-color:#efc88c;background:#fffaf2}.v5-overdue{background:#ffe5e9;color:#b23851}.v5-returned{background:#e2f8ef;color:#087c5b}.v5-card-actions{margin:16px 0 0 61px;display:flex;align-items:flex-start;gap:9px;flex-wrap:wrap}.v5-card-actions button{font-size:12px}.v5-actions{position:relative}.v5-actions summary{cursor:pointer;list-style:none;border:1px solid #d7dfef;border-radius:10px;padding:10px 13px;color:#40557b;font-weight:700;font-size:12px}.v5-actions summary::-webkit-details-marker{display:none}.v5-action-menu{position:fixed;right:0;top:42px;z-index:10;background:#fff;border:1px solid #e2e7f2;border-radius:14px;box-shadow:0 14px 34px #253a6728;min-width:235px;padding:10px;display:flex;flex-direction:column;gap:6px}.v5-action-menu button{width:100%;text-align:left}.v6-floating-actions{box-sizing:border-box;box-shadow:0 18px 44px #20365d40!important;overscroll-behavior:contain}.v5-small-link{background:none!important;color:#6a45bd;padding:6px 0!important;font-size:11px!important}.v5-policy-row{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid #edf0f7;font-size:12px}.v5-policy-row span{color:#73809a}.v5-policy-row strong{text-align:right;color:#263856}.v5-disclaimer{margin:14px 0;padding:14px 16px;background:#fff7e7;border:1px solid #f4e1b8;color:#87631e;border-radius:13px;font-size:12px;line-height:1.7}
+@media(max-width:1000px){.v5-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.v5-two-col{grid-template-columns:1fr}.v5-reservation-main{flex-wrap:wrap}.v5-status{width:100%;margin-left:61px}.v5-card-actions{margin-left:0}.v5-search-row{flex-direction:column}.v5-search-row select{max-width:none}.v5-section-heading h2{font-size:21px}}@media(max-width:400px){.v5-metrics{grid-template-columns:1fr 1fr}.v5-metric{padding:13px}.v5-metric strong{font-size:27px}}
+
+
+/* V6 bottom dock: intentionally overrides the V5 desktop sidebar and mobile drawer. */
+:root{--v6-dock-height:84px}
+body{padding-left:0!important;padding-bottom:calc(var(--v6-dock-height) + 30px + env(safe-area-inset-bottom))!important}
+body.onboarding-bg{padding-bottom:20px!important}
+#sidebar,#sidebarBackdrop,#hamburgerBtn{display:none!important}
+.v6-dock{position:fixed;z-index:120;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(550px,calc(100% - 24px));min-height:var(--v6-dock-height);padding:9px 12px;display:flex;align-items:center;justify-content:space-around;gap:3px;background:rgba(255,255,255,.96);border:1px solid #e9eaf1;border-radius:30px;box-shadow:0 16px 48px rgba(26,43,81,.17),0 3px 9px rgba(26,43,81,.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.v6-dock-item{flex:1;min-width:0;border:0!important;background:transparent!important;color:#8a91a3!important;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:8px 2px!important;border-radius:20px!important;cursor:pointer;font:600 11px/1.15 system-ui,sans-serif!important;box-shadow:none!important;transition:color .2s,background .2s,transform .2s}
+.v6-dock-item svg{width:24px;height:24px;flex-shrink:0}
+.v6-dock-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.v6-dock-item:hover{color:#4c5ad4!important;transform:translateY(-2px)}
+.v6-dock-item.active{color:#3446c4!important;background:#eef0ff!important}
+.v6-dock-item:focus-visible{outline:3px solid #6474ed;outline-offset:2px}
+.v6-dock[hidden],.v6-sheet[hidden]{display:none!important}
+.v6-sheet{position:fixed;inset:0;z-index:130;display:flex;align-items:flex-end;justify-content:center;background:rgba(16,29,54,.45);padding:14px 14px calc(14px + env(safe-area-inset-bottom));backdrop-filter:blur(3px)}
+.v6-sheet-inner{width:min(550px,100%);background:#fff;border-radius:26px;padding:22px;box-shadow:0 18px 65px rgba(17,28,53,.24);max-height:75vh;overflow-y:auto}
+.v6-sheet-inner h3{font-size:20px;margin:0 0 15px;color:#1b2a47}
+.v6-sheet-link{width:100%;display:flex;align-items:center;justify-content:space-between;border:1px solid #edf0f6;background:#f8f9fd;color:#23334f;border-radius:14px;margin:8px 0;padding:14px 16px;text-align:left;font-weight:600;cursor:pointer}
+.v6-sheet-close{margin-top:12px;width:100%;background:#e9edfa!important;color:#3345a5!important;border-radius:14px}
+@media(min-width:860px){body{padding-left:0!important}header,#topBar{max-width:none!important} .wrap{max-width:1200px!important;margin-inline:auto!important}#topBar{margin-left:0!important}#portalBody{margin-left:0!important;max-width:1700px;margin-inline:auto}}
+@media(max-width:420px){.v6-dock{min-height:75px;border-radius:27px;padding:7px 5px}.v6-dock-item{font-size:10px!important}.v6-dock-item svg{width:22px;height:22px}}
+@media(prefers-reduced-motion:reduce){.v6-dock-item{transition:none}}
+
+
+/* V6 unified management shell */
+#portalBody{max-width:1400px;margin-right:auto}
+.studio-staff-intro{border-radius:25px}
+#overviewView .card,#keysView .card,#historyView .card{border-radius:20px}
+.v5-reservation{border-radius:18px;transition:box-shadow .2s,transform .2s}
+.v5-reservation:hover{box-shadow:0 8px 26px rgba(25,38,72,.10);transform:translateY(-1px)}
+.v6-dock-item{min-height:55px}
+@media(prefers-reduced-motion:reduce){.v5-reservation{transition:none}.v5-reservation:hover{transform:none}}
+#overviewView .studio-staff-intro{display:block;} body:not(.v6-overview-active) #overviewView .studio-staff-intro{display:none!important;}
+
+.v6-form-dialog{border:0;border-radius:22px;max-width:560px;width:calc(100% - 32px);padding:26px;box-shadow:0 30px 90px #0c1d3c55;color:#263856}.v6-form-dialog::backdrop{background:#0b1b36a8}.v6-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.v6-form-head h2{margin:0;font-size:22px}.v6-form-fields,.v6-form-grid{display:grid;gap:12px}.v6-form-grid{grid-template-columns:1fr 1fr}.v6-form-dialog label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:650}.v6-form-dialog input,.v6-form-dialog select,.v6-form-dialog textarea{padding:12px;border:1px solid #d2dbea;border-radius:11px;width:100%;box-sizing:border-box;font:inherit;background:#fff}.v6-form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:14px}.v6-form-dialog .v6-help{font-size:12px;color:#61738e}@media(max-width:500px){.v6-form-grid{grid-template-columns:1fr}}
+
+/* Refresh controls: consistent breathing room from every section edge. */
+.v5-section-heading:has(> .v6-page-refresh){padding-right:8px;box-sizing:border-box;flex-wrap:wrap;row-gap:8px}
+.v5-section-heading > .v6-page-refresh{margin-right:18px!important;margin-top:8px!important;margin-bottom:8px!important}
+.v6-refresh-toolbar{width:100%;min-height:56px}
+@media(max-width:480px){.v5-section-heading > .v6-page-refresh{margin-right:14px!important}}
+
+/* Unified blue pill refresh: intentionally static, no animation or timestamps. */
+button.v6-page-refresh, .v5-section-heading button.v6-page-refresh {
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;
+ background:#3d63e5!important;color:#fff!important;border:1px solid #3d63e5!important;
+ border-radius:999px!important;padding:11px 22px!important;min-height:43px!important;
+ font:600 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif!important;
+ box-shadow:none!important;cursor:pointer!important;white-space:nowrap!important;
+}
+button.v6-page-refresh:hover{background:#3356d2!important;border-color:#3356d2!important}
+button.v6-page-refresh:focus-visible{outline:3px solid #91a9ff!important;outline-offset:3px!important}
+button.v6-page-refresh:disabled{opacity:.65!important;cursor:wait!important}
+button.v6-page-refresh svg{width:17px;height:17px;flex-shrink:0}
+#overviewToday{max-height:320px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:6px}
+#overviewToday .v6-today-reservation{width:100%;background:transparent!important;color:inherit!important;border:0!important;border-bottom:1px solid #edf0f7!important;border-radius:0!important;box-shadow:none!important;display:flex;text-align:left;cursor:pointer;padding:12px 6px!important;align-items:center;gap:11px}
+#overviewToday .v6-today-reservation:hover{background:#f2f5ff!important}
+#overviewToday .v6-today-reservation:focus-visible{outline:2px solid #3d63e5;outline-offset:-2px}
+#overviewToday .v6-today-reservation:last-child{border-bottom:0!important}
 </style>
 </head>
 <body>
+<div style="position:sticky;top:0;z-index:9999;background:#fff4d6;color:#754400;padding:9px 16px;text-align:center;font:600 13px system-ui;border-bottom:1px solid #e8c77b">V6 WORKING PREVIEW — Connected to the existing live backend. Do not submit test bookings or deploy.</div>
  
-  <div id="accessGateScreen">
-    <div class="card" id="accessGateCard">
-      <div class="login-brand">
-        <div class="login-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
-        </div>
-        <h1>Cendana Craig Ranch</h1>
-        <div class="login-address">6121 Alma Road &middot; McKinney, TX 75070</div>
-      </div>
-      <div class="login-eyebrow">Staff Access</div>
-      <label>Access Code</label>
-      <input type="password" id="gateCodeInput" autocomplete="off" />
-      <button id="gateSubmitBtn">Continue</button>
-      <div class="msg err" id="gateError" style="display:none"></div>
-      <div class="login-footer">Ask the property manager for the current staff access code.</div>
-    </div>
-  </div>
- 
-  <div id="loginScreen" style="display:none;">
+  <div id="loginScreen">
     <div class="card" id="loginCard">
       <div class="login-brand">
         <div class="login-mark">
@@ -172,10 +269,22 @@
     </div>
   </div>
  
+  <div id="mfaScreen" style="display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px;background:#f3f6fc">
+    <div class="card" style="max-width:420px;width:100%;padding:28px;border-radius:24px">
+      <h2 style="margin-top:0">Staff security verification</h2>
+      <p id="mfaInstructions">Enter the six-digit code from your authenticator app.</p>
+      <div id="mfaQr" style="text-align:center;margin:12px 0"></div>
+      <input id="mfaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit authenticator code" style="width:100%;padding:12px;margin:8px 0 14px" />
+      <div id="mfaError" role="alert" style="color:#b42318;margin-bottom:10px"></div>
+      <button id="mfaVerifyBtn" style="width:100%">Verify and continue</button>
+      <button id="mfaSignoutBtn" class="outline" style="width:100%;margin-top:10px">Sign out</button>
+    </div>
+  </div>
   <div id="portal" style="display:none;">
     <div id="sidebarBackdrop"></div>
     <div id="sidebar">
-      <div class="brand">Cendana Craig Ranch<small>6121 Alma Rd, McKinney, TX 75070</small></div>
+      <div class="brand">Cendana @ CR<small>6121 Alma Rd, McKinney, TX 75070</small></div>
+      <button class="sidebar-link" id="sidebarOverviewBtn">◈ &nbsp; Overview</button>
       <button class="sidebar-link" id="sidebarCalendarBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Calendar
@@ -184,6 +293,8 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         Requests
       </button>
+      <button class="sidebar-link" id="sidebarKeysBtn">⚿ &nbsp; Key Register</button>
+      <button class="sidebar-link" id="sidebarHistoryBtn">◷ &nbsp; History</button>
       <button class="sidebar-link" id="sidebarApartmentsBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M9 21v-4h6v4"/></svg>
         Apartments
@@ -192,14 +303,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Communications
       </button>
+      <button class="sidebar-link" id="sidebarSettingsBtn">⚙ &nbsp; Amenity Settings</button>
     </div>
  
+<nav id="v6StaffDock" class="v6-dock" aria-label="Main navigation"><button type="button" id="v6StaffHome" class="v6-dock-item" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Home</span></button><button type="button" id="v6StaffCalendar" class="v6-dock-item" aria-label="Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span>Calendar</span></button><button type="button" id="v6StaffRequests" class="v6-dock-item" aria-label="Requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v13H8l-4 4V4Z"/><path d="M8 9h8M8 13h5"/></svg><span>Requests</span></button><button type="button" id="v6StaffKeys" class="v6-dock-item" aria-label="Keys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="9" r="4"/><path d="m11 12 9 9m-4-4 3-3"/></svg><span>Keys</span></button><button type="button" id="v6StaffMore" class="v6-dock-item" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></button></nav>
+<div id="v6StaffSheet" class="v6-sheet" hidden><div class="v6-sheet-inner" role="dialog" aria-modal="true" aria-label="More management options"><h3>Management</h3><button class="v6-sheet-link" id="v6StaffHistory">Reservation history <span>›</span></button><button class="v6-sheet-link" id="v6StaffApartments">Apartments &amp; residents <span>›</span></button><button class="v6-sheet-link" id="v6StaffComms">Communications <span>›</span></button><button class="v6-sheet-link" id="v6StaffSettings">Amenity settings <span>›</span></button><button class="v6-sheet-close" id="v6StaffClose">Close</button></div></div>
     <div id="topBar">
       <div style="display:flex; align-items:center; gap:12px;">
-        <button class="icon-btn" id="mobileMenuBtn" title="Menu">
+        <button class="icon-btn" id="mobileMenuBtn" title="Open navigation" aria-label="Open navigation" aria-expanded="false">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <button class="icon-btn" id="homeBtn" title="Home (Calendar)">
+        <button class="icon-btn" id="homeBtn" title="Home (Dashboard)">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
         </button>
         <h2 id="topBarTitle">Calendar</h2>
@@ -210,6 +324,20 @@
     </div>
  
     <div id="portalBody">
+      <div id="overviewView" style="display:none">
+      <section class="studio-staff-intro" aria-label="Staff dashboard introduction">
+        <div class="eyebrow">CENDANA @ CR · MANAGEMENT</div>
+        <h1>Community operations, simplified.</h1>
+        <p>Manage amenity reservations, review requests, support residents and keep your community running smoothly.</p>
+      </section>
+
+        <div class="v5-section-heading"><div><h2>Today's command center</h2><p>Everything your leasing team needs in one place.</p></div></div>
+        <div id="overviewStats" class="v5-metrics"></div>
+        <div class="v5-two-col"><div class="card"><h3>Needs attention</h3><div id="overviewAttention">Loading…</div></div><div class="card"><h3>Today's reservations</h3><div id="overviewToday">Loading…</div></div></div>
+      </div>
+      <div id="keysView" style="display:none"><div class="v5-section-heading"><div><h2>Key register</h2><p>Pickup, returns and overdue keys in one place.</p></div></div><div class="v5-search-row"><input id="keysSearch" placeholder="Search apartment, resident or amenity" aria-label="Search keys"><select id="keysFilter"><option value="all">All keys</option><option value="pending">Awaiting pickup</option><option value="out">Checked out</option><option value="overdue">Overdue</option><option value="returned">Returned</option></select></div><div id="v6KeySummary" class="v5-metrics" style="margin:12px 0"></div><div id="keysList"></div><div class="card" style="margin-top:18px"><h3>Key incident history</h3><div id="v6KeyIncidents">Loading...</div></div></div>
+      <div id="historyView" style="display:none"><div class="v5-section-heading"><div><h2>Reservation history</h2><p>Recent reservation records and their current statuses.</p></div></div><div class="v5-search-row"><input id="historySearch" placeholder="Search resident, apartment or amenity" aria-label="Search history"></div><div id="historyList"></div><div class="card" style="margin-top:18px"><h3>Staff & booking audit log</h3><div id="v6StaffAudit">Loading...</div></div></div>
+      <div id="settingsView" style="display:none"><div class="v5-section-heading"><div><h2>Amenity policy reference</h2><p>Current agreed rules for the handover plan.</p></div></div><div class="v5-two-col"><div class="card"><h3>Private offices & conference room</h3><div class="v5-policy-row"><span>Operating hours</span><strong>9:00 AM – 5:45 PM</strong></div><div class="v5-policy-row"><span>Latest bookable end</span><strong>5:45 PM</strong></div><div class="v5-policy-row"><span>Room vacated / keys returned</span><strong>5:45 PM</strong></div><div class="v5-policy-row"><span>Maximum duration</span><strong>4 hours</strong></div></div><div class="card"><h3>Cinema</h3><div class="v5-policy-row"><span>Room vacated</span><strong>11:00 PM</strong></div><div class="v5-policy-row"><span>Key collection</span><strong>Before 5:45 PM</strong></div><div class="v5-policy-row"><span>Maximum duration</span><strong>4 hours</strong></div><div class="v5-policy-row"><span>45-minute no-show</span><strong>Staff review required (V6 target)</strong></div></div></div><div class="card" style="margin-top:18px"><h3>Maintenance blocks</h3><p>Create a partial-day, full-day, or consecutive multi-day closure. Existing reservations are not cancelled automatically.</p><div class="v5-two-col"><label>Amenity<select id="v6MaintenanceAmenity" style="width:100%;padding:10px"><option value="">Select amenity</option></select></label><label>First date<input id="v6MaintenanceDate" type="date" style="width:100%;padding:10px"></label><label>Start time<input id="v6MaintenanceStart" type="time" value="09:00" style="width:100%;padding:10px"></label><label>End time<input id="v6MaintenanceEnd" type="time" value="17:45" style="width:100%;padding:10px"></label><label>Consecutive days<input id="v6MaintenanceDays" type="number" min="1" max="30" value="1" style="width:100%;padding:10px"></label></div><label>Reason<input id="v6MaintenanceReason" type="text" maxlength="200" placeholder="e.g. HVAC repair" style="width:100%;padding:10px"></label><button id="v6MaintenanceCreate" style="margin-top:12px">Create maintenance block</button><p id="v6MaintenanceResult" role="status"></p></div><div class="v5-disclaimer">The maintenance form writes to Supabase. Other policy rows are reference information; staff policy editing is not yet available.</div></div>
       <div id="calendarView">
         <div class="cal-toolbar">
           <div class="cal-nav">
@@ -223,6 +351,7 @@
             <button id="calMonthBtn" class="active">Month</button>
           </div>
         </div>
+        <div style="margin:12px 0"><button class="primary" id="staffCreateBookingBtn" onclick="staffCreateBooking()">+ Create resident or management booking</button></div>
         <div id="calGrid" class="cal-grid"></div>
       </div>
  
@@ -230,10 +359,13 @@
         <div class="stat-row" id="statRow"></div>
         <div class="tabs">
           <button id="tabBookingsBtn" class="active">Upcoming Bookings</button>
+          <button id="tabActiveBtn">Active Bookings</button>
           <button id="tabApprovalsBtn">Approvals</button>
           <button id="tabWaitlistBtn">Waitlist</button>
         </div>
+        <div class="v5-search-row"><input id="bookingSearch" placeholder="Search resident, apartment or amenity" aria-label="Search bookings"><select id="bookingFilter"><option value="all">All upcoming</option><option value="pending">Keys awaiting pickup</option><option value="out">Keys checked out</option><option value="overdue">Overdue returns</option></select></div>
         <div class="card" id="bookingsView"></div>
+        <div class="card" id="activeView" style="display:none"></div>
         <div class="card" id="approvalsView" style="display:none"></div>
         <div class="card" id="waitlistView" style="display:none"></div>
       </div>
@@ -241,7 +373,7 @@
       <div id="apartmentsView" style="display:none;">
         <div class="card" style="margin-bottom:20px;">
           <div class="section-title" style="margin-top:0;">Add Apartments</div>
-          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">One unit number per line (or comma-separated). Each gets a fresh unique 6-digit PIN automatically.</p>
+          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">One unit number per line (or comma-separated). Each apartment receives a secure 6-digit PIN. The PIN is shown once when issued and stored as a hash.</p>
           <textarea id="addAptInput" rows="3" style="width:100%; font-family:var(--font-mono, monospace); padding:8px; box-sizing:border-box;" placeholder="e.g.&#10;3068&#10;3069, 3070"></textarea>
           <button id="addAptBtn" style="margin-top:10px;">Add Apartment(s)</button>
           <div class="msg err" id="addAptError" style="display:none; margin-top:8px;"></div>
@@ -249,7 +381,7 @@
  
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div class="section-title" style="margin-top:0;">Apartment List &amp; PINs</div>
+            <div class="section-title" style="margin-top:0;">Apartment Directory &amp; Access</div>
             <div style="display:flex; gap:8px;">
               <input type="text" id="aptSearchInput" placeholder="Search unit #..." style="padding:6px 10px; font-size:13px;" />
               <button class="outline" id="exportPinsBtn">Export CSV</button>
@@ -261,16 +393,22 @@
  
       <div id="commsView" style="display:none;">
         <div class="card" style="margin-bottom:20px;">
-          <div class="section-title" style="margin-top:0;">Send Community Announcement</div>
-          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">One-way message sent to every active resident's notification center (e.g. closures, cancellations, policy changes). Residents can't reply from this.</p>
+          <div class="section-title" style="margin-top:0;">Send Resident Notification</div>
+          <p style="font-size:13px; color:var(--ink-soft, #666); margin:0 0 10px;">Send an in-app notification to one apartment or every active apartment. Messages cannot be recalled.</p>
+          <label for="commsRecipient" style="display:block;font-weight:600;margin:12px 0 5px;">Recipient</label>
+          <select id="commsRecipient" style="width:100%;padding:10px;border-radius:9px;border:1px solid #cbd5e1"><option value="all">All active apartments</option><option value="apartment">One apartment</option><option value="resident">Individual resident account</option></select>
+          <div id="commsApartmentWrap" style="display:none;margin-top:10px;"><label for="commsApartment" style="display:block;font-weight:600;margin-bottom:5px;">Apartment number</label><input id="commsApartment" type="text" autocomplete="off" placeholder="Enter exact unit number" style="width:100%;box-sizing:border-box;padding:10px;" /></div>
+          <div id="commsResidentWrap" style="display:none;margin-top:10px"><label for="commsProfileSearch">Search apartment number</label><input id="commsProfileSearch" type="search" placeholder="e.g. 2059" autocomplete="off" style="width:100%;box-sizing:border-box;padding:11px;margin-bottom:12px"><label for="commsResident" style="display:block;font-weight:600;margin-bottom:5px">Resident account</label><select id="commsResident" style="width:100%;padding:10px"><option value="">Select a resident</option></select></div><label for="commsTemplate" style="display:block;font-weight:600;margin:12px 0 5px;">Message template</label>
+          <select id="commsTemplate" style="width:100%;padding:10px;border-radius:9px;border:1px solid #cbd5e1"><option value="">Custom message</option><option value="Your reservation is available. Please review your booking details in the app.">Reservation Available</option><option value="Your reservation has been cancelled. Please check your bookings for details.">Reservation Cancelled</option><option value="Your keys are ready for collection. Please check your booking instructions.">Keys Ready</option><option value="">General Announcement</option></select>
+          <label for="commsMessageInput" style="display:block;font-weight:600;margin:12px 0 5px;">Message</label>
           <textarea id="commsMessageInput" rows="4" style="width:100%; font-family:var(--font-body); padding:10px; box-sizing:border-box; font-size:14px;" placeholder="e.g. The Cinema will be closed for maintenance this Friday, June 12th."></textarea>
-          <button id="commsSendBtn" style="margin-top:10px;">Send to All Residents</button>
+          <button id="commsSendBtn" style="margin-top:10px;">Send Notification</button>
           <div class="msg err" id="commsError" style="display:none; margin-top:8px;"></div>
           <div class="msg ok" id="commsSuccess" style="display:none; margin-top:8px;"></div>
         </div>
  
         <div class="card">
-          <div class="section-title" style="margin-top:0;">Sent History</div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><div class="section-title" style="margin-top:0;">Sent History</div></div>
           <div id="commsHistoryBody">Loading...</div>
         </div>
       </div>
@@ -282,12 +420,14 @@
     <div style="background:#fff; border-radius:14px; padding:28px; max-width:360px; width:90%; text-align:center;">
       <div style="font-size:13px; color:var(--ink-soft,#666); margin-bottom:6px;" id="pinRevealUnit"></div>
       <div style="font-family:var(--font-mono,monospace); font-size:32px; font-weight:700; letter-spacing:6px; margin:10px 0;" id="pinRevealCode"></div>
-      <p style="font-size:13px; color:var(--ink-soft,#666);">Give this PIN to the resident directly &mdash; it won't be shown again automatically, but you can always look it up here later.</p>
+      <p style="font-size:13px; color:var(--ink-soft,#666);">Give this PIN to the resident directly &mdash; it cannot be retrieved later. Generate a fresh PIN if needed.</p>
       <button id="pinRevealCopyBtn" class="outline" style="width:100%; margin-bottom:8px;">Copy PIN</button>
       <button id="pinRevealCloseBtn" style="width:100%;">Done</button>
     </div>
   </div>
  
+
+  <dialog id="v6FormDialog" class="v6-form-dialog" aria-labelledby="v6FormTitle"><form id="v6Form" method="dialog"><div class="v6-form-head"><h2 id="v6FormTitle">Details</h2><button type="button" class="outline" id="v6FormClose" aria-label="Close">✕</button></div><div id="v6FormFields"></div><p id="v6FormError" role="alert" style="color:#b42332;min-height:1em"></p><div class="v6-form-actions"><button type="button" class="outline" id="v6FormCancel">Cancel</button><button type="submit" class="primary" id="v6FormSave">Save</button></div></form></dialog>
   <div id="detailBackdrop">
     <div id="detailModal">
       <div id="detailModalBody"></div>
@@ -297,38 +437,66 @@
  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ---------- STAFF ACCESS GATE ----------
-// NOTE: This is a casual-discovery deterrent only (stops random URL-guessers from
-// even seeing a login form) — it is NOT a real security boundary. The code lives in
-// this file's source, same as everything else client-side. Actual access control is,
-// and remains, Supabase auth + the is_staff() role check on every table/RPC.
-// Change this string with your team whenever you want to rotate it.
-const STAFF_ACCESS_CODE = "cendana2026";
-const GATE_SESSION_KEY = "ccr_staff_gate_passed";
- 
-function passGate() {
-  document.getElementById("accessGateScreen").style.display = "none";
-  document.getElementById("loginScreen").style.display = "flex";
+
+// Single document-level actions menu: no nested overflow clipping, flicker or overlap.
+// The panel is temporarily moved to document.body while open, then restored.
+let activeActions = null;
+function closeActionsMenu(){
+  if(!activeActions)return;
+  const {host,panel,placeholder,button}=activeActions;
+  panel.hidden=true;
+  panel.classList.remove('v6-floating-actions');
+  panel.style.removeProperty('top');panel.style.removeProperty('left');panel.style.removeProperty('right');
+  panel.style.removeProperty('max-height');panel.style.removeProperty('position');
+  panel.style.removeProperty('z-index');
+  if(placeholder.isConnected)placeholder.replaceWith(panel);
+  else panel.remove();
+  if(host.isConnected){host.open=false;host.removeAttribute('data-menu-open');}
+  if(button.isConnected)button.setAttribute('aria-expanded','false');
+  activeActions=null;
 }
- 
-document.getElementById("gateSubmitBtn").onclick = () => {
-  const code = document.getElementById("gateCodeInput").value;
-  const errBox = document.getElementById("gateError");
-  errBox.style.display = "none";
-  if (code === STAFF_ACCESS_CODE) {
-    sessionStorage.setItem(GATE_SESSION_KEY, "true");
-    passGate();
-  } else {
-    errBox.textContent = "Incorrect access code.";
-    errBox.style.display = "block";
+function placeActionsMenu(){
+  if(!activeActions)return;
+  const {panel,button}=activeActions;
+  if(!button.isConnected){closeActionsMenu();return;}
+  const r=button.getBoundingClientRect();
+  const width=Math.min(260,window.innerWidth-16);
+  const left=Math.max(8,Math.min(r.left,window.innerWidth-width-8));
+  panel.style.width=width+'px';
+  panel.style.maxHeight=Math.max(120,window.innerHeight-20)+'px';
+  panel.style.overflowY='auto';
+  panel.style.left=left+'px';panel.style.right='auto';
+  const h=Math.min(panel.scrollHeight,window.innerHeight-20);
+  const below=window.innerHeight-r.bottom-8;
+  panel.style.top=(below>=Math.min(h,230)?r.bottom+6:Math.max(8,r.top-h-6))+'px';
+}
+function openActionsMenu(host,button){
+  if(activeActions?.host===host){closeActionsMenu();return;}
+  closeActionsMenu();
+  const panel=host.querySelector('.v5-action-menu');if(!panel)return;
+  const placeholder=document.createComment('actions-menu-original-location');
+  panel.replaceWith(placeholder);
+  document.body.appendChild(panel);
+  panel.hidden=false;
+  panel.classList.add('v6-floating-actions');
+  panel.style.position='fixed';panel.style.zIndex='100000';
+  host.open=true;host.setAttribute('data-menu-open','');
+  button.setAttribute('aria-expanded','true');
+  activeActions={host,panel,placeholder,button};
+  placeActionsMenu();
+}
+// Capture clicks before native details toggle to avoid competing toggle handlers.
+document.addEventListener('click',event=>{
+  const summary=event.target.closest('details.v5-actions > summary');
+  if(summary){event.preventDefault();openActionsMenu(summary.parentElement,summary);return;}
+  if(activeActions){
+    if(event.target.closest('.v6-floating-actions button')){closeActionsMenu();return;}
+    if(!event.target.closest('.v6-floating-actions'))closeActionsMenu();
   }
-};
-document.getElementById("gateCodeInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") document.getElementById("gateSubmitBtn").click();
-});
- 
-if (sessionStorage.getItem(GATE_SESSION_KEY) === "true") passGate();
- 
+},true);
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeActionsMenu();});
+window.addEventListener('resize',()=>{if(activeActions)placeActionsMenu();});
+window.addEventListener('scroll',()=>{if(activeActions)closeActionsMenu();},true);
 const SUPABASE_URL = "https://uqqbgopausdgirnezxfh.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWJnb3BhdXNkZ2lybmV6eGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MDkzNzAsImV4cCI6MjEwMjE4NTM3MH0.csX9-u9jrc-p0j4x7tKfuQ7ky_HqGIovvglr8zniCSA";
  
@@ -386,6 +554,58 @@ function staffSessionIdleExpired() {
   return !!last && (Date.now() - last) > STAFF_MAX_IDLE_MS;
 }
  
+// MFA is mandatory for the staff interface. The database must ALSO enforce AAL2
+// on privileged RPCs and RLS policies; a browser gate alone is not authorization.
+let pendingMfaFactor = null;
+async function staffMfaGate() {
+  const { data: assurance, error: assuranceError } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (assuranceError) throw assuranceError;
+  if (assurance.currentLevel === 'aal2') { showPortal(); return; }
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('portal').style.display = 'none';
+  document.getElementById('mfaScreen').style.display = 'flex';
+  const { data: factors, error: factorsError } = await sb.auth.mfa.listFactors();
+  if (factorsError) throw factorsError;
+  const verified = (factors.totp || []).find(f => f.status === 'verified');
+  if (verified) {
+    pendingMfaFactor = verified.id;
+    document.getElementById('mfaInstructions').textContent = 'Enter the six-digit code from your authenticator app.';
+    document.getElementById('mfaQr').replaceChildren();
+  } else {
+    const { data: enrolled, error: enrollError } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Cendana Staff' });
+    if (enrollError) throw enrollError;
+    pendingMfaFactor = enrolled.id;
+    document.getElementById('mfaInstructions').textContent = 'Scan this QR code in your authenticator app, then enter the six-digit code.';
+    const qr = document.getElementById('mfaQr');
+    qr.replaceChildren();
+    // Supabase returns a generated SVG data URI; no untrusted HTML insertion.
+    const img = document.createElement('img');
+    img.src = enrolled.totp.qr_code;
+    img.alt = 'Authenticator enrollment QR code';
+    img.style.maxWidth = '220px';
+    qr.appendChild(img);
+  }
+}
+document.getElementById('mfaVerifyBtn').onclick = async () => {
+  const err = document.getElementById('mfaError');
+  err.textContent = '';
+  const code = document.getElementById('mfaCode').value.trim();
+  if (!/^\d{6}$/.test(code)) { err.textContent = 'Enter a six-digit code.'; return; }
+  try {
+    const { data: challenge, error: challengeError } = await sb.auth.mfa.challenge({ factorId: pendingMfaFactor });
+    if (challengeError) throw challengeError;
+    const { error: verifyError } = await sb.auth.mfa.verify({ factorId: pendingMfaFactor, challengeId: challenge.id, code });
+    if (verifyError) throw verifyError;
+    document.getElementById('mfaCode').value = '';
+    touchStaffActivity();
+    showPortal();
+  } catch(e) { err.textContent = e.message || 'Verification failed.'; }
+};
+document.getElementById('mfaSignoutBtn').onclick = async () => {
+  await sb.auth.signOut();
+  document.getElementById('mfaScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+};
 document.getElementById("loginBtn").onclick = async () => {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -393,12 +613,8 @@ document.getElementById("loginBtn").onclick = async () => {
   errBox.style.display = "none";
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) { errBox.textContent = "Login failed: " + error.message; errBox.style.display = "block"; return; }
-  touchStaffActivity();
-  showPortal();
+  try { await staffMfaGate(); } catch(e) { errBox.textContent = e.message; errBox.style.display = 'block'; document.getElementById('loginScreen').style.display = 'flex'; }
 };
-// A resumed Supabase session means this is a returning, already-authenticated staff
-// member — skip the access gate entirely rather than making them re-enter the code.
-// Unless they've been idle past the timeout, in which case sign them out for real.
 sb.auth.getSession().then(async ({ data }) => {
   if (!data.session) return;
   if (staffSessionIdleExpired()) {
@@ -406,51 +622,133 @@ sb.auth.getSession().then(async ({ data }) => {
     localStorage.removeItem(STAFF_LAST_ACTIVE_KEY);
     return;
   }
-  touchStaffActivity();
-  passGate();
-  showPortal();
+  try { await staffMfaGate(); } catch(e) { console.error('Staff MFA check failed', e); }
 });
- 
 function showPortal() {
-  document.getElementById("accessGateScreen").style.display = "none";
   document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("mfaScreen").style.display = "none";
   document.getElementById("portal").style.display = "block";
   document.addEventListener("click", touchStaffActivity);
   document.addEventListener("keydown", touchStaffActivity);
-  goToCalendar();
+  // Restore the selected page after a browser reload; never restore an authenticated
+  // page until the staff MFA gate has completed.
+  let restoredView;
+  try { restoredView = sessionStorage.getItem(STAFF_VIEW_KEY); } catch(e) {}
+  const routes = {
+    overviewView: goToOverview, calendarView: goToCalendar,
+    requestsView: goToRequests, keysView: goToKeys,
+    historyView: goToHistory, settingsView: goToSettings,
+    apartmentsView: goToApartments, commsView: goToComms
+  };
+  (routes[restoredView] || goToOverview)();
 }
- 
+
 document.getElementById("logoutBtn").onclick = async () => {
   await sb.auth.signOut();
   localStorage.removeItem(STAFF_LAST_ACTIVE_KEY);
+  try { sessionStorage.removeItem(STAFF_VIEW_KEY); } catch(e) {}
   document.removeEventListener("click", touchStaffActivity);
   document.removeEventListener("keydown", touchStaffActivity);
   document.getElementById("portal").style.display = "none";
   document.getElementById("loginScreen").style.display = "flex";
 };
-document.getElementById("homeBtn").onclick = () => { calendarMode = "month"; goToCalendar(); };
+document.getElementById("homeBtn").onclick = () => goToOverview();
 document.getElementById("mobileMenuBtn").onclick = () => {
   document.getElementById("sidebar").classList.add("visible");
   document.getElementById("sidebarBackdrop").classList.add("visible");
+  document.getElementById("mobileMenuBtn").setAttribute("aria-expanded","true");
 };
 document.getElementById("sidebarBackdrop").onclick = closeMobileSidebar;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeMobileSidebar(); });
 function closeMobileSidebar() {
   document.getElementById("sidebar").classList.remove("visible");
   document.getElementById("sidebarBackdrop").classList.remove("visible");
+  document.getElementById("mobileMenuBtn").setAttribute("aria-expanded","false");
 }
+document.getElementById("sidebarOverviewBtn").onclick = () => { goToOverview(); closeMobileSidebar(); };
+document.getElementById("sidebarKeysBtn").onclick = () => { goToKeys(); closeMobileSidebar(); };
+document.getElementById("sidebarHistoryBtn").onclick = () => { goToHistory(); closeMobileSidebar(); };
+document.getElementById("sidebarSettingsBtn").onclick = () => { goToSettings(); closeMobileSidebar(); };
+
+
+
+document.getElementById("keysSearch").oninput = renderKeys;
+document.getElementById("keysFilter").onchange = renderKeys;
+document.getElementById("historySearch").oninput = renderHistory;
+document.getElementById("bookingSearch").oninput = renderBookingCards;
+document.getElementById("bookingFilter").onchange = renderBookingCards;
 document.getElementById("sidebarCalendarBtn").onclick = () => { goToCalendar(); closeMobileSidebar(); };
 document.getElementById("sidebarRequestsBtn").onclick = () => { goToRequests(); closeMobileSidebar(); };
 document.getElementById("sidebarApartmentsBtn").onclick = () => { goToApartments(); closeMobileSidebar(); };
 document.getElementById("sidebarCommsBtn").onclick = () => { goToComms(); closeMobileSidebar(); };
  
-const ALL_SIDEBAR_BTNS = ["sidebarCalendarBtn", "sidebarRequestsBtn", "sidebarApartmentsBtn", "sidebarCommsBtn"];
-const ALL_MAIN_VIEWS = ["calendarView", "requestsView", "apartmentsView", "commsView"];
+const ALL_SIDEBAR_BTNS = ["sidebarOverviewBtn","sidebarCalendarBtn","sidebarRequestsBtn","sidebarKeysBtn","sidebarHistoryBtn","sidebarApartmentsBtn","sidebarCommsBtn","sidebarSettingsBtn"];
+const STAFF_VIEW_KEY = "cendana_staff_current_view_v6";
+const ALL_MAIN_VIEWS = ["overviewView","calendarView", "requestsView", "keysView","historyView","settingsView","apartmentsView", "commsView"];
 function setActiveNav(btnId, viewId, title) {
+  document.body.classList.toggle("v6-overview-active", viewId === "overviewView");
+  try { sessionStorage.setItem(STAFF_VIEW_KEY, viewId); } catch(e) {}
   ALL_SIDEBAR_BTNS.forEach(b => document.getElementById(b).classList.toggle("active", b === btnId));
   ALL_MAIN_VIEWS.forEach(v => document.getElementById(v).style.display = (v === viewId ? "block" : "none"));
   document.getElementById("topBarTitle").textContent = title;
 }
  
+async function refreshCurrentStaffPage(){
+ const current=ALL_MAIN_VIEWS.find(id=>document.getElementById(id)?.style.display!=='none');
+ switch(current){
+ case 'overviewView':await loadOverview();break;
+ case 'calendarView':await renderCalendar();break;
+ case 'requestsView':await Promise.all([loadStats(),loadBookings(),loadActiveBookings(),loadApprovals(),loadWaitlist()]);break;
+ case 'keysView':await Promise.all([loadKeys(),loadKeyIncidents()]);break;
+ case 'apartmentsView':await loadApartmentList();break;
+ case 'commsView':await refreshCommunicationsPage();break;
+ case 'historyView':await Promise.all([loadHistory(),loadStaffAudit()]);break;
+ case 'settingsView':break;
+ }
+}
+async function refreshCommunicationsPage(){
+  // Refresh BOTH sections without deleting an unsent message or recipient selection.
+  const mode=document.getElementById('commsRecipient').value;
+  if(mode==='resident') {
+    const selected=document.getElementById('commsResident').value;
+    await loadResidentRecipientOptions();
+    if(selected && [...document.getElementById('commsResident').options].some(o=>o.value===selected))
+      document.getElementById('commsResident').value=selected;
+  } else if(mode==='apartment') {
+    const unit=document.getElementById('commsApartment').value.trim();
+    if(unit) {
+      const {data,error}=await sb.from('apartments').select('unit_number,active').eq('unit_number',unit).maybeSingle();
+      const box=document.getElementById('commsError');
+      if(error || !data || !data.active) {
+        box.textContent='The selected apartment could not be verified as active. Please review the recipient.';
+        box.style.display='block';
+      } else {box.style.display='none';box.textContent='';}
+    }
+  }
+  await loadCommsHistory();
+}
+function setupPageRefreshButtons(){
+  ALL_MAIN_VIEWS.forEach(id=>{
+    const view=document.getElementById(id);
+    if(!view)return;
+    // Only one refresh control per page; put it in the page header where available.
+    view.querySelectorAll('.v6-page-refresh').forEach(el=>el.remove());
+    const heading=view.querySelector('.v5-section-heading');
+    const btn=document.createElement('button');btn.type='button';btn.className='v6-page-refresh';btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Refresh</span>';btn.setAttribute('aria-label','Refresh current page');
+    btn.style.cssText='font-size:12px;position:relative;z-index:2;flex-shrink:0;margin:8px 18px 8px 12px';
+    if(heading){heading.appendChild(btn);}else{
+      const toolbar=document.createElement('div');toolbar.className='v6-refresh-toolbar';
+      toolbar.style.cssText='display:flex;justify-content:flex-end;align-items:center;padding:12px 18px 12px 12px;margin-bottom:12px;box-sizing:border-box';
+      btn.style.margin="0";toolbar.appendChild(btn);view.prepend(toolbar);
+    }
+    btn.onclick=async()=>{btn.disabled=true;try{await refreshCurrentStaffPage();}finally{btn.disabled=false;}};
+  });
+}
+document.addEventListener('DOMContentLoaded',setupPageRefreshButtons);
+function goToOverview(){setActiveNav("sidebarOverviewBtn","overviewView","Overview");loadOverview();}
+function goToKeys(){setActiveNav("sidebarKeysBtn","keysView","Key Register");loadKeys();loadKeyIncidents();}
+function goToHistory(){setActiveNav("sidebarHistoryBtn","historyView","History");loadHistory();loadStaffAudit();}
+function goToSettings(){setActiveNav("sidebarSettingsBtn","settingsView","Amenity Settings");}
 function goToCalendar() {
   setActiveNav("sidebarCalendarBtn", "calendarView", "Calendar");
   document.getElementById("calMonthBtn").classList.toggle("active", calendarMode === "month");
@@ -472,13 +770,15 @@ function goToComms() {
  
 document.getElementById("tabBookingsBtn").onclick = () => switchReqTab("bookings");
 document.getElementById("tabApprovalsBtn").onclick = () => switchReqTab("approvals");
+document.getElementById("tabActiveBtn").onclick = () => switchReqTab("active");
 document.getElementById("tabWaitlistBtn").onclick = () => switchReqTab("waitlist");
 function switchReqTab(tab) {
-  ["Bookings", "Approvals", "Waitlist"].forEach(t => {
+  ["Bookings", "Active", "Approvals", "Waitlist"].forEach(t => {
     document.getElementById(`tab${t}Btn`).classList.toggle("active", t.toLowerCase() === tab);
     document.getElementById(`${t.toLowerCase()}View`).style.display = t.toLowerCase() === tab ? "block" : "none";
   });
   if (tab === "bookings") loadBookings();
+  if (tab === "active") loadActiveBookings();
   if (tab === "approvals") loadApprovals();
   if (tab === "waitlist") loadWaitlist();
   loadStats();
@@ -491,11 +791,11 @@ async function loadStats() {
     sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "pending").gt("end_time", nowIso),
     sb.from("extension_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
     sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").eq("key_picked_up", true).eq("key_returned", false),
-    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").gt("end_time", nowIso)
+    sb.from("bookings").select("id", { count: "exact", head: true }).eq("status", "confirmed").gt("end_time", nowIso).eq("key_picked_up",false).eq("is_maintenance_hold",false)
   ]);
   const stats = [
     { label: "Awaiting Approval", value: (pendingBookings || 0) + (pendingExt || 0) },
-    { label: "Active Fobs", value: activeFobs || 0 },
+    { label: "Active Bookings", value: activeFobs || 0 },
     { label: "Upcoming Bookings", value: upcoming || 0 }
   ];
   document.getElementById("statRow").innerHTML = stats.map(s => `
@@ -505,7 +805,8 @@ async function loadStats() {
 // ---------- NOTIFICATIONS (staff-triggered) ----------
 async function sendNotification(apartmentNumber, type, message) {
   if (!apartmentNumber || apartmentNumber === "N/A") return;
-  const { error } = await sb.from("notifications").insert({ apartment_number: apartmentNumber, type, message });
+  const {data:currentUser}=await sb.auth.getUser();
+  const { error } = await sb.from("notifications").insert({ apartment_number: apartmentNumber, type, message, sent_by:currentUser?.user?.id||null });
   if (error) console.error("Notification insert failed:", error.message);
 }
 function fmtRange(start, end) {
@@ -513,13 +814,20 @@ function fmtRange(start, end) {
 }
  
 // ---------- BOOKINGS ----------
+async function loadActiveBookings() {
+ const view=document.getElementById("activeView");view.textContent="Loading active bookings…";
+ const {data,error}=await sb.from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)").eq("status","confirmed").eq("key_picked_up",true).eq("key_returned",false).order("start_time",{ascending:false}).limit(200);
+ if(error){view.textContent="Unable to load active bookings: "+error.message;return;}
+ const list=(data||[]).filter(b=>!b.is_maintenance_hold);
+ view.innerHTML=list.length?list.map(b=>v5Card(b,"key")).join(""):"<p>No active bookings with keys checked out.</p>";
+}
 async function loadBookings() {
   const view = document.getElementById("bookingsView");
   view.innerHTML = "Loading...";
   const nowIso = new Date().toISOString();
   const { data, error } = await sb.from("bookings")
     .select("*, amenities(name, requires_deposit, deposit_amount, allow_overlapping_bookings)")
-    .eq("status", "confirmed").gt("end_time", nowIso).order("start_time");
+    .eq("status", "confirmed").eq("key_picked_up",false).eq("is_maintenance_hold",false).gt("end_time", nowIso).order("start_time");
  
   if (error) { view.innerHTML = `<div class="msg err">Error loading bookings: ${error.message}</div>`; return; }
   if (!data || data.length === 0) { view.innerHTML = "<p>No upcoming bookings.</p>"; return; }
@@ -542,42 +850,50 @@ async function loadBookings() {
   });
   window._calBookingsForConflicts = data;
  
-  let html = `<div class="section-title">Upcoming Bookings</div><div class="table-wrap"><table><tr><th>Amenity</th><th>Resident</th><th>Time</th><th>Guests</th><th>Key</th><th>Deposit</th><th>Actions</th></tr>`;
-  data.forEach(b => {
-    if (b.is_maintenance_hold) {
-      html += `<tr><td>${b.amenities.name}</td><td><em>Maintenance Hold</em></td>
-        <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
-        <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>
-        <td><button class="neutral" onclick="clearMaintenanceHold('${b.id}')">Clear Hold</button></td></tr>`;
-      return;
-    }
-    const groupId = window._theaterConflictGroups[b.id];
-    const groupSize = groupId ? Object.values(window._theaterConflictGroups).filter(g => g === groupId).length : 0;
-    const conflictBadge = groupId
-      ? ` <span class="badge wait" style="cursor:pointer;" onclick="openTheaterConflict('${groupId}')">${groupSize} stacked requests \u2014 Resolve</span>`
-      : '';
-    html += `<tr>
-      <td>${b.amenities.name}${b.bulk_group_id ? ' <span class="badge wait">Bulk plan</span>' : ''}${b.cancellation_reason === "no_show_auto_release" ? ' <span class="badge" style="background:#FBEBE9; color:#B04A3E;">Auto-released</span>' : ''}${conflictBadge}</td>
-      <td>${escapeHtml(b.resident_name)}<br/><small>${escapeHtml(b.resident_email)}<br/>Apt ${escapeHtml(b.apartment_number)}</small></td>
-      <td class="mono">${new Date(b.start_time).toLocaleString()} &ndash; ${new Date(b.end_time).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</td>
-      <td>${b.guests}</td>
-      <td>${!b.key_picked_up ? '<span class="badge no">Not picked up</span>' : `<span class="badge yes">Picked up</span> <span class="badge ${b.key_returned ? 'yes' : 'no'}">${b.key_returned ? 'Returned' : 'Not returned'}</span>`}</td>
-      <td>${b.amenities.requires_deposit ? `<span class="badge ${b.deposit_paid ? 'yes' : 'no'}">${b.deposit_paid ? 'Paid' : 'Unpaid ($' + b.amenities.deposit_amount + ')'}</span>` : '&mdash;'}</td>
-      <td><div class="btn-row">
-        ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up')">Mark Key Picked Up</button>` : ''}
-        ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned')">Mark Key Returned</button>` : ''}
-        ${b.key_picked_up ? `<button class="outline" onclick="undoKeyStatus('${b.id}', ${b.key_returned ? "'key_returned'" : "'key_picked_up'"})">Undo ${b.key_returned ? 'Return' : 'Pickup'}</button>` : ''}
-        ${!b.key_picked_up ? `<button class="outline" onclick="notifyKeyStatus('${b.id}', true)">Notify: Key Ready</button>
-        <button class="outline" onclick="notifyKeyStatus('${b.id}', false)">Notify: Key Not Ready</button>` : ''}
-        ${b.amenities.requires_deposit && !b.deposit_paid ? `<button class="warn" onclick="markDeposit('${b.id}')">Mark Deposit Paid</button>` : ''}
-        <button class="danger" onclick="staffCancel('${b.id}', false)">Cancel &amp; Release to Waitlist</button>
-        <button class="neutral" onclick="staffCancel('${b.id}', true)">Cancel for Maintenance</button>
-      </div></td></tr>`;
-  });
-  html += `</table></div>`;
-  view.innerHTML = html;
+  window._v5Bookings = data;
+  renderBookingCards();
 }
  
+// ---------- V5 OPERATIONS PRESENTATION ----------
+
+// V6: Stable amenity names and color tokens. Names originate in the existing amenities table.
+const V6_AMENITIES = [
+  { match: 'huddle', color: '#0D9488', soft: '#DEF7F1', days: 14 },
+  { match: 'busy', color: '#2563EB', soft: '#E9F1FF', days: 14 },
+  { match: 'plan', color: '#EA580C', soft: '#FFF0E4', days: 14 },
+  { match: 'task', color: '#DB2777', soft: '#FCE7F3', days: 14 },
+  { match: 'work', color: '#0891B2', soft: '#E4F8FB', days: 14 },
+  { match: 'cinema', color: '#7C3AED', soft: '#F1EAFF', days: 30 }
+];
+function v6AmenityPolicy(name) {
+  const n = String(name || '').toLowerCase();
+  return V6_AMENITIES.find(x => n.includes(x.match)) || {color:'#4359CE',soft:'#EDF0FF',days:14};
+}
+
+function v5AmenityStyle(name){
+  const p=v6AmenityPolicy(name);
+  return [p.color,p.soft,/cinema|theater/i.test(name||'')?'🎬':/conference|huddle/i.test(name||'')?'▤':'▣'];
+}
+function v5KeyState(b){if(b.key_returned)return 'returned';if(b.key_picked_up)return new Date(b.end_time)<new Date()?'overdue':'out';return 'pending';}
+function v5Safe(s){return escapeHtml(s||'');}
+function v5Card(b,mode='booking'){
+ const name=b.amenities?.name||'Amenity';const [accent,soft,icon]=v5AmenityStyle(name);const key=v5KeyState(b);
+ const stateLabel={pending:'Awaiting pickup',out:'Key checked out',returned:'Key returned',overdue:'Return overdue'}[key];
+ const groupId=window._theaterConflictGroups?.[b.id];
+ const conflict=groupId?`<button class="v5-small-link" onclick="openTheaterConflict('${groupId}')">Resolve stacked cinema requests ↗</button>`:'';
+ const action=b.is_maintenance_hold?`<button class="outline" onclick="clearMaintenanceHold('${b.id}')">Clear maintenance hold</button>`:
+ mode==='history'?'':`<div class="v5-card-actions">${!b.key_picked_up?`<button onclick="markKey('${b.id}','key_picked_up')">✓ Mark key collected</button>`:!b.key_returned?`<button onclick="markKey('${b.id}','key_returned')">✓ Mark key returned</button>`:''}<details class="v5-actions"><summary>More actions ⋯</summary><div class="v5-action-menu">${b.key_picked_up?`<button class="outline" onclick="undoKeyStatus('${b.id}','${b.key_returned?'key_returned':'key_picked_up'}')">Undo key ${b.key_returned?'return':'pickup'}</button>`:`<button class="outline" onclick="notifyKeyStatus('${b.id}',true)">Notify: key ready</button><button class="outline" onclick="notifyKeyStatus('${b.id}',false)">Notify: key not ready</button>`}${b.amenities?.requires_deposit&&!b.deposit_paid?`<button class="outline" onclick="markDeposit('${b.id}')">Mark deposit paid</button>`:''}<button class="outline" onclick="reportKeyIncident('${b.id}')">Report key incident</button><button class="danger" onclick="staffCancel('${b.id}',false)">Cancel & release to waitlist</button><button class="neutral" onclick="staffCancel('${b.id}',true)">Cancel for maintenance</button></div></details></div>`;
+ const status=mode==='history'?`<span class="v5-pill">${v5Safe(b.status)}</span>`:`<span class="v5-pill v5-${key}">${stateLabel}</span>`;
+ return `<article class="v5-reservation" style="--amenity-accent:${accent};--amenity-soft:${soft}"><div class="v5-reservation-main"><div class="v5-amenity-icon">${icon}</div><div class="v5-reservation-copy"><div class="v5-reservation-title">${v5Safe(name)} ${b.bulk_group_id?'<span class="v5-pill">Bulk plan</span>':''}</div><div class="v5-reservation-time">${v5Safe(fmtRange(b.start_time,b.end_time))}</div><div class="v5-meta">${v5Safe(b.resident_name||'Maintenance hold')} · Apt ${v5Safe(b.apartment_number||'—')} · ${Number(b.guests)||0} guest(s)</div>${conflict}</div><div class="v5-status">${b.is_maintenance_hold?'<span class="v5-pill">Maintenance</span>':status}</div></div>${action}</article>`;
+}
+function renderBookingCards(){const data=window._v5Bookings||[];const q=(document.getElementById('bookingSearch')?.value||'').toLowerCase();const f=document.getElementById('bookingFilter')?.value||'all';const filtered=data.filter(b=>!b.key_picked_up&&!b.key_returned&&!b.is_maintenance_hold&&([b.amenities?.name,b.resident_name,b.apartment_number].join(' ').toLowerCase().includes(q))&&(f==='all'||v5KeyState(b)===f));document.getElementById('bookingsView').innerHTML=`<div class="v5-list-heading"><h3>Upcoming bookings (keys not yet collected)</h3><span>${filtered.length} results</span></div>`+(filtered.length?filtered.map(b=>v5Card(b)).join(''):'<p>No matching reservations.</p>');}
+let v5KeyBookings=[],v5HistoryBookings=[];
+async function loadKeys(){const {data:activeAmenities}=await sb.from('amenities').select('id').eq('active',true);if(activeAmenities)window._amenityKeyCount=activeAmenities.length;const view=document.getElementById('keysList');view.innerHTML='Loading keys…';const {data,error}=await sb.from('bookings').select('*, amenities(name, requires_deposit, deposit_amount)').eq('status','confirmed').order('start_time',{ascending:false}).limit(200);if(error){view.textContent='Unable to load keys: '+error.message;return;}v5KeyBookings=data||[];renderKeys();}
+function renderKeys(){const q=(document.getElementById('keysSearch').value||'').toLowerCase(),f=document.getElementById('keysFilter').value;const list=v5KeyBookings.filter(b=>!b.is_maintenance_hold&&[b.amenities?.name,b.resident_name,b.apartment_number].join(' ').toLowerCase().includes(q)&&(f==='all'||v5KeyState(b)===f));document.getElementById('v6KeySummary').innerHTML=[['Active keys',new Set(v5KeyBookings.filter(b=>!b.is_maintenance_hold&&b.key_picked_up&&!b.key_returned).map(b=>b.amenity_id)).size,'#d97706'],['Pending return',new Set(v5KeyBookings.filter(b=>!b.is_maintenance_hold&&b.key_picked_up&&!b.key_returned&&new Date(b.end_time)<new Date()).map(b=>b.amenity_id)).size,'#dc5666'],['Returned',Math.max(0,(window._amenityKeyCount||6)-new Set(v5KeyBookings.filter(b=>!b.is_maintenance_hold&&b.key_picked_up&&!b.key_returned).map(b=>b.amenity_id)).size),'#0d9488']].map(([label,num,color])=>`<div class="v5-metric" style="--metric:${color}"><strong>${num}</strong><span>${label}</span></div>`).join('');document.getElementById('keysList').innerHTML=list.length?list.map(b=>v5Card(b,'key')).join(''):'<div class="card">No matching key records.</div>';}
+async function loadHistory(){const view=document.getElementById('historyList');view.textContent='Loading history…';const {data,error}=await sb.from('bookings').select('*, amenities(name)').order('start_time',{ascending:false}).limit(100);if(error){view.textContent='Unable to load history: '+error.message;return;}v5HistoryBookings=data||[];renderHistory();}
+function renderHistory(){const q=(document.getElementById('historySearch').value||'').toLowerCase();const list=v5HistoryBookings.filter(b=>[b.amenities?.name,b.resident_name,b.apartment_number].join(' ').toLowerCase().includes(q));document.getElementById('historyList').innerHTML=list.length?list.map(b=>v5Card(b,'history')).join(''):'<div class="card">No matching records.</div>';}
+async function loadOverview(){const stats=document.getElementById('overviewStats'),attention=document.getElementById('overviewAttention'),today=document.getElementById('overviewToday');stats.innerHTML='<p>Loading…</p>';const now=new Date();const chicagoDay=d=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);const todayChicago=chicagoDay(now);const windowStart=new Date(now.getTime()-48*3600000).toISOString(),windowEnd=new Date(now.getTime()+48*3600000).toISOString();const [bookingRes,todayRes,approvalRes,waitRes]=await Promise.all([sb.from('bookings').select('*, amenities(name)').eq('status','confirmed').gte('end_time',now.toISOString()).order('start_time').limit(150),sb.from('bookings').select('*, amenities(name)').in('status',['confirmed','completed']).gte('start_time',windowStart).lt('start_time',windowEnd).order('start_time').limit(1000),sb.from('bookings').select('id',{count:'exact',head:true}).eq('status','pending'),sb.from('waitlist').select('id',{count:'exact',head:true}).eq('status','waiting')]);if(bookingRes.error||todayRes.error){stats.textContent='Unable to load overview: '+(bookingRes.error||todayRes.error).message;return;}const all=bookingRes.data||[],todays=(todayRes.data||[]).filter(b=>chicagoDay(new Date(b.start_time))===todayChicago&&!b.is_maintenance_hold),out=all.filter(b=>b.key_picked_up&&!b.key_returned),pending=todays.filter(b=>b.status==='confirmed'&&!b.key_picked_up&&!b.key_returned&&new Date(b.end_time)>now),overdue=out.filter(b=>new Date(b.end_time)<now);const metrics=[['Today’s bookings',todays.length,'#4359ce'],['Keys awaiting pickup',pending.length,'#d97706'],['Pending approvals',approvalRes.count||0,'#0d9488'],['Overdue returns',overdue.length,'#dc5666']];stats.innerHTML=metrics.map(([label,num,color],i)=>`<div class="v5-metric" role="button" tabindex="0" onclick="${i===2?'goToRequests();switchReqTab(\'approvals\')':i===0?'goToCalendar()':'goToKeys()'}" style="--metric:${color};cursor:pointer"><strong>${num}</strong><span>${label}</span></div>`).join('');const actions=[...overdue.map(b=>({b,msg:'Overdue key return'})),...pending.map(b=>({b,msg:'Key awaiting pickup'}))].slice(0,8);attention.innerHTML=actions.length?actions.map(x=>`<div class="v5-task"><span class="v5-task-dot"></span><div><strong>${v5Safe(x.msg)}</strong><small>${v5Safe(x.b.amenities?.name)} · Apt ${v5Safe(x.b.apartment_number)}</small></div></div>`).join(''):'<p class="v5-muted">No key-related issues right now.</p>';today.innerHTML=todays.length?todays.sort((a,b)=>new Date(a.start_time)-new Date(b.start_time)).map(b=>`<button type="button" class="v6-today-reservation" onclick="openTodayReservation('${b.id}','${b.start_time}')" aria-label="View ${v5Safe(b.amenities?.name)} reservation for apartment ${v5Safe(b.apartment_number)}"><span class="v5-task-dot" style="background:${v5AmenityStyle(b.amenities?.name)[0]}"></span><span><strong>${v5Safe(b.amenities?.name)} <span style="margin-left:7px;font-weight:500;white-space:nowrap">· ${v5Safe(new Date(b.start_time).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/Chicago"}))}</span></strong><small>${v5Safe(new Date(b.start_time).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}))} · ${v5Safe(b.resident_name||"Resident not specified")} · Apt ${v5Safe(b.apartment_number)}</small></span></button>`).join(''):'<p class="v5-muted">No reservations today.</p>';}
+
 // ---------- THEATER OVERLAP RESOLUTION ----------
 // Theater bookings can stack (multiple confirmed requests for the same
 // overlapping window) -- deliberately not auto-promoted. Staff pick the
@@ -618,23 +934,31 @@ async function resolveTheaterConflict(winnerId, loserIds) {
  
 async function markKey(id, field) {
   const update = { [field]: true }; update[field + "_at"] = new Date().toISOString();
-  await sb.from("bookings").update(update).eq("id", id);
-  loadBookings(); loadStats();
+  update.key_status = field === "key_returned" ? "returned" : "collected";
+  const {error}=await sb.from("bookings").update(update).eq("id", id);
+  if(error){alert("Key update failed: "+error.message);return;}
+  await Promise.all([loadBookings(), loadActiveBookings(), loadKeys(), loadOverview(), loadStats(), renderCalendar()]);
+  if(document.getElementById("detailBackdrop").classList.contains("visible"))openBookingDetail(id);
 }
 async function undoKeyStatus(id, field) {
   const label = field === "key_returned" ? "returned" : "picked up";
   if (!confirm(`Undo "${label}"? Use this if it was marked by mistake.`)) return;
   const update = { [field]: false }; update[field + "_at"] = null;
-  await sb.from("bookings").update(update).eq("id", id);
-  loadBookings(); loadStats();
+  if(field === "key_returned") update.key_status="collected"; else update.key_status="not_ready";
+  const {error}=await sb.from("bookings").update(update).eq("id", id);
+  if(error){alert("Key update failed: "+error.message);return;}
+  await Promise.all([loadBookings(), loadActiveBookings(), loadKeys(), loadOverview(), loadStats(), renderCalendar()]);
+  if(document.getElementById("detailBackdrop").classList.contains("visible"))openBookingDetail(id);
 }
 async function notifyKeyStatus(id, isReady) {
   const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
   if (!booking) return;
   if (isReady) {
+    await sb.from("bookings").update({key_status:"ready"}).eq("id",id);
     await sendNotification(booking.apartment_number, "keys_ready",
       `Your key for ${booking.amenities.name} (${fmtRange(booking.start_time, booking.end_time)}) is ready for pickup at the leasing office.`);
   } else {
+    await sb.from("bookings").update({key_status:"not_ready"}).eq("id",id);
     await sendNotification(booking.apartment_number, "keys_not_ready",
       `Your key for ${booking.amenities.name} (${fmtRange(booking.start_time, booking.end_time)}) isn't ready yet \u2014 the leasing office will notify you when it is.`);
   }
@@ -653,7 +977,8 @@ async function staffCancel(id, isMaintenance) {
   if (!confirm(`Are you sure you want to ${label}?`)) return;
   const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
   if (!booking) return;
-  await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
+  const {error:cancelError}=await sb.from("bookings").update({ status: "cancelled", cancellation_reason: isMaintenance ? "maintenance" : "staff_cancelled" }).eq("id", id);
+  if(cancelError){ alert("Cancellation failed: "+cancelError.message); return; }
   if (isMaintenance) {
     await sb.from("bookings").insert({
       amenity_id: booking.amenity_id, resident_name: "Maintenance Hold", resident_email: "n/a",
@@ -665,28 +990,12 @@ async function staffCancel(id, isMaintenance) {
   } else {
     await sendNotification(booking.apartment_number, "booking_cancelled",
       `Your ${booking.amenities.name} reservation for ${fmtRange(booking.start_time, booking.end_time)} was cancelled by the leasing office. Anyone waitlisted for that window has been notified.`);
-    await promoteNextWaitlisted(booking);
+    // Promotion is performed atomically by the database cancellation trigger.
   }
   loadBookings(); loadStats(); renderCalendar();
 }
-async function promoteNextWaitlisted(cancelledBooking) {
-  const { data: candidates } = await sb.from("waitlist").select("*")
-    .eq("amenity_id", cancelledBooking.amenity_id).eq("status", "waiting")
-    .lt("start_time", cancelledBooking.end_time).gt("end_time", cancelledBooking.start_time)
-    .order("created_at", { ascending: true }).limit(1);
-  if (!candidates || candidates.length === 0) return;
-  const next = candidates[0];
-  await sb.from("bookings").insert({
-    amenity_id: next.amenity_id, resident_name: next.resident_name, resident_email: next.resident_email,
-    apartment_number: next.apartment_number, start_time: next.start_time, end_time: next.end_time,
-    guests: next.guests, comments: next.comments, profile_id: next.profile_id
-  });
-  await sb.from("waitlist").update({ status: "promoted" }).eq("id", next.id);
-  const { data: amenity } = await sb.from("amenities").select("name").eq("id", next.amenity_id).single();
-  await sendNotification(next.apartment_number, "waitlist_promoted",
-    `${amenity ? amenity.name : "The amenity"} you were waitlisted for opened up for ${fmtRange(next.start_time, next.end_time)} \u2014 you're booked in.`);
-}
- 
+// Waitlist promotion is server-side and runs atomically on cancellation.
+
 // ---------- APPROVALS ----------
 async function loadApprovals() {
   const view = document.getElementById("approvalsView");
@@ -730,7 +1039,8 @@ async function loadApprovals() {
 }
 async function approveBooking(id) {
   const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
-  await sb.from("bookings").update({ status: "confirmed" }).eq("id", id);
+  const {error:approvalError}=await sb.from("bookings").update({ status: "confirmed" }).eq("id", id).eq("status","pending");
+  if(approvalError){ alert("Approval failed: "+approvalError.message); return; }
   if (booking) {
     await sendNotification(booking.apartment_number, "approval",
       `Your ${booking.amenities.name} reservation for ${fmtRange(booking.start_time, booking.end_time)} was approved.`);
@@ -739,7 +1049,8 @@ async function approveBooking(id) {
 }
 async function denyBooking(id) {
   const { data: booking } = await sb.from("bookings").select("*, amenities(name)").eq("id", id).single();
-  await sb.from("bookings").update({ status: "rejected" }).eq("id", id);
+  const {error:denialError}=await sb.from("bookings").update({ status: "rejected" }).eq("id", id).eq("status","pending");
+  if(denialError){ alert("Denial failed: "+denialError.message); return; }
   if (booking) {
     await sendNotification(booking.apartment_number, "booking_rejected",
       `Your ${booking.amenities.name} request for ${fmtRange(booking.start_time, booking.end_time)} was not approved by the leasing office.`);
@@ -793,6 +1104,14 @@ async function removeFromWaitlist(id) {
   loadWaitlist();
 }
  
+async function openTodayReservation(id,startTime){
+  // Load the correct calendar range before opening its booking detail modal.
+  calendarAnchor=new Date(startTime);
+  goToCalendar();
+  await renderCalendar();
+  openBookingDetail(id);
+}
+
 // ---------- CALENDAR ----------
 let calendarMode = "month";
 let calendarAnchor = new Date();
@@ -824,6 +1143,33 @@ function getGridDates() {
   return Array.from({ length: weeks * 7 }, (_, i) => { const d = new Date(gridStart); d.setDate(gridStart.getDate() + i); return d; });
 }
  
+function v6OpenForm(title,fields,saveLabel,submit){
+ const dialog=document.getElementById('v6FormDialog'),form=document.getElementById('v6Form');
+ document.getElementById('v6FormTitle').textContent=title;
+ document.getElementById('v6FormFields').innerHTML=fields;
+ document.getElementById('v6FormSave').textContent=saveLabel||'Save';
+ document.getElementById('v6FormError').textContent='';
+ const close=()=>dialog.close();
+ document.getElementById('v6FormClose').onclick=close;document.getElementById('v6FormCancel').onclick=close;
+ form.onsubmit=async e=>{e.preventDefault();const btn=document.getElementById('v6FormSave');btn.disabled=true;document.getElementById('v6FormError').textContent='';try{const result=await submit(new FormData(form),form);if(result!==false)close();}catch(err){document.getElementById('v6FormError').textContent=err.message||String(err);}finally{btn.disabled=false;}};
+ dialog.showModal();
+}
+async function staffCreateBooking() {
+ const {data:amenities,error}=await sb.from('amenities').select('id,name').eq('active',true).order('name');
+ if(error){alert('Unable to load amenities: '+error.message);return;}
+ const options=(amenities||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+ const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,16);
+ v6OpenForm('Create a reservation',`<div class="v6-form-fields"><label>Booking type<select name="kind" id="v6BookingKind"><option value="resident">Resident booking</option><option value="management">Management / community event</option></select></label><label>Amenity<select name="amenity" required>${options}</select></label><div class="v6-form-grid"><label>Start<input name="start" type="datetime-local" value="${local}" required></label><label>End<input name="end" type="datetime-local" required></label></div><label>Apartment number<input name="unit" id="v6BookingUnit" placeholder="e.g. 2059" required></label><label>Resident / event name<input name="name" placeholder="Resident name or meeting title" required></label><label>Notes<textarea name="notes" rows="2" placeholder="Optional booking details"></textarea></label><p class="v6-help">Reservations are checked for conflicts before saving and appear in the shared calendar.</p></div>`, 'Create booking',async fd=>{
+ const kind=fd.get('kind'),unit=kind==='management'?'MANAGEMENT':String(fd.get('unit')||'').trim(),name=String(fd.get('name')||'').trim();
+ const start=new Date(fd.get('start')),end=new Date(fd.get('end'));
+ if(!name||!unit||!Number.isFinite(+start)||!Number.isFinite(+end)||end<=start||end-start>4*3600000)throw Error('Enter a valid name, apartment and time range (maximum four hours).');
+ const {data:overlaps,error:oe}=await sb.from('bookings').select('id').eq('amenity_id',fd.get('amenity')).in('status',['confirmed','pending']).lt('start_time',end.toISOString()).gt('end_time',start.toISOString());if(oe)throw oe;if(overlaps?.length)throw Error(`This time overlaps ${overlaps.length} existing reservation(s). Choose another time.`);
+ const {data:user}=await sb.auth.getUser();const row={amenity_id:fd.get('amenity'),resident_name:name,apartment_number:unit,start_time:start.toISOString(),end_time:end.toISOString(),status:'confirmed',comments:String(fd.get('notes')||''),created_by:user?.user?.id||null};
+ const {error:ie}=await sb.from('bookings').insert(row);if(ie)throw ie;
+ await Promise.all([renderCalendar(),loadBookings(),loadStats()]);
+ });
+ const kind=document.getElementById('v6BookingKind');kind.onchange=()=>{const input=document.getElementById('v6BookingUnit');input.disabled=kind.value==='management';input.required=kind.value!=='management';input.value=kind.value==='management'?'MANAGEMENT':'';};
+}
 async function renderCalendar() {
   const grid = document.getElementById("calGrid");
   const dates = getGridDates();
@@ -839,7 +1185,7 @@ async function renderCalendar() {
  
   const { data: bookings } = await sb.from("bookings")
     .select("*, amenities(name)")
-    .in("status", ["confirmed", "pending"])
+    .in("status", ["confirmed", "pending", "completed"])
     .lt("start_time", rangeEnd.toISOString()).gt("end_time", rangeStart.toISOString())
     .order("start_time");
  
@@ -888,8 +1234,8 @@ async function renderCalendar() {
       ${visible.map(b => {
         const timeStr = new Date(b.start_time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
         const color = amenityColorMap[b.amenities.name];
-        const isPast = new Date(b.end_time) < new Date();
-        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''} ${isPast ? 'past' : ''}" style="background-color:${isPast ? '#B04A3E' : color};" onclick="openBookingDetail('${b.id}')">${timeStr} ${b.amenities.name}</div>`;
+        const isFinished = b.key_returned || b.status === 'completed'; const isPast = new Date(b.end_time) < new Date();
+        return `<div class="cal-chip ${b.status === 'pending' ? 'pending' : ''} ${isFinished ? 'completed' : isPast ? 'past' : ''}" style="background-color:${isFinished ? color : isPast ? '#8a96a8' : color};" title="${isFinished?'Completed — key returned':isPast?'Past booking':b.status}" onclick="openBookingDetail('${b.id}')">${timeStr} ${escapeHtml(b.amenities.name)}${isFinished?'<span class="cal-completed-note">✓ Completed · Key returned</span>':''}</div>`;
       }).join("")}
       ${overflow > 0 ? `<div class="cal-more" onclick="openDayDetail('${key}')">+${overflow} more</div>` : ""}
       ${dayWaitlist.map(w => {
@@ -916,12 +1262,12 @@ function openBookingDetail(id) {
     </div>`;
   } else {
     actions = `<div class="btn-row">
-      ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up'); closeDetail();">Mark Key Picked Up</button>` : ''}
-      ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned'); closeDetail();">Mark Key Returned</button>` : ''}
-      ${b.key_picked_up ? `<button class="outline" onclick="undoKeyStatus('${b.id}', ${b.key_returned ? "'key_returned'" : "'key_picked_up'"}); closeDetail();">Undo ${b.key_returned ? 'Return' : 'Pickup'}</button>` : ''}
+      ${!b.key_picked_up ? `<button onclick="markKey('${b.id}','key_picked_up');">Mark Key Picked Up</button>` : ''}
+      ${b.key_picked_up && !b.key_returned ? `<button onclick="markKey('${b.id}','key_returned');">Mark Key Returned</button>` : ''}
+      ${b.key_picked_up ? `<button class="outline" onclick="undoKeyStatus('${b.id}', ${b.key_returned ? "'key_returned'" : "'key_picked_up'"});">Undo ${b.key_returned ? 'Return' : 'Pickup'}</button>` : ''}
       ${!b.key_picked_up ? `<button class="outline" onclick="notifyKeyStatus('${b.id}', true)">Notify: Key Ready</button>
       <button class="outline" onclick="notifyKeyStatus('${b.id}', false)">Notify: Key Not Ready</button>` : ''}
-      <button class="danger" onclick="staffCancel('${b.id}', false); closeDetail();">Cancel &amp; Release to Waitlist</button>
+      <button class="outline" onclick="reportKeyIncident('${b.id}'); closeDetail();">Report Key Incident</button><button class="outline" onclick="setCinemaReturnInstructions('${b.id}')">Cinema Return Instructions</button><button class="danger" onclick="staffCancel('${b.id}', false); closeDetail();">Cancel &amp; Release to Waitlist</button>
       <button class="neutral" onclick="staffCancel('${b.id}', true); closeDetail();">Cancel for Maintenance</button>
     </div>`;
   }
@@ -985,8 +1331,8 @@ function renderApartmentList() {
       <tbody>
         ${rows.map(a => `
           <tr style="border-bottom:1px solid var(--line);">
-            <td style="padding:8px 6px; font-weight:600;">${escapeHtml(a.unit_number)}</td>
-            <td style="padding:8px 6px; font-family:var(--font-mono,monospace); letter-spacing:2px;">${a.pin || "\u2014"}</td>
+            <td style="padding:8px 6px; font-weight:600;"><button class="outline" style="font-size:13px; padding:6px 8px" onclick="showApartmentProfiles(${JSON.stringify(a.unit_number).replace(/\"/g,'&quot;')})">${escapeHtml(a.unit_number)} · Profiles</button></td>
+            <td style="padding:8px 6px; font-family:var(--font-mono,monospace); letter-spacing:2px;"><button class="outline" style="font-size:12px" onclick="revealExistingPin('${escapeHtml(a.unit_number)}')">Reveal existing PIN</button></td>
             <td style="padding:8px 6px; font-size:12px; color:var(--ink-soft,#666);">${a.pin_issued_at ? new Date(a.pin_issued_at).toLocaleDateString() : "\u2014"}</td>
             <td style="padding:8px 6px;">${a.active ? '<span class="badge yes">Active</span>' : '<span class="badge no">Inactive</span>'}</td>
             <td style="padding:8px 6px; white-space:nowrap;">
@@ -998,6 +1344,51 @@ function renderApartmentList() {
       </tbody>
     </table>
     </div>`;
+}
+let openProfileUnit = null;
+async function showApartmentProfiles(unit) {
+ openProfileUnit=unit;
+ const body=document.getElementById("detailModalBody");
+ body.textContent="Loading household profiles…";
+ document.getElementById("detailBackdrop").classList.add("visible");
+ const {data,error}=await sb.from("profiles").select("id,full_name,email,phone,apartment_number,occupancy_id").eq("apartment_number",unit).order("full_name");
+ if(error){body.textContent="Could not load profiles: "+error.message;return;}
+ const list=data||[];
+ body.innerHTML=`<h3>Apartment ${escapeHtml(unit)} — Household profiles</h3><p>Profiles share the apartment PIN. They are not private accounts.</p>`+
+ (list.length?list.map(p=>`<div class="v5-task"><div><strong>${escapeHtml(p.full_name||"Unnamed profile")}</strong><small>${escapeHtml(p.email||"No email")} · ${escapeHtml(p.phone||"No phone")}</small></div><div style="display:flex;gap:6px"><button class="outline" onclick="editApartmentProfile('${p.id}')">Edit</button><button class="outline" onclick="removeApartmentProfile('${p.id}')">Remove</button></div></div>`).join(""):"<p>No profiles registered for this apartment.</p>")+
+ `<button class="primary" onclick="addApartmentProfile()">+ Add household profile</button><button class="outline" style="margin-left:8px" onclick="createPrivateSubaccount()">+ Private subaccount (on request)</button><p class="v5-muted">For confidential reservations, use separate authenticated private accounts, not household profiles.</p>`;
+ window._aptProfiles=list;
+}
+async function createPrivateSubaccount(){
+ const parent=openProfileUnit;if(!parent||/\-\d+$/.test(parent)){document.getElementById('detailModalBody').insertAdjacentHTML('beforeend','<p class="v5-muted">Choose a physical apartment first.</p>');return;}
+ v6OpenForm(`Private subaccount for ${parent}`,`<div class="v6-form-fields"><p class="v6-help">A separate PIN and private reservations will be created. Existing household profiles are unchanged.</p><label>Subaccount number<input name="suffix" type="number" min="1" max="99" value="1" required></label></div>`,'Create private account',async fd=>{
+ const suffix=Number(fd.get('suffix'));if(!Number.isInteger(suffix)||suffix<1||suffix>99)throw Error('Enter a number from 1 to 99.');
+ const {data,error}=await sb.rpc('create_private_apartment',{p_parent:parent,p_suffix:suffix});if(error)throw error;
+ closeDetail();await loadApartmentList();
+ document.getElementById('detailModalBody').textContent=`Private account ${data} created. Select it in the directory to reveal its PIN securely.`;document.getElementById('detailBackdrop').classList.add('visible');
+ });
+}
+async function addApartmentProfile(){
+ const unit=openProfileUnit;
+ v6OpenForm(`Add profile · Apartment ${unit}`,`<div class="v6-form-fields"><label>Full name<input name="name" required maxlength="120" autofocus></label><label>Email (optional)<input name="email" type="email"></label><label>Phone (optional)<input name="phone" type="tel"></label></div>`,'Add profile',async fd=>{
+ const apt=apartmentCache.find(a=>a.unit_number===unit);if(!apt?.occupancy_id)throw Error('Apartment occupancy not found.');
+ const {error}=await sb.from('profiles').insert({apartment_number:unit,occupancy_id:apt.occupancy_id,full_name:String(fd.get('name')).trim(),email:String(fd.get('email')||'').trim()||null,phone:String(fd.get('phone')||'').trim()||null});if(error)throw error;await showApartmentProfiles(unit);
+ });
+}
+async function editApartmentProfile(id){
+ const p=(window._aptProfiles||[]).find(x=>x.id===id);if(!p)return;
+ v6OpenForm(`Edit ${p.full_name}`,`<div class="v6-form-fields"><label>Full name<input name="name" required maxlength="120" value="${escapeHtml(p.full_name||'')}"></label><label>Email<input name="email" type="email" value="${escapeHtml(p.email||'')}"></label><label>Phone<input name="phone" type="tel" value="${escapeHtml(p.phone||'')}"></label></div>`,'Save changes',async fd=>{
+ const {error}=await sb.from('profiles').update({full_name:String(fd.get('name')).trim(),email:String(fd.get('email')||'').trim()||null,phone:String(fd.get('phone')||'').trim()||null}).eq('id',id).eq('apartment_number',openProfileUnit);if(error)throw error;await showApartmentProfiles(openProfileUnit);
+ });
+}
+async function removeApartmentProfile(id){
+ const p=(window._aptProfiles||[]).find(x=>x.id===id);if(!p)return;
+ const {data:bookings,error}=await sb.from('bookings').select('id,resident_name,start_time,amenities(name)').eq('profile_id',id).in('status',['confirmed','pending']);if(error){alert(error.message);return;}
+ const active=bookings||[];
+ v6OpenForm(`Remove ${p.full_name}?`,`<p>This removes the household profile from apartment ${escapeHtml(openProfileUnit)}.</p>${active.length?`<p><strong>${active.length} linked reservation(s) (including past dates) will retain their resident name and original details. Any waiting-list entries for this profile will be cancelled.</strong></p><div style="max-height:180px;overflow:auto">${active.map(b=>`<p class="v6-help">${escapeHtml(b.amenities?.name||'Amenity')} · ${new Date(b.start_time).toLocaleString()}</p>`).join('')}</div>`:'<p class="v6-help">There are no active reservations linked to this profile.</p>'}<label><input type="checkbox" name="ack" required style="width:auto"> I understand the profile will be removed.</label>`,'Remove profile',async fd=>{
+ if(fd.get('ack')!=='on')throw Error('Confirm removal.');
+ const {error:de}=await sb.rpc('delete_household_profile',{p_profile:id});if(de)throw de;await showApartmentProfiles(openProfileUnit);
+ });
 }
 document.getElementById("aptSearchInput").addEventListener("input", renderApartmentList);
  
@@ -1035,10 +1426,33 @@ document.getElementById("addAptBtn").onclick = async () => {
   if (succeeded.length === 1) {
     showPinReveal(succeeded[0].unit, succeeded[0].pin);
   } else if (succeeded.length > 1) {
-    alert(`Added ${succeeded.length} apartments with fresh PINs. See the table below, or export CSV to hand them out.`);
+    alert(`Added ${succeeded.length} apartments with fresh PINs. PINs are shown only when created. Refresh each PIN if you need to issue it again.`);
   }
 };
  
+// The backend checks a recent verified TOTP challenge on EVERY reveal.
+// This UI does not store a vault token or decryption key.
+async function revealExistingPin(unit) {
+  try {
+    let {data,error}=await sb.rpc('reveal_apartment_pin',{p_apartment:unit});
+    if(error && /Authenticator verification expired|Authenticator verification required/i.test(error.message)) {
+      const factors=await sb.auth.mfa.listFactors();
+      if(factors.error)throw factors.error;
+      const factor=(factors.data.totp||[]).find(f=>f.status==='verified');
+      if(!factor)throw Error('Set up your staff authenticator before revealing PINs.');
+      v6OpenForm('Verify authenticator · Apartment '+unit,`<p class="v6-help">Enter the six-digit code from your authenticator app. Verification unlocks PIN viewing for five minutes.</p><label>Authenticator code<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required autofocus></label>`, 'Verify and reveal',async fd=>{
+        const code=String(fd.get('code')||'').trim();
+        if(!/^\d{6}$/.test(code))throw Error('Enter a valid six-digit code.');
+        const challenge=await sb.auth.mfa.challenge({factorId:factor.id});if(challenge.error)throw challenge.error;
+        const verified=await sb.auth.mfa.verify({factorId:factor.id,challengeId:challenge.data.id,code});if(verified.error)throw verified.error;
+        const revealed=await sb.rpc('reveal_apartment_pin',{p_apartment:unit});if(revealed.error)throw revealed.error;
+        setTimeout(()=>showPinReveal(unit,revealed.data),0);
+      });return;
+    }
+    if(error)throw error;
+    showPinReveal(unit,data);
+  }catch(e){alert('Unable to reveal apartment PIN: '+e.message);}
+}
 async function renewLease(unit) {
   if (!confirm(`Renew the lease PIN for apartment ${unit}? This immediately signs out whoever is currently using that unit's PIN \u2014 only do this at move-out/move-in.`)) return;
   const { data: newPin, error } = await sb.rpc("rotate_apartment_pin", { p_apartment: unit });
@@ -1060,11 +1474,17 @@ async function refreshPin(unit) {
 }
  
 async function toggleAptActive(unit, makeActive) {
-  const { error } = await sb.from("apartments").update({ active: makeActive }).eq("unit_number", unit);
-  if (error) { alert("Couldn't update this apartment."); return; }
-  await loadApartmentList();
+ const message=makeActive
+  ? `Reactivate apartment ${unit}? A NEW PIN will be issued and old sessions remain invalid.`
+  : `Deactivate apartment ${unit}? All resident profiles will be removed and existing access revoked. Booking history remains for staff records.`;
+ if(!confirm(message))return;
+ const {data,error}=await sb.rpc('staff_set_apartment_active',{p_apartment:unit,p_active:makeActive});
+ if(error){alert('Could not change apartment status: '+error.message);return;}
+ await loadApartmentList();
+ if(makeActive && data)showPinReveal(unit,data);
+ else alert(`Apartment ${unit} deactivated. Old resident access has been revoked.`);
 }
- 
+
 function showPinReveal(unit, pin) {
   document.getElementById("pinRevealUnit").textContent = `Apartment ${unit}`;
   document.getElementById("pinRevealCode").textContent = pin;
@@ -1080,8 +1500,7 @@ document.getElementById("pinRevealCopyBtn").onclick = () => {
  
 document.getElementById("exportPinsBtn").onclick = () => {
   // Deliberately excludes the pin column -- a bulk CSV export of every apartment's PIN
-  // is a much bigger blast radius than any individual lookup. Staff can already see/reveal
-  // one apartment's PIN at a time via the (masked) list view or "Renew Lease".
+  // is a much bigger blast radius than any individual lookup. PINs cannot be retrieved from the database; issue a new one if needed.
   const rows = [["Unit Number", "Issued", "Active"]].concat(
     apartmentCache.map(a => [a.unit_number, a.pin_issued_at ? new Date(a.pin_issued_at).toISOString() : "", a.active ? "yes" : "no"])
   );
@@ -1097,60 +1516,169 @@ document.getElementById("exportPinsBtn").onclick = () => {
 // =====================================================================
 // COMMUNICATIONS TAB: one-way announcements to all active residents
 // =====================================================================
+document.getElementById("commsRecipient").onchange = () => {
+  const mode=document.getElementById("commsRecipient").value;
+  document.getElementById("commsApartmentWrap").style.display = mode === "apartment" ? "block" : "none";
+  document.getElementById("commsResidentWrap").style.display = mode === "resident" ? "block" : "none";
+  if(mode === "resident") {document.getElementById('commsResident').innerHTML='<option value="">Search an apartment first</option>';document.getElementById('commsProfileSearch').value='';}
+};
+async function loadResidentRecipientOptions(){
+ const sel=document.getElementById('commsResident'),unit=document.getElementById('commsProfileSearch').value.trim();
+ if(!unit){sel.innerHTML='<option value="">Search an apartment first</option>';window._commsProfiles=[];return;}
+ const {data,error}=await sb.from('profiles').select('id,full_name,apartment_number').eq('apartment_number',unit).order('full_name');
+ if(error){sel.innerHTML='<option value="">Unable to load profiles</option>';return;}
+ window._commsProfiles=data||[];
+ sel.innerHTML='<option value="">'+(data?.length?'Select a profile':'No profiles in this apartment')+'</option>'+(data||[]).map(p=>`<option value="${p.id}">${escapeHtml(p.full_name||'Resident')} · Apt ${escapeHtml(p.apartment_number)}</option>`).join('');
+}
+let v6ProfileSearchTimer;
+document.getElementById('commsProfileSearch').addEventListener('input',()=>{clearTimeout(v6ProfileSearchTimer);v6ProfileSearchTimer=setTimeout(loadResidentRecipientOptions,250);});
+document.getElementById("commsTemplate").onchange = (e) => {
+  if (e.target.value) document.getElementById("commsMessageInput").value = e.target.value;
+};
 document.getElementById("commsSendBtn").onclick = async () => {
   const message = document.getElementById("commsMessageInput").value.trim();
+  const mode = document.getElementById("commsRecipient").value;
+  const unit = document.getElementById("commsApartment").value.trim();
   const errBox = document.getElementById("commsError");
   const okBox = document.getElementById("commsSuccess");
   errBox.style.display = "none"; okBox.style.display = "none";
- 
-  if (!message) {
-    errBox.textContent = "Write a message before sending.";
-    errBox.style.display = "block";
-    return;
+  if (!message || message.length > 2000) {
+    errBox.textContent = "Enter a message between 1 and 2,000 characters.";
+    errBox.style.display = "block"; return;
   }
- 
-  const { data: activeApts, error: aptErr } = await sb.from("apartments").select("unit_number").eq("active", true);
-  if (aptErr || !activeApts || activeApts.length === 0) {
-    errBox.textContent = "Couldn't find any active apartments to notify.";
-    errBox.style.display = "block";
-    return;
+  if (mode === "resident" && !document.getElementById("commsResident").value) {errBox.textContent="Select a resident account.";errBox.style.display="block";return;}
+  if (mode === "apartment" && !unit) {
+    errBox.textContent = "Enter an apartment number.";
+    errBox.style.display = "block"; return;
   }
- 
-  if (!confirm(`Send this announcement to all ${activeApts.length} active apartments? This can't be recalled once sent.`)) return;
- 
+  let residentTarget=null;
+  if(mode === "resident"){
+    const profileId=document.getElementById('commsResident').value;
+    residentTarget=(window._commsProfiles||[]).find(p=>p.id===profileId);
+    if(!residentTarget){errBox.textContent='Selected profile is unavailable.';errBox.style.display='block';return;}
+  }
+  let query = sb.from("apartments").select("unit_number").eq("active", true);
+  if (mode === "apartment") query = query.eq("unit_number", unit);
+  if (mode === "resident") query = query.eq("unit_number",residentTarget.apartment_number);
+  const {data: apartments, error: aptErr} = await query;
+  if (aptErr || !apartments || apartments.length === 0) {
+    errBox.textContent = aptErr ? aptErr.message : "No active matching apartment found.";
+    errBox.style.display = "block"; return;
+  }
+  const recipientLabel = mode === "resident" ? `one resident in apartment ${apartments[0].unit_number}` : mode === "apartment" ? `apartment ${apartments[0].unit_number}` : `${apartments.length} active apartments`;
+  if (!confirm(`Send this notification to ${recipientLabel}? It cannot be recalled.`)) return;
   const btn = document.getElementById("commsSendBtn");
   btn.disabled = true; btn.textContent = "Sending...";
- 
-  const rows = activeApts.map(a => ({ apartment_number: a.unit_number, type: "announcement", message }));
-  const { error: sendErr } = await sb.from("notifications").insert(rows);
- 
-  btn.disabled = false; btn.textContent = "Send to All Residents";
- 
-  if (sendErr) {
-    errBox.textContent = "Send failed: " + sendErr.message;
+  try {
+    const {data:sessionData}=await sb.auth.getUser();
+    const rows = apartments.map(a => ({apartment_number:a.unit_number,type:mode === "all" ? "announcement" : "staff_message",message,sent_by:sessionData?.user?.id||null,recipient_profile_id:mode === "resident" ? residentTarget.id : null}));
+    const {error} = await sb.from("notifications").insert(rows);
+    if (error) throw error;
+    // Announcements are a broadcast-only history; targeted messages are not broadcasts.
+    if (mode === "all") {
+      const {error:historyError} = await sb.from("announcements").insert({message,recipient_count:apartments.length});
+      if (historyError) console.warn("Notification delivered; announcement history unavailable",historyError);
+    }
+    document.getElementById("commsMessageInput").value = "";
+    okBox.textContent = `Notification sent to ${recipientLabel}.`;
+    okBox.style.display = "block";
+    loadCommsHistory(); loadStats();
+  } catch (e) {
+    errBox.textContent = "Send failed: " + e.message;
     errBox.style.display = "block";
-    return;
+  } finally {
+    btn.disabled = false; btn.textContent = "Send Notification";
   }
- 
-  await sb.from("announcements").insert({ message, recipient_count: activeApts.length });
-  document.getElementById("commsMessageInput").value = "";
-  okBox.textContent = `Sent to ${activeApts.length} apartments.`;
-  okBox.style.display = "block";
-  loadCommsHistory();
 };
  
 async function loadCommsHistory() {
-  const body = document.getElementById("commsHistoryBody");
-  body.innerHTML = "Loading...";
-  const { data, error } = await sb.from("announcements").select("*").order("created_at", { ascending: false }).limit(50);
-  if (error) { body.innerHTML = `<div class="msg err">Couldn't load history: ${error.message}</div>`; return; }
-  if (!data || data.length === 0) { body.innerHTML = "<p>No announcements sent yet.</p>"; return; }
-  body.innerHTML = data.map(a => `
-    <div style="border-bottom:1px solid var(--line); padding:12px 0;">
-      <div style="font-size:14px; margin-bottom:4px;">${a.message.replace(/</g, "&lt;")}</div>
-      <div style="font-size:12px; color:var(--ink-soft,#666);">${new Date(a.created_at).toLocaleString()} &middot; sent to ${a.recipient_count} apartment${a.recipient_count === 1 ? "" : "s"}</div>
-    </div>`).join("");
+ const body=document.getElementById("commsHistoryBody");
+ body.textContent="Loading...";
+ const {data,error}=await sb.from("notifications").select("id,apartment_number,message,read,read_at,created_at,type,sent_by").not("sent_by","is",null).order("created_at",{ascending:false}).limit(100);
+ if(error){body.textContent="Unable to load delivery history: "+error.message;return;}
+ if(!data?.length){body.textContent="No staff notifications have been sent yet.";return;}
+ body.innerHTML=data.map(n=>`<div style="padding:12px 0;border-bottom:1px solid var(--line)"><strong>Apt ${escapeHtml(n.apartment_number)}</strong> <span class="badge ${n.read?'yes':'wait'}">${n.read?'Read':'Unread'}</span><div>${escapeHtml(n.message)}</div><small>${new Date(n.created_at).toLocaleString()}${n.read_at?' · Read '+new Date(n.read_at).toLocaleString():''}</small></div>`).join("");
 }
+async function reportKeyIncident(id){
+ const kind=prompt("Incident type: overdue, lost, damaged, or other","overdue");
+ if(kind===null)return;
+ const incidentType=kind.trim().toLowerCase();
+ if(!["overdue","lost","damaged","other"].includes(incidentType)){alert("Choose overdue, lost, damaged, or other.");return;}
+ const notes=prompt("Incident notes (optional)","");if(notes===null)return;
+ const {error}=await sb.from("key_incidents").insert({booking_id:id,incident_type:incidentType,notes:notes.trim()});
+ if(error){alert("Could not record incident: "+error.message);return;}
+ if(incidentType==="lost"||incidentType==="damaged")await sb.from("bookings").update({key_status:incidentType}).eq("id",id);
+ alert("Incident recorded in staff history.");loadKeys();loadStats();
+}
+</script>
+<script>
+// V6 staff dock reuses existing staff navigation and permissions.
+(function(){
+ const sheet=document.getElementById('v6StaffSheet');const ids=['v6StaffHome','v6StaffCalendar','v6StaffRequests','v6StaffKeys','v6StaffMore'];
+ function active(id){ids.forEach(x=>{const b=document.getElementById(x);b.classList.toggle('active',x===id);if(x===id)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});}
+ function close(){sheet.hidden=true;}
+ const actions={v6StaffHome:'sidebarOverviewBtn',v6StaffCalendar:'sidebarCalendarBtn',v6StaffRequests:'sidebarRequestsBtn',v6StaffKeys:'sidebarKeysBtn',v6StaffHistory:'sidebarHistoryBtn',v6StaffApartments:'sidebarApartmentsBtn',v6StaffComms:'sidebarCommsBtn',v6StaffSettings:'sidebarSettingsBtn'};
+ Object.entries(actions).forEach(([id,target])=>{document.getElementById(id).onclick=()=>{close();active(ids.includes(id)?id:'v6StaffMore');document.getElementById(target).click();};});
+ document.getElementById('v6StaffMore').onclick=()=>{active('v6StaffMore');sheet.hidden=false;};
+ document.getElementById('v6StaffClose').onclick=close;
+ sheet.addEventListener('click',e=>{if(e.target===sheet)close();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+ active('v6StaffHome');
+})();
+</script>
+<script>
+async function loadStaffAudit(){
+ const el=document.getElementById("v6StaffAudit");if(!el)return;
+ const {data,error}=await sb.from("staff_audit_log").select("action,entity_type,entity_id,details,created_at").order("created_at",{ascending:false}).limit(50);
+ if(error){el.textContent="Audit unavailable: "+error.message;return;}
+ if(!data?.length){el.textContent="No audited changes yet.";return;}
+ el.innerHTML=data.map(a=>`<div style="border-bottom:1px solid var(--line);padding:9px 0"><strong>${escapeHtml(a.action)}</strong> · ${escapeHtml(a.entity_type)}<div style="font-size:12px;color:#6b7891">${new Date(a.created_at).toLocaleString()} · ${escapeHtml(a.entity_id||"—")}</div></div>`).join("");
+}
+async function loadKeyIncidents(){
+ const el=document.getElementById('v6KeyIncidents');if(!el)return;
+ const {data,error}=await sb.from('key_incidents').select('id,booking_id,incident_type,notes,resolved,created_at').order('created_at',{ascending:false}).limit(40);
+ if(error){el.textContent='Unable to load incidents: '+error.message;return;}
+ if(!data?.length){el.textContent='No key incidents recorded.';return;}
+ el.innerHTML=data.map(i=>`<div style="border-bottom:1px solid var(--line);padding:9px 0"><strong>${escapeHtml(i.incident_type)}</strong> · ${new Date(i.created_at).toLocaleString()} <span class="badge ${i.resolved?'yes':'wait'}">${i.resolved?'Resolved':'Open'}</span><p>${escapeHtml(i.notes||'No notes')}</p>${!i.resolved?`<button class="outline" onclick="resolveKeyIncident('${i.id}')">Resolve</button>`:''}</div>`).join('');
+}
+async function resolveKeyIncident(id){const {error}=await sb.from('key_incidents').update({resolved:true}).eq('id',id);if(error)alert(error.message);else loadKeyIncidents();}
+async function setCinemaReturnInstructions(id){
+ const instructions=prompt('Cinema key return method / instructions:');if(instructions===null)return;
+ const deadline=prompt('Return deadline (local date/time, e.g. 2026-11-01T23:00). Leave blank for none:','');if(deadline===null)return;
+ const iso=deadline.trim()?new Date(deadline).toISOString():null;
+ const {error}=await sb.from('bookings').update({cinema_return_instructions:instructions.trim(),cinema_return_deadline:iso}).eq('id',id);
+ if(error)alert('Unable to save: '+error.message);else alert('Cinema return instructions saved.');
+}
+let v6MaintenanceLoaded=false;
+async function loadMaintenanceAmenities(){
+ if(v6MaintenanceLoaded)return;
+ const {data,error}=await sb.from('amenities').select('id,name').eq('active',true).order('name');if(error)return;
+ const sel=document.getElementById('v6MaintenanceAmenity');sel.innerHTML='<option value="">Select amenity</option>'+(data||[]).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');v6MaintenanceLoaded=true;
+}
+document.getElementById('v6MaintenanceAmenity')?.addEventListener('focus',loadMaintenanceAmenities);
+document.getElementById('v6MaintenanceCreate')?.addEventListener('click',async()=>{
+ const get=id=>document.getElementById(id).value;
+ const amenity_id=get('v6MaintenanceAmenity'),date=get('v6MaintenanceDate'),start=get('v6MaintenanceStart'),end=get('v6MaintenanceEnd'),days=Number(get('v6MaintenanceDays')),reason=get('v6MaintenanceReason').trim();
+ const result=document.getElementById('v6MaintenanceResult');
+ if(!amenity_id||!date||!start||!end||end<=start||!Number.isInteger(days)||days<1||days>30||!reason){result.textContent='Complete all fields. Use a valid same-day time range and 1–30 days.';return;}
+ // Preflight conflicts before writing holds; never silently cancel residents.
+ const base=new Date(date+'T12:00:00');const windows=[];
+ for(let i=0;i<days;i++){const d=new Date(base);d.setDate(base.getDate()+i);const ds=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');windows.push({start:new Date(ds+'T'+start+':00'),end:new Date(ds+'T'+end+':00')});}
+ const earliest=new Date(Math.min(...windows.map(w=>w.start.getTime()))).toISOString(),latest=new Date(Math.max(...windows.map(w=>w.end.getTime()))).toISOString();
+ const {data:conflicts,error:conflictError}=await sb.from('bookings').select('id,resident_name,apartment_number,start_time,end_time').eq('amenity_id',amenity_id).in('status',['confirmed','pending']).eq('is_maintenance_hold',false).lt('start_time',latest).gt('end_time',earliest);
+ if(conflictError){result.textContent='Unable to check existing reservations: '+conflictError.message;return;}
+ const affected=(conflicts||[]).filter(b=>windows.some(w=>new Date(b.start_time)<w.end&&new Date(b.end_time)>w.start));
+ const review=affected.length?`\n\n${affected.length} resident booking(s) conflict. These will be CANCELLED, and residents notified.\n\n`+affected.slice(0,12).map(b=>`${b.apartment_number} · ${b.resident_name} · ${new Date(b.start_time).toLocaleString()}`).join('\n'):'\n\nNo resident conflicts detected.';
+ if(!confirm(`Create ${days} maintenance block(s)?${review}\n\nProceed?`))return;
+ const outcomes=[];
+ for(const w of windows){
+  const {data,error}=await sb.rpc('staff_create_maintenance_block',{p_amenity:amenity_id,p_start:w.start.toISOString(),p_end:w.end.toISOString(),p_reason:reason,p_cancel_conflicts:affected.length>0});
+  outcomes.push(w.start.toLocaleDateString()+': '+(error?'FAILED — '+error.message:`Blocked; ${data} reservation(s) cancelled and notified`));
+  if(error)break;
+ }
+ result.textContent=outcomes.join(' | ');
+ await Promise.all([renderCalendar(),loadBookings(),loadStats()]);
+});
 </script>
 </body>
 </html>
