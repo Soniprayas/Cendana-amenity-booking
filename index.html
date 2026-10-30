@@ -4,7 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Cendana Craig Ranch - Amenity Reservations</title>
-<link rel="manifest" href="manifest.json" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" type="image/png" href="/resident-icon-192.png" />
+<link rel="apple-touch-icon" href="/resident-icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
@@ -275,9 +277,179 @@
   #appLoadingScreen{position:fixed; inset:0; z-index:200; background:linear-gradient(160deg, #232B36 0%, #2E3A47 45%, #3B4A56 100%); display:flex; align-items:center; justify-content:center;}
   .loading-spinner{width:34px; height:34px; border:3px solid rgba(255,255,255,.25); border-top-color:var(--amber); border-radius:50%; animation:ccrspin .8s linear infinite;}
   @keyframes ccrspin{to{transform:rotate(360deg);}}
+
+
+/* Cendana Modern SaaS visual layer — no booking/authentication logic changed */
+:root{--ink:#18263b;--ink-soft:#64748b;--sand:#f3f7fc;--line:#e1e9f3;--amber:#3b82f6;--amber-dark:#2563eb;--sage:#0d9488;--dusty:#06b6d4;--clay:#f97373;--gold:#f59e0b}
+body{background:linear-gradient(140deg,#f1f7ff 0%,#f8fbff 55%,#f0fdfa 100%);min-height:100vh}
+header{background:linear-gradient(112deg,#12243e,#1d4ed8 72%,#0d9488);padding:26px 24px;box-shadow:0 10px 30px rgba(30,64,175,.14)}
+header h1{font-size:22px;letter-spacing:-.6px}header p{color:#dceaff;font-size:13px;margin-top:7px}
+.card{border:1px solid #e2eaf5;border-radius:20px;box-shadow:0 12px 36px rgba(30,64,175,.055);padding:24px}
+.page-heading h2{font-size:25px;letter-spacing:-.9px;line-height:1.25}.page-heading p{line-height:1.6}
+.eyebrow{color:#2563eb;letter-spacing:1.2px;font-weight:700}
+button{background:#2563eb;border-radius:11px;transition:background .16s,transform .16s,box-shadow .16s}
+button:hover{background:#1d4ed8}button:focus-visible,.menu-box:focus-visible,input:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+input,select,textarea{border-radius:11px;border-color:#dbe5f2;background:#fbfdff;padding:12px}
+input:focus,select:focus,textarea:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+#topBar{background:rgba(255,255,255,.94);border-color:#e2e8f0;backdrop-filter:blur(12px)}
+#sidebar{background:linear-gradient(180deg,#142640,#1b3151)}
+.sidebar-link{border-radius:11px}.sidebar-link svg{stroke:#93c5fd}.sidebar-link.active{background:rgba(59,130,246,.27)}
+.menu-grid{max-width:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.menu-box{min-height:165px;aspect-ratio:auto;border-radius:19px;align-items:flex-start;text-align:left;padding:22px;gap:16px;background:linear-gradient(145deg,#eff6ff,#fff);border:1px solid #bfdbfe;box-shadow:0 10px 24px rgba(37,99,235,.07)}
+.menu-box:nth-child(2){background:linear-gradient(145deg,#ecfdf5,#fff);border-color:#a7f3d0;box-shadow:0 10px 24px rgba(13,148,136,.06)}
+.menu-box svg{width:40px;height:40px;stroke:#2563eb;background:#dbeafe;padding:8px;border-radius:12px;box-sizing:content-box}
+.menu-box:nth-child(2) svg{stroke:#0d9488;background:#ccfbf1}
+.menu-box span{font-size:16px;line-height:1.4;letter-spacing:-.3px}
+.menu-box:hover{transform:translateY(-3px);border-color:#60a5fa;box-shadow:0 15px 32px rgba(37,99,235,.14)}
+.amenity-option{border:1px solid #dbeafe;border-left:4px solid #3b82f6;background:linear-gradient(135deg,#f8fbff,#fff);border-radius:13px;padding:16px;transition:box-shadow .2s,transform .2s}
+.amenity-option:hover{box-shadow:0 6px 18px rgba(37,99,235,.10);transform:translateY(-1px)}
+.res-item{border-radius:14px;border-color:#dce7f4;background:#fff;box-shadow:0 6px 18px rgba(30,64,175,.045)}
+.res-status.confirmed,.msg.ok{background:#dcfce7;color:#166534}.res-status.waiting,.msg.wait{background:#fef3c7;color:#92400e}
+.push-prompt-banner{background:linear-gradient(110deg,#eff6ff,#ecfeff);border:1px solid #bfdbfe;border-radius:15px}
+.push-prompt-banner .push-prompt-icon{background:#2563eb}
+.profile-chip{background:linear-gradient(135deg,#2563eb,#0d9488)}
+.time-slot-row.selected{background:#2563eb}.ampm-tab.active{background:#1e40af;border-color:#1e40af}
+#confirmModal,#confirmDialog,#pinModal{border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.22)}
+#appLoadingScreen{background:linear-gradient(130deg,#12243e,#1d4ed8,#0d9488)}
+body.onboarding-bg{background:linear-gradient(140deg,#10223e,#1d4ed8 60%,#0f766e)}
+body.onboarding-bg .wrap .card{border-radius:22px;box-shadow:0 25px 70px rgba(15,23,42,.3)}
+.onboarding-brand .onboarding-mark,.profile-tile .tile-avatar{background:linear-gradient(135deg,#2563eb,#0d9488)}
+.profile-tile{border-radius:14px}.profile-tile:hover{border-color:#60a5fa;background:#eff6ff}
+@media(min-width:860px){header{padding:26px 40px}.wrap{max-width:1000px}.menu-grid{max-width:720px}.menu-box{min-height:190px}}
+@media(max-width:480px){.card{padding:19px;border-radius:17px}.menu-grid{gap:10px}.menu-box{min-height:150px;padding:15px}.menu-box span{font-size:14px}.menu-box svg{width:30px;height:30px}.page-heading h2{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.menu-box,.amenity-option,button{transition:none!important}.menu-box:hover,.amenity-option:hover{transform:none}}
+
+
+/* CENDANA STUDIO / 2026 — a complete visual layout, not a palette swap */
+:root{--ink:#142338;--ink-soft:#65748a;--sand:#f4f7fc;--line:#e4eaf3;--amber:#f4ae55;--amber-dark:#d57d26;--sage:#15b8a6;--dusty:#6177ed;--clay:#fa7f79;--gold:#f4ae55;--font-display:'Sora',sans-serif;--font-body:'Inter',sans-serif}
+body{background:#f5f7fc;background-image:radial-gradient(ellipse at 83% 0%,rgba(109,145,255,.11),transparent 35%);color:#142338}
+header{background:#fff;color:#17243a;border-bottom:1px solid #e7ebf3;padding:21px 28px;text-align:left}
+header h1{font-size:18px;letter-spacing:-.7px}header p{color:#8b97aa;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700}
+#sidebar{background:#111e35;padding:30px 16px;border-right:1px solid #283851;box-shadow:10px 0 45px rgba(19,33,57,.08)}
+#sidebar h3{color:#a9bddc;letter-spacing:2px;margin:7px 10px 29px;font-size:11px}
+.sidebar-link{border-radius:13px;margin-top:8px;padding:15px 14px;font-size:13px;color:#bdcbe1}
+.sidebar-link svg{stroke:#9caefb}.sidebar-link.active{background:#3045b8;color:#fff;box-shadow:0 8px 20px rgba(36,63,162,.25)}
+#topBar{background:transparent;border:0;padding-top:24px;padding-bottom:0;max-width:1200px}
+.wrap{max-width:1200px;padding-top:22px}
+.card{border:1px solid #e9edf5;border-radius:26px;padding:32px;box-shadow:0 12px 50px rgba(38,54,89,.045)}
+#menuStep{background:transparent;border:0;box-shadow:none;padding:0}
+.resident-hero{position:relative;overflow:hidden;min-height:330px;border-radius:30px;background:linear-gradient(110deg,#172b66 0%,#344ac0 53%,#6867dd 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:45px 50px;box-shadow:0 22px 45px rgba(48,69,166,.18)}
+.resident-hero:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 78% 0%,rgba(255,255,255,.23),transparent 34%),radial-gradient(circle at 30% 115%,rgba(52,220,202,.25),transparent 38%);pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:490px}.hero-pill{display:inline-flex;gap:9px;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:30px;padding:9px 13px;font-size:10px;letter-spacing:1.6px;font-weight:700}.live-dot{width:7px;height:7px;background:#5ff0ce;border-radius:50%;box-shadow:0 0 0 4px rgba(95,240,206,.12)}
+.resident-hero h2{font-family:var(--font-display);font-size:clamp(29px,4vw,51px);letter-spacing:-2.3px;line-height:1.17;margin:24px 0 14px}.resident-hero h2 em{font-style:normal;color:#a6f3e9}.resident-hero p{max-width:410px;color:#d8e2ff;font-size:14px;line-height:1.8;margin:0}.hero-tags{display:flex;gap:18px;margin-top:23px;font-size:11px;font-weight:600;color:#d9f8f3}
+.hero-art{position:relative;min-width:280px;height:260px;flex:0 0 34%;display:grid;place-items:center}.art-orbit{position:absolute;border:1px solid rgba(255,255,255,.25);border-radius:50%;transform:rotate(-25deg)}.orbit-one{width:280px;height:190px}.orbit-two{width:220px;height:280px;transform:rotate(33deg)}.art-window{position:relative;width:185px;height:205px;border-radius:93px 93px 30px 30px;background:linear-gradient(160deg,#d9f7f2,#9de7d9);box-shadow:20px 24px 0 rgba(13,29,86,.17),inset 0 0 0 9px rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#23477c;transform:rotate(8deg)}.art-window strong{font-family:var(--font-display);font-size:95px;line-height:1;font-weight:600}.art-window span{font-size:30px;color:#f59e73}.art-window small{font-size:9px;letter-spacing:2px;font-weight:800}.art-star{position:absolute;right:5px;top:7px;font-size:53px;color:#ffd39a}
+.dashboard-section-heading{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:34px 2px 19px}.dashboard-section-heading h3{font-family:var(--font-display);font-size:21px;letter-spacing:-.8px;margin:5px 0 0}.dashboard-section-heading .eyebrow{font-size:10px;color:#6678d9}.section-accent{color:#8390a5;font-size:12px}.upcoming-heading{margin-top:31px}
+.menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.menu-box{position:relative;min-height:230px;border:0;border-radius:25px;padding:28px 30px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;box-shadow:none;overflow:hidden}.menu-box:first-child{background:#dff6f1}.menu-box:nth-child(2){background:#fcece7}.menu-box:after{content:'↗';position:absolute;top:25px;right:25px;font-size:22px;color:#406c68}.menu-box:nth-child(2):after{color:#9c6c66}.menu-box svg{width:48px;height:48px;padding:13px;box-sizing:content-box;border-radius:18px;background:#fff!important;stroke:#138f84!important}.menu-box:nth-child(2) svg{stroke:#e87867!important}.menu-box span{font-size:22px;letter-spacing:-.9px;line-height:1.35;color:#1b3440}.menu-box:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(31,63,80,.09);border:0}
+#homeUpcomingCard{background:#fff;border-radius:22px;min-height:65px}#homeUpcomingCard:empty{display:none}
+#step2 .page-heading,#myResStep .page-heading{padding:5px 0 20px;border-bottom:1px solid #edf0f6;margin-bottom:25px}#step2 .page-heading h2,#myResStep .page-heading h2{font-size:32px}
+#amenityList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:17px 0}
+.amenity-option{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:14px;min-height:205px;margin:0!important;padding:23px!important;border:2px solid transparent!important;border-radius:22px!important;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s!important}
+.amenity-cinema{background:#f0eaff!important}.amenity-office{background:#e7f6ff!important}.amenity-club{background:#fff0e6!important}.amenity-other{background:#e5f8ef!important}
+.amenity-option input[type=radio]{position:absolute;right:20px;top:20px;width:20px;height:20px;accent-color:#4d56cb}.amenity-glyph{display:grid;place-items:center;font-size:29px;width:59px;height:59px;background:rgba(255,255,255,.75);border-radius:18px}.amenity-card-copy{display:block!important;margin:0!important;width:100%;cursor:pointer}.amenity-card-copy strong{display:block;font-size:16px;letter-spacing:-.4px;color:#25324a;line-height:1.35}.amenity-note{margin-top:6px;color:#66758a;font-size:11px;line-height:1.5}.amenity-card-cta{display:inline-flex;gap:8px;margin-top:14px;color:#4854a9;font-weight:700;font-size:11px}.amenity-option.is-selected{border-color:#4d56cb!important;box-shadow:0 0 0 4px rgba(77,86,203,.1)!important}.amenity-option:hover{transform:translateY(-3px)}
+.cinema-pickup-banner{display:flex;align-items:center;gap:13px;background:#fff9e8;border:1px solid #f4dc9c;border-radius:16px;padding:15px 18px;margin:15px 0;color:#654918}.cinema-pickup-banner[hidden]{display:none}.cinema-pickup-icon{font-size:26px}.cinema-pickup-banner strong{font-size:13px}.cinema-pickup-banner p{margin:4px 0 0;font-size:12px;line-height:1.6}
+button{background:#3e54c7;border-radius:12px}button:hover{background:#3045b8}.eyebrow{color:#6171c5}.profile-chip{background:#3e54c7}
+body.onboarding-bg{background:linear-gradient(130deg,#172b66,#5555c5)}body.onboarding-bg .wrap .card{max-width:450px;border-radius:27px;padding:39px}
+@media(min-width:860px){body{padding-left:252px}#sidebar{width:252px;left:0!important}header{padding:22px 44px}#topBar{max-width:1200px;padding-left:35px;padding-right:35px}.wrap{max-width:1200px;padding:23px 35px 50px}.menu-grid{max-width:none}body.onboarding-bg{padding-left:0}}
+@media(max-width:700px){.resident-hero{min-height:300px;padding:30px 27px}.hero-art{position:absolute;right:-105px;bottom:-70px;opacity:.24;transform:scale(.8)}.hero-content{max-width:95%}.resident-hero h2{font-size:34px;letter-spacing:-1.5px}.hero-tags{flex-wrap:wrap;gap:8px 15px}.section-accent{display:none}.menu-box{min-height:175px;padding:19px}.menu-box span{font-size:17px}.menu-box svg{width:33px;height:33px;padding:10px}#amenityList{grid-template-columns:1fr 1fr;gap:10px}.amenity-option{min-height:185px;padding:15px!important}.amenity-glyph{width:46px;height:46px;font-size:23px}.amenity-card-copy strong{font-size:13px}.amenity-card-cta{font-size:10px}.card{padding:22px}.dashboard-section-heading h3{font-size:19px}}
+@media(max-width:390px){.menu-grid{gap:10px}.menu-box{padding:15px;min-height:160px}.menu-box span{font-size:15px}.amenity-option{padding:13px!important;min-height:185px}.amenity-card-copy strong{font-size:12px}.resident-hero{padding:27px 21px}}
+@media(prefers-reduced-motion:reduce){.menu-box,.amenity-option{transition:none!important}}
+
+
+/* CENDANA STUDIO V3 — booking experience */
+.art-window small{font-size:11px;letter-spacing:.45px;font-weight:800;text-transform:none;white-space:nowrap}
+.amenity-option{--amenity-accent:#2563eb;--amenity-bg:#eaf2ff;background:var(--amenity-bg)!important;border:2px solid transparent!important;box-shadow:0 8px 22px rgba(36,52,89,.045)}
+.amenity-option.is-selected{border-color:var(--amenity-accent)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--amenity-accent) 15%,transparent)!important}
+.amenity-option .amenity-glyph{color:var(--amenity-accent);box-shadow:0 5px 16px rgba(30,40,70,.07)}
+.amenity-option .amenity-card-cta{color:var(--amenity-accent)}
+.v3-policy-notice:not(:empty){padding:13px 17px;border-radius:14px;background:#edf8f7;color:#185e60;font-size:13px;line-height:1.6;margin-top:13px;border:1px solid #c9e9e7}
+.v3-slot-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 15px}
+.v3-slot-intro{font-size:13px;font-weight:700;color:#293b58}.v3-slot-intro span{font-weight:400;color:#7c8ba2}
+.v3-manual-btn,.v3-apply-btn{width:auto!important;margin:0!important;padding:10px 14px!important;border-radius:12px!important;background:#e7e9ff!important;color:#3c48b5!important;font-size:12px!important}
+.v3-manual-panel[hidden]{display:none!important}.v3-manual-panel{background:#f6f8ff;padding:15px;border:1px solid #dbe4f5;border-radius:16px;margin-bottom:15px}.v3-manual-panel label{margin:0 0 8px}.v3-manual-panel input{max-width:230px}.v3-apply-btn{display:block;margin-top:10px!important;background:#495dd4!important;color:white!important}
+.v3-timeline{margin:8px 0 22px}.v3-timeline-labels{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#72819a;margin-bottom:8px}.v3-timeline-labels span:first-child,.v3-timeline-labels span:last-child{font-weight:700;color:#334563}.v3-timeline-track{display:flex;gap:2px;height:27px;padding:3px;border-radius:9px;background:#eaf0f9}.v3-timeline-cell{flex:1;min-width:1px;border-radius:3px}.v3-timeline-cell.is-open{background:#2cc7b0}.v3-timeline-cell.is-booked{background:#f4a2a4}.v3-timeline-key{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;color:#64748b;margin-top:8px}.v3-timeline-key span:first-child{color:#168e7e}.v3-timeline-key span:last-child{color:#bd5e69}
+#timeScroller{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;max-height:320px;overflow:auto;padding:3px!important;border:0!important;background:transparent!important}
+.v3-time-chip{width:100%!important;margin:0!important;padding:12px 5px!important;border-radius:13px!important;background:#fff!important;border:1.5px solid #e1e8f4!important;color:#293b58!important;display:flex;flex-direction:column;gap:5px;align-items:center;box-shadow:none!important;transition:transform .15s,border-color .15s!important}
+.v3-time-chip strong{font-size:12px;white-space:nowrap}.v3-time-chip small{font-size:10px;color:#119985;font-weight:600}.v3-time-chip.is-booked{background:#fff6f5!important;border-color:#f6d7d7!important}.v3-time-chip.is-booked small{color:#c36b6b}.v3-time-chip.selected{background:#485dd4!important;border-color:#485dd4!important;color:white!important;transform:translateY(-2px)}.v3-time-chip.selected small{color:#dce7ff}
+@media(max-width:450px){#timeScroller{grid-template-columns:repeat(3,minmax(0,1fr))}.v3-time-chip strong{font-size:11px}.v3-slot-intro span{display:block;margin-top:4px}}
+
+/* STUDIO V4: always-collapsed resident navigation, including desktop */
+@media(min-width:860px){
+  body,body.onboarding-bg{padding-left:0!important}
+  #sidebar{left:-290px!important;width:270px!important;box-shadow:18px 0 55px rgba(10,22,47,.25)!important;border-right:0!important}
+  #sidebar.visible{left:0!important}
+  #sidebarBackdrop.visible{display:block!important}
+  #hamburgerBtn{display:flex!important}
+  header{padding-left:35px;padding-right:35px}
+  #topBar{max-width:1260px!important}
+  .wrap{max-width:1260px!important}
+}
+#sidebar{width:min(290px,86vw);border-radius:0 22px 22px 0}
+#sidebarBackdrop{backdrop-filter:blur(3px)}
+#hamburgerBtn{background:#e9edff!important;color:#394ec2!important;border-radius:12px!important;min-width:42px;min-height:42px}
+#hamburgerBtn:hover{background:#dbe3ff!important}
+#hamburgerBtn svg{stroke:#394ec2!important}
+
+
+/* V6 bottom dock: intentionally overrides the V5 desktop sidebar and mobile drawer. */
+:root{--v6-dock-height:84px}
+body{padding-left:0!important;padding-bottom:calc(var(--v6-dock-height) + 30px + env(safe-area-inset-bottom))!important}
+body.onboarding-bg{padding-bottom:20px!important}
+#sidebar,#sidebarBackdrop,#hamburgerBtn{display:none!important}
+.v6-dock{position:fixed;z-index:120;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(550px,calc(100% - 24px));min-height:var(--v6-dock-height);padding:9px 12px;display:flex;align-items:center;justify-content:space-around;gap:3px;background:rgba(255,255,255,.96);border:1px solid #e9eaf1;border-radius:30px;box-shadow:0 16px 48px rgba(26,43,81,.17),0 3px 9px rgba(26,43,81,.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.v6-dock-item{flex:1;min-width:0;border:0!important;background:transparent!important;color:#8a91a3!important;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:8px 2px!important;border-radius:20px!important;cursor:pointer;font:600 11px/1.15 system-ui,sans-serif!important;box-shadow:none!important;transition:color .2s,background .2s,transform .2s}
+.v6-dock-item svg{width:24px;height:24px;flex-shrink:0}
+.v6-dock-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.v6-dock-item:hover{color:#4c5ad4!important;transform:translateY(-2px)}
+.v6-dock-item.active{color:#3446c4!important;background:#eef0ff!important}
+.v6-dock-item:focus-visible{outline:3px solid #6474ed;outline-offset:2px}
+.v6-dock[hidden],.v6-sheet[hidden]{display:none!important}
+.v6-sheet{position:fixed;inset:0;z-index:130;display:flex;align-items:flex-end;justify-content:center;background:rgba(16,29,54,.45);padding:14px 14px calc(14px + env(safe-area-inset-bottom));backdrop-filter:blur(3px)}
+.v6-sheet-inner{width:min(550px,100%);background:#fff;border-radius:26px;padding:22px;box-shadow:0 18px 65px rgba(17,28,53,.24);max-height:75vh;overflow-y:auto}
+.v6-sheet-inner h3{font-size:20px;margin:0 0 15px;color:#1b2a47}
+.v6-sheet-link{width:100%;display:flex;align-items:center;justify-content:space-between;border:1px solid #edf0f6;background:#f8f9fd;color:#23334f;border-radius:14px;margin:8px 0;padding:14px 16px;text-align:left;font-weight:600;cursor:pointer}
+.v6-sheet-close{margin-top:12px;width:100%;background:#e9edfa!important;color:#3345a5!important;border-radius:14px}
+@media(min-width:860px){body{padding-left:0!important}header,#topBar{max-width:none!important} .wrap{max-width:1200px!important;margin-inline:auto!important}#topBar{margin-left:0!important}#portalBody{margin-left:0!important;max-width:1700px;margin-inline:auto}}
+@media(max-width:420px){.v6-dock{min-height:75px;border-radius:27px;padding:7px 5px}.v6-dock-item{font-size:10px!important}.v6-dock-item svg{width:22px;height:22px}}
+@media(prefers-reduced-motion:reduce){.v6-dock-item{transition:none}}
+
+
+/* V6 iteration 2: discoverable amenity-first home and consistent booking cards */
+.v6-space-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:30px 0 16px}
+.v6-space-heading h3{font-size:23px;letter-spacing:-.8px;margin:4px 0 0;color:#1c2949}
+.v6-space-heading p{margin:0;color:#78839a;font-size:12px}
+.v6-space-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.v6-space-tile{--tile-color:#5265c6;--tile-soft:#eef0ff;appearance:none;text-align:left;min-width:0;min-height:158px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:19px;border:1px solid #e7eaf2;border-radius:23px;background:linear-gradient(160deg,var(--tile-soft),#fff 78%);color:#25304b;box-shadow:0 8px 25px rgba(34,50,87,.045);cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+.v6-space-tile:hover{transform:translateY(-4px);box-shadow:0 15px 30px rgba(34,50,87,.12);border-color:var(--tile-color)}
+.v6-space-tile:focus-visible{outline:3px solid var(--tile-color);outline-offset:2px}
+.v6-space-icon{width:41px;height:41px;display:grid;place-items:center;border-radius:15px;background:#fff;color:var(--tile-color);font-size:23px}
+.v6-space-name{font-size:15px;font-weight:800;line-height:1.35;color:#25304b}
+.v6-space-meta{font-size:11px;color:#71809a;line-height:1.4}
+.v6-space-action{margin-top:auto;font-size:11px;font-weight:800;color:var(--tile-color)}
+.v6-space-empty{grid-column:1/-1;padding:20px;border:1px dashed #cbd3e3;border-radius:16px;color:#6b7690}
+@media(max-width:680px){.v6-space-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v6-space-tile{min-height:147px;padding:14px;border-radius:19px}.v6-space-heading h3{font-size:20px}}
+@media(max-width:360px){.v6-space-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.v6-space-tile{transition:none}.v6-space-tile:hover{transform:none}}
+
+
+/* V6 release visual refinements */
+.v6-legacy-actions{display:none!important}
+#menuStep{padding-bottom:30px}
+.v6-spaces{margin-top:16px}
+.v6-space-tile{position:relative;overflow:hidden;border-top:4px solid var(--tile-color);min-height:178px}
+.v6-space-tile:after{content:"";position:absolute;right:-30px;top:-40px;width:110px;height:110px;border-radius:50%;background:var(--tile-color);opacity:.065;pointer-events:none}
+.v6-space-icon{box-shadow:0 4px 15px rgba(20,30,50,.06)}
+.v6-dock{max-width:550px}
+.v6-dock-item{min-height:55px}
+.v6-dock-item.active{box-shadow:inset 0 0 0 1px #d8defc!important}
+.v6-space-meta{font-weight:650}
+#step2,#myResStep{border-radius:25px}
+#step2 input:focus-visible,#step2 select:focus-visible{outline:3px solid #8d9af3;outline-offset:2px}
+@media(max-width:680px){.resident-hero{border-radius:24px}.v6-space-tile{min-height:165px}.v6-space-grid{gap:12px}}
+@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
+<div style="position:sticky;top:0;z-index:9999;background:#fff4d6;color:#754400;padding:9px 16px;text-align:center;font:600 13px system-ui;border-bottom:1px solid #e8c77b">V6 WORKING PREVIEW — Connected to the existing live backend. Do not submit test bookings or deploy.</div>
 <div id="appLoadingScreen"><div class="loading-spinner"></div></div>
 <header>
   <h1>Cendana Craig Ranch</h1>
@@ -287,7 +459,7 @@
 <!-- Persistent top bar: Home on left, Logout on right -->
 <div id="topBar">
   <div class="topbar-left">
-    <button class="icon-btn" id="hamburgerBtn" title="Menu">
+    <button class="icon-btn" id="hamburgerBtn" title="Open navigation" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <button class="icon-btn" id="homeBtn" title="Home">
@@ -321,7 +493,7 @@
  
 <!-- Sidebar drawer -->
 <div id="sidebarBackdrop"></div>
-<div id="sidebar">
+<div id="sidebar" role="navigation" aria-label="Resident navigation">
   <h3>Menu</h3>
   <button class="sidebar-link" id="sidebarNewRes">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
@@ -345,6 +517,8 @@
   </button>
 </div>
  
+<nav id="v6ResidentDock" class="v6-dock" aria-label="Main navigation"><button type="button" id="v6Home" class="v6-dock-item" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-7h6v7"/></svg><span>Home</span></button><button type="button" id="v6Office" class="v6-dock-item" aria-label="Office"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 21v-5h6v5"/></svg><span>Office</span></button><button type="button" id="v6Bookings" class="v6-dock-item" aria-label="Bookings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span>Bookings</span></button><button type="button" id="v6Inbox" class="v6-dock-item" aria-label="Inbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v13H8l-4 4V4Z"/><path d="M8 9h8M8 13h5"/></svg><span>Inbox</span></button><button type="button" id="v6Account" class="v6-dock-item" aria-label="Account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Account</span></button></nav>
+<div id="v6ResidentSheet" class="v6-sheet" hidden><div class="v6-sheet-inner" role="dialog" aria-modal="true" aria-label="Account menu"><h3>Account &amp; household</h3><button class="v6-sheet-link" id="v6SwitchProfile">Switch household profile <span>›</span></button><button class="v6-sheet-link" id="v6ViewPin">Apartment access details <span>›</span></button><button class="v6-sheet-link" id="v6SignOut">Sign out <span>›</span></button><button class="v6-sheet-close" id="v6ResidentClose">Close</button></div></div>
 <!-- View My PIN modal -->
 <div id="pinModalBackdrop">
   <div id="pinModal">
@@ -453,11 +627,16 @@
  
   <!-- STEP 1B: menu / home -->
   <div class="card" id="menuStep">
-    <div class="page-heading">
-      <div class="eyebrow">Resident Booking</div>
-      <h2>What would you like to do?</h2>
-      <p>Reserve a shared space, or check on your existing bookings.</p>
+    <div class="resident-hero">
+      <div class="hero-content">
+        <div class="hero-pill"><span class="live-dot"></span> YOUR COMMUNITY, YOUR SPACE</div>
+        <h2>Make room for<br><em>good moments.</em></h2>
+        <p>From movie nights to focused workdays, your favorite spaces are just a few taps away.</p>
+        <div class="hero-tags"><span>✦ Easy reservations</span><span>✦ Live availability</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><div class="art-window"><span>✦</span><strong>C</strong><small>Cendana @ CR</small></div><div class="art-star">✳</div></div>
     </div>
+    <div class="dashboard-section-heading"><div><div class="eyebrow">RESERVE A SPACE</div><h3>Choose where you want to go</h3></div></div>
     <div class="push-prompt-banner" id="pushPromptBanner">
       <div class="push-prompt-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -471,7 +650,7 @@
         </div>
       </div>
     </div>
-    <div class="menu-grid">
+    <div class="menu-grid v6-legacy-actions">
       <div class="menu-box" id="newResBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
         <span>Make a New<br/>Reservation</span>
@@ -481,6 +660,11 @@
         <span>My<br/>Reservations</span>
       </div>
     </div>
+    <section aria-label="Explore amenities" class="v6-spaces">
+      <div class="v6-space-heading"><div><div class="eyebrow">OUR SPACES</div><h3>Find your place</h3></div><p>Choose a space to reserve</p></div>
+      <div id="v6SpaceGrid" class="v6-space-grid"><div class="v6-space-empty">Loading community spaces…</div></div>
+    </section>
+    <div class="dashboard-section-heading upcoming-heading"><div><div class="eyebrow">COMING UP</div><h3>Your next reservation</h3></div></div>
     <div id="homeUpcomingCard"></div>
   </div>
  
@@ -500,19 +684,20 @@
   <div class="card" id="step2">
     <div class="page-heading">
       <div class="eyebrow">New Reservation</div>
-      <h2>Book a shared space</h2>
-      <p>Pick a space, choose an available time, and send your request.</p>
+      <h2>Find your perfect space.</h2>
+      <p>Choose an amenity, explore available times, and reserve in minutes.</p>
     </div>
     <label>Which amenity would you like to reserve? *</label>
     <div id="amenityList"></div>
-    <div class="hint" id="amenityDeposit" style="display:none"></div>
+    <div class="cinema-pickup-banner" id="cinemaPickupBanner" role="note" hidden><span class="cinema-pickup-icon">🎟</span><div><strong>Cinema key pickup</strong><p>Please collect your cinema key from the leasing office before <b>5:45 PM</b> on the day of your reservation.</p></div></div>
+    <div class="hint" id="amenityDeposit" style="display:none"></div><div id="v3PolicyNotice" class="v3-policy-notice" role="note"></div>
  
     <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reservation Date *</label>
     <input type="date" id="resDate" />
  
     <div id="availabilitySection" style="display:none;">
       <label style="margin-top:14px;">Availability for this day</label>
-      <div class="hint" style="margin-top:-6px; margin-bottom:10px;">You can book a time that overlaps an existing reservation, subject to availability and approval from the leasing office.</div>
+      <div class="hint" style="margin-top:-6px; margin-bottom:10px;">Unavailable times cannot be confirmed. Join the waitlist when the requested time is already reserved.</div>
       <div class="slot-legend">
         <span><span class="legend-dot" style="background:#fff; border:1px solid var(--line);"></span>Open</span>
         <span><span class="legend-dot" style="background:#FBE9E7;"></span>Booked</span>
@@ -521,21 +706,22 @@
       <div id="bookedRangesList" style="margin-bottom:14px;"></div>
  
       <label>Pick a Start Time</label>
-      <div class="ampm-tabs">
-        <button type="button" class="ampm-tab active" id="amTabBtn">AM</button>
-        <button type="button" class="ampm-tab" id="pmTabBtn">PM</button>
-      </div>
+      <div class="v3-slot-heading"><div class="v3-slot-intro">Choose from 15-minute starts <span>· or pick an exact time</span></div><button type="button" id="manualTimeToggle" class="v3-manual-btn" aria-expanded="false">✎ Enter time manually</button></div><div id="v3ManualTime" class="v3-manual-panel" hidden><label for="v3ManualInput">Custom start time</label><input type="time" id="v3ManualInput" step="60"/><button type="button" id="v3ApplyManual" class="v3-apply-btn">Use this time</button><p class="hint" id="v3ManualError" role="status"></p></div><div id="v3Timeline" class="v3-timeline" aria-label="Daily availability timeline"></div>
       <div class="time-scroller" id="timeScroller"></div>
       <div class="hint">Times already booked are shown in red &mdash; you can still select one to join the waitlist for that slot.</div>
     </div>
  
     <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Start Time *</label>
     <input type="time" id="resStart" readonly />
-    <div class="hint">Pick a time slot above to set this.</div>
+    <div class="hint">Choose a 15-minute start slot or enter a custom time above. Your chosen time appears here.</div>
  
     <label><svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9Zm0 0C7.03 22 3 17.97 3 13c4.97 0 9 4.03 9 9Z"/><path d="M12 13V2"/></svg>Duration *</label>
     <select id="resDuration">
+      <option value="15">15 minutes</option>
+      <option value="30">30 minutes</option>
+      <option value="45">45 minutes</option>
       <option value="60">1 hour</option>
+      <option value="90">1 hour 30 minutes</option>
       <option value="120">2 hours</option>
       <option value="180">3 hours</option>
       <option value="240">4 hours</option>
@@ -553,7 +739,7 @@
     <div id="bulkBookingSection" style="display:none; border:1.5px dashed var(--amber); border-radius:8px; padding:12px; margin-top:16px; background:#FBF6EA;">
       <div class="agree" style="margin-top:0;">
         <input type="checkbox" id="resBulk" />
-        <label><strong>Plan the week</strong> &mdash; repeat this same time for the next 6 days. Day 1 is confirmed instantly. Days 2&ndash;6 need staff approval &mdash; you don't need to do anything; you'll be notified once each is approved.</label>
+        <label><strong>Plan the week</strong> &mdash; reserve the next 5 working days (Monday–Friday only; weekends skipped). The first day is confirmed instantly. The other 4 working days need staff approval &mdash; you don't need to do anything; you'll be notified once each is approved.</label>
       </div>
     </div>
  
@@ -668,6 +854,21 @@ let officeHours = [];
 let settings = { enforce_apartment_list: false, max_advance_booking_days: 90 };
 let resident = { name: "", phone: "", email: "", apt: "", profileId: null };
 let apartmentProfiles = [];
+
+// V6: Stable amenity names and color tokens. Names originate in the existing amenities table.
+const V6_AMENITIES = [
+  { match: 'huddle', color: '#0D9488', soft: '#DEF7F1', days: 14 },
+  { match: 'busy', color: '#2563EB', soft: '#E9F1FF', days: 14 },
+  { match: 'plan', color: '#EA580C', soft: '#FFF0E4', days: 14 },
+  { match: 'task', color: '#DB2777', soft: '#FCE7F3', days: 14 },
+  { match: 'work', color: '#0891B2', soft: '#E4F8FB', days: 14 },
+  { match: 'cinema', color: '#7C3AED', soft: '#F1EAFF', days: 30 }
+];
+function v6AmenityPolicy(name) {
+  const n = String(name || '').toLowerCase();
+  return V6_AMENITIES.find(x => n.includes(x.match)) || {color:'#4359CE',soft:'#EDF0FF',days:14};
+}
+
 let selectedAmenity = null;
 let editingProfile = false;
 let addingNewProfile = false;
@@ -877,11 +1078,12 @@ function maybeShowPushPrompt() {
   if (!banner) return;
   if (typeof Notification === "undefined") return; // unsupported browser/context
   if (Notification.permission !== "default") { banner.classList.remove("visible"); return; }
-  if (localStorage.getItem("ccr_push_dismissed_" + resident.apt)) return;
+  if (localStorage.getItem("ccr_push_dismissed_" + resident.apt) || localStorage.getItem("ccr_push_requested_" + resident.apt)) return;
   banner.classList.add("visible");
 }
  
 document.getElementById("pushEnableBtn").onclick = () => {
+  localStorage.setItem("ccr_push_requested_" + resident.apt, "1");
   document.getElementById("pushPromptBanner").classList.remove("visible");
   if (!window.OneSignalDeferred) return;
   OneSignalDeferred.push(async function (OneSignal) {
@@ -921,8 +1123,7 @@ document.getElementById("sidebarViewPin").onclick = async () => {
   document.getElementById("pinModalBackdrop").classList.add("visible");
   // Always fetched live, never cached locally — this is intentionally the only
   // place the PIN is ever shown, and only reachable once already signed in.
-  const { data, error } = await sb.from("apartments").select("pin").eq("unit_number", resident.apt).single();
-  pinEl.textContent = (!error && data && data.pin) ? data.pin : "Unavailable";
+  pinEl.textContent = "For security, PINs are not retrievable. Contact the office for a new PIN.";
 };
 document.getElementById("pinModalCloseBtn").onclick = () => {
   document.getElementById("pinModalBackdrop").classList.remove("visible");
@@ -1018,7 +1219,7 @@ const NOTIF_TYPE_LABELS = {
 async function loadNotifications() {
   if (!resident.apt) return;
   const { data } = await sb.from("notifications").select("*").eq("apartment_number", resident.apt).order("created_at", { ascending: false }).limit(30);
-  renderNotifications(data || []);
+  renderNotifications((data || []).filter(n=>!n.recipient_profile_id||n.recipient_profile_id===resident.profileId));
 }
  
 function renderNotifications(list) {
@@ -1056,7 +1257,7 @@ async function openNotifPanel() {
 }
 document.getElementById("markAllReadBtn").onclick = async () => {
   if (!resident.apt) return;
-  await sb.from("notifications").update({ read: true }).eq("apartment_number", resident.apt).eq("read", false);
+  await sb.from("notifications").update({ read: true }).eq("apartment_number", resident.apt).eq("read", false).or(`recipient_profile_id.is.null,recipient_profile_id.eq.${resident.profileId}`);
   await loadNotifications();
 };
 function closeNotifPanel() {
@@ -1070,14 +1271,17 @@ document.getElementById("notifBackdrop").onclick = closeNotifPanel;
 function openSidebar() {
   document.getElementById("sidebar").classList.add("visible");
   document.getElementById("sidebarBackdrop").classList.add("visible");
+  document.getElementById("hamburgerBtn").setAttribute("aria-expanded","true");
 }
 function closeSidebar() {
   document.getElementById("sidebar").classList.remove("visible");
   document.getElementById("sidebarBackdrop").classList.remove("visible");
+  document.getElementById("hamburgerBtn").setAttribute("aria-expanded","false");
 }
  
 document.getElementById("hamburgerBtn").onclick = openSidebar;
 document.getElementById("sidebarBackdrop").onclick = closeSidebar;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSidebar(); });
 document.getElementById("homeBtn").onclick = () => { showScreen("menuStep"); loadHomeCard(); };
  
 function goToNewReservation() { showScreen("step2"); }
@@ -1098,7 +1302,7 @@ function openEditProfile(p) {
 }
 async function deleteProfile(p) {
   if (!confirm(`Delete the profile for "${p.full_name}"? This can't be undone, and any of their upcoming reservations will stay on the calendar but will no longer be linked to a profile.`)) return;
-  const { error } = await sb.from("profiles").delete().eq("id", p.id);
+  const { error } = await sb.rpc("delete_household_profile", { p_profile: p.id });
   if (error) { alert("Couldn't delete that profile: " + error.message); return; }
   if (resident.profileId === p.id) {
     resident = { name: "", phone: "", email: "", apt: p.apartment_number, profileId: null };
@@ -1247,12 +1451,47 @@ document.getElementById("saveProfileBtn").onclick = async () => {
 };
  
 // ---------- LOAD AMENITIES + SETTINGS ----------
+
+// V6 amenity discovery: uses the same live amenity records and existing booking flow.
+// No availability or reservation is fabricated by this visual shortcut.
+function v6RenderHomeSpaces(){
+  const grid=document.getElementById('v6SpaceGrid');if(!grid)return;
+  grid.replaceChildren();
+  if(!Array.isArray(amenities)||!amenities.length){
+    const empty=document.createElement('div');empty.className='v6-space-empty';
+    empty.textContent='Spaces could not be loaded. Please try again shortly.';grid.appendChild(empty);return;
+  }
+  const ordered=[...amenities].sort((a,b)=>{
+    const rank=n=>/conference|huddle/i.test(n)?0:/busy/i.test(n)?1:/plan/i.test(n)?2:/task/i.test(n)?3:/work/i.test(n)?4:/cinema|theater/i.test(n)?5:6;
+    return rank(a.name)-rank(b.name);
+  });
+  for(const a of ordered){
+    const policy=v6AmenityPolicy(a.name);
+    const isCinema=/cinema|theater/i.test(a.name),isOffice=/office/i.test(a.name);
+    const tile=document.createElement('button');tile.type='button';tile.className='v6-space-tile';
+    tile.style.setProperty('--tile-color',policy.color);tile.style.setProperty('--tile-soft',policy.soft);
+    const ico=document.createElement('span');ico.className='v6-space-icon';ico.textContent=isCinema?'🎬':isOffice?'💻':'🏢';ico.setAttribute('aria-hidden','true');
+    const name=document.createElement('span');name.className='v6-space-name';name.textContent=a.name;
+    const meta=document.createElement('span');meta.className='v6-space-meta';meta.textContent=(isCinema?'30':'14')+'-day booking window';
+    const action=document.createElement('span');action.className='v6-space-action';action.textContent='Choose this space  →';
+    tile.append(ico,name,meta,action);
+    tile.addEventListener('click',()=>{
+      goToNewReservation();
+      const radio=[...document.querySelectorAll('#amenityList input[name="amenity"]')].find(r=>r.value===String(a.id));
+      if(radio){radio.checked=true;radio.dispatchEvent(new Event('change',{bubbles:true}));}
+      document.getElementById('amenityList')?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    grid.appendChild(tile);
+  }
+}
+
 async function loadData() {
   const { data: settingsRow } = await sb.from("app_settings").select("*").eq("id", 1).single();
   if (settingsRow) settings = settingsRow;
  
   const { data: amenityRows } = await sb.from("amenities").select("*").eq("active", true).order("name");
   amenities = amenityRows || [];
+  v6RenderHomeSpaces();
  
   const { data: hourRows } = await sb.from("amenity_hours").select("*");
   amenityHours = hourRows || [];
@@ -1266,14 +1505,40 @@ async function loadData() {
   amenities.forEach((a, i) => {
     const div = document.createElement("div");
     div.className = "amenity-option";
-    div.style.borderLeftColor = accentCycle[i % accentCycle.length];
+    const isCinema = /cinema|theater|theatre/i.test(a.name);
+    const isOffice = /office|study|workspace/i.test(a.name);
+    const isClub = /club|lounge|party/i.test(a.name);
+    const isConference = /conference|meeting/i.test(a.name);
+    const officeMatch = (a.name || "").match(/(?:office|study|workspace)\s*[-#:]?\s*(\d+)/i);
+    const officeNumber = officeMatch ? Number(officeMatch[1]) : (isOffice ? i + 1 : 0);
+    const officePalettes = [
+      ["#2563eb", "#e5efff"], ["#ea580c", "#fff0e4"],
+      ["#db2777", "#fce7f3"], ["#0891b2", "#e3f7fb"],
+      ["#4f46e5", "#eae9ff"], ["#16a34a", "#e8f8ee"]
+    ];
+    const v6Color = v6AmenityPolicy(a.name);
+    const palette = [v6Color.color, v6Color.soft];
+    div.style.setProperty('--amenity-accent',palette[0]);
+    div.style.setProperty('--amenity-bg',palette[1]);
+    div.classList.add(isCinema ? "amenity-cinema" : isOffice ? "amenity-office" : isClub ? "amenity-club" : "amenity-other");
+    const glyph = isCinema ? "🎬" : isConference ? "📊" : isOffice ? "💻" : isClub ? "✨" : "🏡";
     div.innerHTML = `
       <input type="radio" name="amenity" value="${a.id}" id="amenity_${i}" />
-      <label for="amenity_${i}" style="margin:0; font-weight:normal;">${a.name}
-        <div class="amenity-note">Up to ${a.max_guests} guests${a.requires_deposit ? " &middot; $" + a.deposit_amount + " refundable deposit required at leasing office" : ""}</div>
+      <span class="amenity-glyph" aria-hidden="true">${glyph}</span>
+      <label for="amenity_${i}" class="amenity-card-copy"><strong></strong>
+        <div class="amenity-note">Up to ${a.max_guests} guests${a.requires_deposit ? " &middot; Refundable deposit applies" : ""}</div>
+        <span class="amenity-card-cta">Select space <span aria-hidden="true">↗</span></span>
       </label>`;
+    div.querySelector(".amenity-card-copy strong").textContent = a.name;
+    div.addEventListener("click", (event) => {
+      if (event.target.closest("input, label")) return;
+      div.querySelector("input").click();
+    });
     div.querySelector("input").onchange = () => {
       selectedAmenity = a;
+      v6ApplyBookingWindow();
+      document.querySelectorAll(".amenity-option").forEach(el => el.classList.toggle("is-selected", el === div));
+      document.getElementById("cinemaPickupBanner").hidden = !isCinema;
       document.getElementById("guestCapHint").textContent = "Maximum " + a.max_guests + " guests for this space.";
       const depoBox = document.getElementById("amenityDeposit");
       if (a.requires_deposit) {
@@ -1282,6 +1547,7 @@ async function loadData() {
       } else {
         depoBox.style.display = "none";
       }
+      v3PolicyNotice();
       updateDurationOptions();
       renderAvailability();
  
@@ -1304,12 +1570,31 @@ async function loadData() {
   const dateInput = document.getElementById("resDate");
   const today = new Date();
   const maxDate = new Date();
-  maxDate.setDate(today.getDate() + settings.max_advance_booking_days);
-  dateInput.min = localDateStr(today);
-  dateInput.max = localDateStr(maxDate);
+  maxDate.setDate(today.getDate() + (selectedAmenity ? v6AmenityPolicy(selectedAmenity.name).days : 14));
+  dateInput.min = v6ChicagoToday();
+  dateInput.max = v6AddCalendarDays(v6ChicagoToday(), selectedAmenity ? v6AmenityPolicy(selectedAmenity.name).days : 14);
 }
 loadData();
  
+// V3: Client-side amenity booking policy. Supabase server policies must mirror this.
+function isWorkSpace(amenity) { return !!amenity && /office|study|workspace|conference|meeting/i.test(amenity.name || ""); }
+function isCinemaSpace(amenity) { return !!amenity && /cinema|theater|theatre/i.test(amenity.name || ""); }
+function getEffectiveCloseMin(amenity, configuredCloseMin) {
+  if (isWorkSpace(amenity)) return Math.min(configuredCloseMin, 17 * 60 + 45);
+  if (isCinemaSpace(amenity)) return Math.min(configuredCloseMin, 23 * 60);
+  return configuredCloseMin;
+}
+function applyEffectiveCloseTime(dateObj, amenity) {
+  const current = dateObj.getHours()*60+dateObj.getMinutes();
+  const effective = getEffectiveCloseMin(amenity, current);
+  dateObj.setHours(Math.floor(effective/60), effective%60, 0, 0);
+}
+function v3PolicyNotice() {
+  const el=document.getElementById('v3PolicyNotice'); if (!el) return;
+  if (isWorkSpace(selectedAmenity)) el.textContent='Workspaces open at 9:00 AM. Vacate the room and return keys by 5:45 PM. Maximum booking: 4 hours.';
+  else if (isCinemaSpace(selectedAmenity)) el.textContent='Cinema must be vacated by 11:00 PM. Collect your key before 5:45 PM. Maximum booking: 4 hours.';
+  else el.textContent='Reservations are limited to 4 hours and must finish before this amenity closes.';
+}
 // ---------- DYNAMIC DURATION OPTIONS ----------
 // Shrinks the duration dropdown so a booking can never run past that amenity's closing time
 // (this is what naturally produces "8pm -> max 3 hours, 9pm -> max 2 hours" for a space that closes at 11pm)
@@ -1326,6 +1611,7 @@ function updateDurationOptions() {
   const dow = startTime.getDay();
   const hoursRow = amenityHours.find(h => h.amenity_id === selectedAmenity.id && h.day_of_week === dow);
  
+  const previousDuration = Number(durationSelect.value);
   durationSelect.innerHTML = "";
   closingNote.style.display = "none";
  
@@ -1337,6 +1623,7 @@ function updateDurationOptions() {
  
   const openTime = new Date(`${date}T${hoursRow.open_time}`);
   const closeTime = new Date(`${date}T${hoursRow.close_time}`);
+  applyEffectiveCloseTime(closeTime, selectedAmenity);
  
   if (startTime < openTime || startTime >= closeTime) {
     durationSelect.innerHTML = '<option value="">Outside business hours</option>';
@@ -1345,7 +1632,7 @@ function updateDurationOptions() {
   }
  
   const maxMinutes = Math.floor((closeTime - startTime) / 60000);
-  const allOptions = [60, 120, 180, 240];
+  const allOptions = [15, 30, 45, 60, 90, 120, 150, 180, 210, 240];
   const validOptions = allOptions.filter(m => m <= maxMinutes);
  
   if (validOptions.length === 0) {
@@ -1357,10 +1644,11 @@ function updateDurationOptions() {
   validOptions.forEach(m => {
     const opt = document.createElement("option");
     opt.value = m;
-    opt.textContent = (m / 60) + (m === 60 ? " hour" : " hours");
+    opt.textContent = m < 60 ? `${m} minutes` : (m % 60 === 0 ? `${m / 60} hour${m === 60 ? "" : "s"}` : `${Math.floor(m/60)} hr ${m%60} min`);
     durationSelect.appendChild(opt);
   });
-  hint.textContent = `Closes at ${hoursRow.close_time.slice(0,5)} on this day.`;
+  if (validOptions.includes(previousDuration)) durationSelect.value = String(previousDuration);
+  hint.textContent = `Up to 4 hours. Reservations must end by ${minToLabel(getEffectiveCloseMin(selectedAmenity, closeTime.getHours()*60+closeTime.getMinutes()))}.`;
  
   // late-evening warning: only relevant for spaces open into the evening (close at/after 9pm)
   if (closeTime.getHours() >= 21 && startTime.getHours() >= 20) {
@@ -1409,30 +1697,28 @@ async function renderAvailability() {
  
   const [oh, om] = hoursRow.open_time.split(":").map(Number);
   const [ch, cm] = hoursRow.close_time.split(":").map(Number);
-  dayOpenMin = oh * 60 + om;
-  dayCloseMin = ch * 60 + cm;
+  dayOpenMin = Math.max(oh * 60 + om, isWorkSpace(selectedAmenity) ? 9*60 : 0);
+  dayCloseMin = getEffectiveCloseMin(selectedAmenity, ch * 60 + cm);
   if (dayCloseMin <= dayOpenMin) dayCloseMin += 24 * 60;
  
   const dayStart = new Date(`${date}T00:00:00`).toISOString();
   const dayEnd = new Date(`${date}T23:59:59`).toISOString();
   const { data: dayBookings } = await sb
-    .from("bookings")
-    .select("start_time, end_time, key_picked_up")
+    .from("bookings_availability")
+    .select("start_time, end_time")
     .eq("amenity_id", selectedAmenity.id)
-    .eq("status", "confirmed")
+    .in("status", ["confirmed", "pending"])
     .lt("start_time", dayEnd)
     .gt("end_time", dayStart);
  
   const dayBase = new Date(`${date}T00:00:00`);
   dayBookingsCache = (dayBookings || []).map(b => {
     const s = new Date(b.start_time), e = new Date(b.end_time);
-    return { startMin: Math.round((s - dayBase) / 60000), endMin: Math.round((e - dayBase) / 60000), key_picked_up: b.key_picked_up };
+    return { startMin: Math.round((s - dayBase) / 60000), endMin: Math.round((e - dayBase) / 60000), key_picked_up: true };
   }).sort((a, b) => a.startMin - b.startMin);
  
   renderBookedRangesList();
-  // default to whichever half of the day the amenity opens in
-  ampmMode = dayOpenMin < 720 ? "AM" : "PM";
-  syncAmPmTabs();
+  // V3: render the entire day without AM/PM switching.
   renderTimeScroller();
 }
  
@@ -1445,46 +1731,48 @@ function renderBookedRangesList() {
   box.innerHTML = dayBookingsCache.map(b => `
     <div class="booked-range-row${b.key_picked_up ? "" : " keys-out"}">
       <span class="range-time">${minToLabel(b.startMin)} \u2013 ${minToLabel(b.endMin)}</span>
-      <span>${b.key_picked_up ? "Booked" : "Booked \u00b7 keys still out"}</span>
+      <span>${b.key_picked_up ? "Booked" : "Reserved"}</span>
     </div>`).join("");
 }
  
-function syncAmPmTabs() {
-  document.getElementById("amTabBtn").classList.toggle("active", ampmMode === "AM");
-  document.getElementById("pmTabBtn").classList.toggle("active", ampmMode === "PM");
+function syncAmPmTabs() {} // V3 uses all-day slots; retained for compatibility.
+function renderV3Timeline() {
+  const timeline=document.getElementById('v3Timeline'); if(!timeline) return;
+  if(dayOpenMin===null || dayCloseMin===null || dayCloseMin<=dayOpenMin){timeline.innerHTML='';return;}
+  const pieces=[];
+  for(let m=dayOpenMin;m<dayCloseMin;m+=15){
+    const state=minuteStatus(m);
+    pieces.push(`<span class="v3-timeline-cell ${state==='open'?'is-open':'is-booked'}" title="${minToLabel(m)}: ${state==='open'?'Open':'Reserved'}"></span>`);
+  }
+  timeline.innerHTML=`<div class="v3-timeline-labels"><span>${minToLabel(dayOpenMin)}</span><span>Availability at a glance</span><span>${minToLabel(dayCloseMin)}</span></div><div class="v3-timeline-track">${pieces.join('')}</div><div class="v3-timeline-key"><span>● Open</span><span>● Reserved · waitlist available</span></div>`;
 }
-document.getElementById("amTabBtn").onclick = () => { ampmMode = "AM"; syncAmPmTabs(); renderTimeScroller(); };
-document.getElementById("pmTabBtn").onclick = () => { ampmMode = "PM"; syncAmPmTabs(); renderTimeScroller(); };
- 
 function renderTimeScroller() {
-  const scroller = document.getElementById("timeScroller");
-  if (dayOpenMin === null) { scroller.innerHTML = ""; return; }
- 
-  const base = ampmMode === "AM" ? 0 : 720;
-  const rows = [];
-  for (let i = 0; i < 48; i++) {
-    const min = base + i * 15;
-    const status = minuteStatus(min);
-    if (status === "disabled") continue; // outside open hours -- just hide, nothing useful to show
-    rows.push({ min, status });
+  const scroller=document.getElementById('timeScroller');
+  if(dayOpenMin===null){scroller.innerHTML='';renderV3Timeline();return;}
+  const rows=[];
+  for(let min=Math.ceil(dayOpenMin/15)*15;min<dayCloseMin;min+=15){
+    const status=minuteStatus(min);
+    rows.push({min,status});
   }
- 
-  if (rows.length === 0) {
-    scroller.innerHTML = `<div class="booked-range-empty" style="padding:14px;">Closed during ${ampmMode === "AM" ? "the morning" : "the afternoon/evening"} on this day.</div>`;
-    return;
-  }
- 
-  scroller.innerHTML = rows.map(r => `
-    <div class="time-slot-row ${r.status === "open" ? "" : "booked"} ${selectedStartMin === r.min ? "selected" : ""}" data-min="${r.min}">
-      <span>${minToLabel(r.min)}</span>
-      ${r.status !== "open" ? `<span class="slot-tag">${r.status === "booked-keys-out" ? "Keys Out" : "Booked"}</span>` : ""}
-    </div>`).join("");
- 
-  scroller.querySelectorAll(".time-slot-row").forEach(row => {
-    row.onclick = () => selectStart(parseInt(row.dataset.min, 10));
-  });
+  scroller.innerHTML=rows.length?rows.map(r=>`<button type="button" class="v3-time-chip ${r.status==='open'?'':'is-booked'} ${selectedStartMin===r.min?'selected':''}" data-min="${r.min}" aria-pressed="${selectedStartMin===r.min}"><strong>${minToLabel(r.min)}</strong><small>${r.status==='open'?'Available':'Waitlist'}</small></button>`).join(''):'<div class="booked-range-empty">No start times available for this day.</div>';
+  scroller.querySelectorAll('[data-min]').forEach(row=>row.onclick=()=>selectStart(Number(row.dataset.min)));
+  renderV3Timeline();
 }
- 
+const manualToggle=document.getElementById('manualTimeToggle');
+manualToggle.addEventListener('click',()=>{
+  const panel=document.getElementById('v3ManualTime');panel.hidden=!panel.hidden;
+  manualToggle.setAttribute('aria-expanded',String(!panel.hidden));
+  manualToggle.textContent=panel.hidden?'✎ Enter time manually':'✕ Hide manual entry';
+  if(!panel.hidden && document.getElementById('resStart').value) document.getElementById('v3ManualInput').value=document.getElementById('resStart').value;
+});
+document.getElementById('v3ApplyManual').addEventListener('click',()=>{
+  const val=document.getElementById('v3ManualInput').value;
+  const err=document.getElementById('v3ManualError');
+  if(!/^\d{2}:\d{2}$/.test(val)){err.textContent='Enter a valid time.';return;}
+  const [h,m]=val.split(':').map(Number),min=h*60+m;
+  if(dayOpenMin===null || min<dayOpenMin || min>=dayCloseMin){err.textContent='Choose a time within the permitted booking window.';return;}
+  err.textContent='';selectStart(min);
+});
 function selectStart(min) {
   selectedStartMin = min;
   const h = String(Math.floor(min / 60) % 24).padStart(2, "0");
@@ -1494,6 +1782,29 @@ function selectStart(min) {
   renderTimeScroller();
 }
  
+// V6 frontend validation; server-side enforcement is required before production.
+function v6ChicagoToday() {
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+  return `${p.year}-${p.month}-${p.day}`;
+}
+function v6AddCalendarDays(dateString,days){
+  const d=new Date(dateString+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);
+  return d.toISOString().slice(0,10);
+}
+function v6ApplyBookingWindow() {
+  const field=document.getElementById('resDate');if(!field)return;
+  const today=v6ChicagoToday();
+  const days=selectedAmenity?v6AmenityPolicy(selectedAmenity.name).days:14;
+  field.min=today;field.max=v6AddCalendarDays(today,days);
+  if(field.value&&(field.value<field.min||field.value>field.max))field.value='';
+}
+function v6DateAllowed(date,amenity,dayOffset=0){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!amenity)return false;
+  const today=v6ChicagoToday(),target=v6AddCalendarDays(date,dayOffset);
+  return target>=today&&target<=v6AddCalendarDays(today,v6AmenityPolicy(amenity.name).days);
+}
+
 // ---------- SUBMIT ----------
 document.getElementById("submitBtn").onclick = async () => {
   const resultBox = document.getElementById("resultMsg");
@@ -1513,6 +1824,9 @@ document.getElementById("submitBtn").onclick = async () => {
   const isBulk = document.getElementById("resBulk").checked;
  
   if (!date || !startStr) return showMsg("err", "Please choose a date and start time.");
+  if (!v6DateAllowed(date, selectedAmenity)) return showMsg("err", `Bookings for ${selectedAmenity.name} are available up to ${v6AmenityPolicy(selectedAmenity.name).days} days in advance.`);
+  if (isBulk && !v6DateAllowed(date, selectedAmenity, 5)) return showMsg("err", "All six days must fall within the office booking window.");
+  if (!Number.isFinite(duration) || duration < 15 || duration > 240) return showMsg("err", "Booking duration must be between 15 minutes and 4 hours.");
   if (!agreed) return showMsg("err", "You must agree to the reservation agreement to continue.");
   if (guests > selectedAmenity.max_guests) return showMsg("err", `This space allows a maximum of ${selectedAmenity.max_guests} guests.`);
  
@@ -1531,16 +1845,18 @@ document.getElementById("submitBtn").onclick = async () => {
   }
   const openTime = new Date(`${date}T${hoursRow.open_time}`);
   const closeTime = new Date(`${date}T${hoursRow.close_time}`);
+  applyEffectiveCloseTime(closeTime, selectedAmenity);
+  if (isWorkSpace(selectedAmenity) && startTime.getHours()*60+startTime.getMinutes() < 540) return showMsg("err", "Workspaces cannot be booked before 9:00 AM.");
   if (startTime < openTime || endTime > closeTime) {
     return showMsg("err", `Reservations must fit within business hours: ${hoursRow.open_time.slice(0,5)} - ${hoursRow.close_time.slice(0,5)} on this day.`);
   }
  
   // ---- check for overlap with existing confirmed bookings ----
   const { data: overlaps, error: overlapErr } = await sb
-    .from("bookings")
+    .from("bookings_availability")
     .select("id")
     .eq("amenity_id", selectedAmenity.id)
-    .eq("status", "confirmed")
+    .in("status", ["confirmed", "pending"])
     .lt("start_time", endTime.toISOString())
     .gt("end_time", startTime.toISOString());
  
@@ -1558,7 +1874,7 @@ document.getElementById("submitBtn").onclick = async () => {
       guests, comments
     }).select().single();
  
-    if (waitErr) return showMsg("err", "Something went wrong joining the waitlist. Please try again.");
+    if (waitErr) { console.error("Waitlist insert failed", waitErr); return showMsg("err", "Unable to join waitlist: " + (waitErr.message || "Please try again.")); }
  
     const { count } = await sb
       .from("waitlist")
@@ -1568,7 +1884,7 @@ document.getElementById("submitBtn").onclick = async () => {
       .lt("start_time", endTime.toISOString())
       .gt("end_time", startTime.toISOString());
  
-    showConfirmationModal(`That time is already booked for ${selectedAmenity.name}. You've been added to the waitlist \u2014 you are position #${count}. ${count === 1 ? "You're first in line: if the current holder does not pick up their keys, this room may become available to you. " : ""}We'll notify you if it opens up.`, "wait");
+    showConfirmationModal(`That time is already booked for ${selectedAmenity.name}. You've been added to the waitlist \u2014 you are position #${count}. ${count === 1 ? "You're first in line. Staff may release an unclaimed booking manually. " : ""}We'll notify you if it opens up.`, "wait");
     resetBookingForm();
     return;
   }
@@ -1584,22 +1900,25 @@ document.getElementById("submitBtn").onclick = async () => {
     guests, comments
   });
  
-  if (insertErr) return showMsg("err", "Something went wrong submitting your reservation. Please try again.");
+  if (insertErr) { console.error("Reservation insert failed", insertErr); return showMsg("err", "Unable to submit reservation: " + (insertErr.message || "Please try again.")); }
  
   const pickupInstructions = getPickupInstructions(selectedAmenity, startTime, date);
-  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${formatDateTime(startTime.toISOString())}. ${pickupInstructions} If keys aren't picked up within 45 minutes of your reservation's start time, this space will be released and offered to the next person on the waitlist.`);
+  showConfirmationModal(`Your reservation for ${selectedAmenity.name} is confirmed for ${formatDateTime(startTime.toISOString())}. ${pickupInstructions} Staff will contact you if there is a key collection issue.`);
   resetBookingForm();
 };
  
 // ---------- BULK BOOKING (private offices only, plan the week) ----------
 async function submitBulkBooking(date, startStr, duration, guests, comments) {
+  if (!Number.isFinite(duration) || duration < 15 || duration > 240) return showMsg("err", "Booking duration must be between 15 minutes and 4 hours.");
   const groupId = crypto.randomUUID();
   const results = []; // { date, outcome: 'confirmed'|'pending'|'skipped-closed'|'skipped-booked' }
  
-  for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
+  for (let dayOffset = 0, workdays = 0; workdays < 5 && dayOffset < 14; dayOffset++) {
     const d = new Date(`${date}T00:00:00`);
     d.setDate(d.getDate() + dayOffset);
     const dStr = localDateStr(d);
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    const workdayIndex = workdays++;
  
     const startTime = new Date(`${dStr}T${startStr}:00`);
     const endTime = new Date(startTime.getTime() + duration * 60000);
@@ -1612,14 +1931,15 @@ async function submitBulkBooking(date, startStr, duration, guests, comments) {
     }
     const openTime = new Date(`${dStr}T${hoursRow.open_time}`);
     const closeTime = new Date(`${dStr}T${hoursRow.close_time}`);
+    applyEffectiveCloseTime(closeTime, selectedAmenity);
     if (startTime < openTime || endTime > closeTime) {
       results.push({ date: dStr, outcome: "skipped-closed" });
       continue;
     }
  
     const { data: overlaps } = await sb
-      .from("bookings").select("id")
-      .eq("amenity_id", selectedAmenity.id).eq("status", "confirmed")
+      .from("bookings_availability").select("id")
+      .eq("amenity_id", selectedAmenity.id).in("status", ["confirmed", "pending"])
       .lt("start_time", endTime.toISOString()).gt("end_time", startTime.toISOString());
  
     if (overlaps && overlaps.length > 0) {
@@ -1627,7 +1947,7 @@ async function submitBulkBooking(date, startStr, duration, guests, comments) {
       continue;
     }
  
-    const status = dayOffset === 0 ? "confirmed" : "pending";
+    const status = workdayIndex === 0 ? "confirmed" : "pending";
     const { error } = await sb.from("bookings").insert({
       amenity_id: selectedAmenity.id,
       resident_name: resident.name, apartment_number: resident.apt, profile_id: resident.profileId,
@@ -1647,7 +1967,7 @@ async function submitBulkBooking(date, startStr, duration, guests, comments) {
     return `${fmt(r.date)}: Something went wrong, please try that day again`;
   });
  
-  showConfirmationModal(`Your 6-day plan for ${selectedAmenity.name}:<br/>` + lines.join("<br/>"));
+  showConfirmationModal(`Your 5-working-day plan for ${selectedAmenity.name}:<br/>` + lines.join("<br/>"));
   resetBookingForm();
 }
  
@@ -1686,21 +2006,12 @@ function resetBookingForm() {
 // Cinema bookings can start after the leasing office itself has closed for the day (extended hours to 11pm).
 // In that case, fob pickup has to happen before the office closes -- not "at reservation start time".
 function getPickupInstructions(amenity, startTime, dateStr) {
-  const standard = "Please pick up your fob from the leasing office at your reservation start time.";
-  if (amenity.name !== "Cinema Theater") return standard;
- 
-  const dow = startTime.getDay();
-  const officeRow = officeHours.find(h => h.day_of_week === dow);
-  if (!officeRow || !officeRow.close_time) return standard;
- 
-  const officeClose = new Date(`${dateStr}T${officeRow.close_time}`);
-  if (startTime >= officeClose) {
-    const closeStr = officeClose.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    return `Since this is after the leasing office's normal hours, please pick up your fob from the leasing office 15 minutes before office closing time (by around ${closeStr}) rather than at your reservation start time.`;
+  if (/cinema|theater|theatre/i.test(amenity.name)) {
+    return "Please collect your cinema key from the leasing office before 5:45 PM on the day of your reservation.";
   }
-  return standard;
+  return "Please pick up your fob from the leasing office at your reservation start time.";
 }
- 
+
 function showMsg(type, text) {
   document.getElementById("resultMsg").innerHTML = `<div class="msg ${type}">${text}</div>`;
 }
@@ -1714,12 +2025,12 @@ document.getElementById("confirmModalDoneBtn").onclick = () => {
 // ---------- HOME CARD (shows next upcoming booking right on the home screen) ----------
 async function loadHomeCard() {
   const box = document.getElementById("homeUpcomingCard");
-  if (!resident.apt) { box.innerHTML = ""; return; }
+  if (!resident.apt || !resident.profileId) { box.innerHTML = ""; return; }
   const nowIso = new Date().toISOString();
  
   const { data } = await sb
     .from("bookings").select("*, amenities(name, requires_deposit, deposit_amount)")
-    .eq("status", "confirmed").gt("end_time", nowIso)
+    .eq("status", "confirmed").eq("profile_id", resident.profileId).eq("key_returned", false).gt("end_time", nowIso)
     .order("start_time").limit(1);
  
   if (!data || data.length === 0) { box.innerHTML = ""; return; }
@@ -1729,7 +2040,7 @@ async function loadHomeCard() {
   div.className = "res-item";
   div.style.marginTop = "16px";
   div.innerHTML = `
-    <div class="res-title">Your Next Reservation</div>
+    <div class="res-title">${escapeHtml(resident.name)} · Your Next Reservation</div>
     <div class="res-title">${b.amenities.name}</div>
     <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
     <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
@@ -1755,21 +2066,21 @@ async function loadMyReservations() {
   const amenitySelect = "*, amenities(name, requires_deposit, deposit_amount)";
  
   const { data: myBookings } = await sb
-    .from("bookings").select(amenitySelect)
+    .from("bookings").select(amenitySelect).eq("profile_id", resident.profileId)
     .eq("status", "confirmed").eq("key_returned", false).gt("end_time", nowIso).order("start_time");
  
   const { data: myPending } = await sb
-    .from("bookings").select(amenitySelect)
+    .from("bookings").select(amenitySelect).eq("profile_id", resident.profileId)
     .eq("status", "pending").gt("end_time", nowIso).order("start_time");
  
   const { data: myWaitlist } = await sb
-    .from("waitlist").select(amenitySelect)
+    .from("waitlist").select(amenitySelect).eq("profile_id", resident.profileId)
     .eq("status", "waiting").gt("end_time", nowIso).order("start_time");
  
   // "Completed" means either the scheduled end_time has passed, OR the resident
   // already returned their key early -- either way it's no longer "upcoming"
   const { data: pastBookings } = await sb
-    .from("bookings").select(amenitySelect)
+    .from("bookings").select(amenitySelect).eq("profile_id", resident.profileId)
     .in("status", ["confirmed", "cancelled"])
     .or(`end_time.lte.${nowIso},key_returned.eq.true`)
     .order("start_time", { ascending: false }).limit(10);
@@ -1800,7 +2111,7 @@ async function loadMyReservations() {
     div.innerHTML = `
       <div class="res-title">${b.amenities.name}</div>
       <div class="res-time">${formatDateTimeRange(b.start_time, b.end_time)}</div>
-      <span class="res-status confirmed">Confirmed</span>
+      <span class="res-status confirmed">${b.key_picked_up && !b.key_returned ? "Active · Key collected" : "Confirmed · Upcoming"}</span>
       <div class="res-time">${timeRemainingText(b.start_time, b.end_time)}</div>
       <div class="res-time">${keyStatusText(b)}</div>
       ${showCountdown ? keyCountdownPlaceholder(b) : ""}
@@ -1833,7 +2144,7 @@ async function loadMyReservations() {
     pastBookings.forEach(b => {
       const div = document.createElement("div");
       div.className = "res-item";
-      const statusLabel = b.status === "cancelled" ? "Cancelled" : "Completed";
+      const statusLabel = b.status === "cancelled" ? "Cancelled" : (b.key_returned ? "Completed · Key returned" : "Completed");
       div.innerHTML = `
         <div class="res-title">${b.amenities.name}</div>
         <div class="res-time">${formatDateTime(b.start_time)}</div>
@@ -2016,7 +2327,7 @@ async function performCancel(id, type, btn) {
     const { data: booking } = await sb.from("bookings").select("*").eq("id", id).single();
     if (booking) {
       await sb.from("bookings").update({ status: "cancelled" }).eq("id", id);
-      await promoteNextWaitlisted(booking);
+      // Server cancellation trigger promotes the earliest eligible waitlist entry.
     }
   }
  
@@ -2031,12 +2342,35 @@ async function performCancel(id, type, btn) {
 // Runs server-side (SECURITY DEFINER) since the promoted booking belongs to a different
 // resident than whoever triggered this by cancelling -- RLS would otherwise block it.
 async function promoteNextWaitlisted(cancelledBooking) {
-  await sb.rpc("promote_next_waitlisted", { p_cancelled_booking_id: cancelledBooking.id });
+  // Promotion is triggered atomically by Supabase when the booking is cancelled.
   // Note: the promoted resident finding out is via the notification center (bell icon).
 }
  
 // keep the unread badge reasonably fresh while the app is open
 setInterval(() => { if (resident.apt) loadNotifications(); }, 45000);
+</script>
+<script>
+// V6 floating bottom navigation. Reuse existing booking, notification and account actions.
+(function(){
+ const dock=document.getElementById('v6ResidentDock'),sheet=document.getElementById('v6ResidentSheet');
+ const ids=['v6Home','v6Office','v6Bookings','v6Inbox','v6Account'];
+ function active(id){ids.forEach(x=>{const b=document.getElementById(x);b.classList.toggle('active',x===id);if(x===id)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});}
+ function close(){sheet.hidden=true;}
+ document.getElementById('v6Home').onclick=()=>{close();active('v6Home');document.getElementById('homeBtn').click();};
+ document.getElementById('v6Office').onclick=()=>{close();active('v6Office');document.getElementById('sidebarNewRes').click();};
+ document.getElementById('v6Bookings').onclick=()=>{close();active('v6Bookings');document.getElementById('sidebarMyRes').click();};
+ document.getElementById('v6Inbox').onclick=()=>{close();active('v6Inbox');document.getElementById('notifBellBtn').click();};
+ document.getElementById('v6Account').onclick=()=>{active('v6Account');sheet.hidden=false;};
+ document.getElementById('v6SwitchProfile').onclick=()=>{close();document.getElementById('sidebarSwitchProfile').click();};
+ document.getElementById('v6ViewPin').onclick=()=>{close();document.getElementById('sidebarViewPin').click();};
+ document.getElementById('v6SignOut').onclick=()=>{close();document.getElementById('sidebarLogout').click();};
+ document.getElementById('v6ResidentClose').onclick=close;
+ sheet.addEventListener('click',e=>{if(e.target===sheet)close();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+ const observer=new MutationObserver(()=>{const screen=document.querySelector('#authStep.active,#profileStep.active,#profilePickerStep.active,#menuStep.active,#step2.active,#myResStep.active');const id=screen?.id;const ready=!!id&&!['authStep','profileStep','profilePickerStep'].includes(id);dock.hidden=!ready;if(!ready)close();if(id==='menuStep')active('v6Home');else if(id==='step2')active('v6Office');else if(id==='myResStep')active('v6Bookings');});
+ observer.observe(document.body,{attributes:true,subtree:true,attributeFilter:['class']});
+ dock.hidden=true;
+})();
 </script>
 </body>
 </html>
